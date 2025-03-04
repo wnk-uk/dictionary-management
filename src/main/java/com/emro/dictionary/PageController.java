@@ -28,7 +28,14 @@ public class PageController {
             model.addAttribute("username", authentication.getName());
         }
         return "gloList";
+    }
 
+    @GetMapping("/lang/lists")
+    public String langHome(Model model, Authentication authentication) {
+        if (authentication != null) {
+            model.addAttribute("username", authentication.getName());
+        }
+        return "langList";
     }
 
 }

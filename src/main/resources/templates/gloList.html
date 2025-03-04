@@ -14,15 +14,72 @@
             <div class="container-fluid">
 
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                    <h1 class="h3 mb-0 text-gray-800">Glossary</h1>
+                    <button onclick="saveData()" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">save</button>
                 </div>
 
                 <!-- write -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div id="luckysheet" style="margin:0px;padding:0px;width:100%;height:700px;left: 0px;top: 0px;"></div>
+                    </div>
+                </div>
             </div>
         </div>
         <footer th:replace="fragments.html :: main-footer"></footer>
     </div>
 </div>
+
+<script th:replace="fragments.html :: ajax-csrf-header"></script>
+<script>
+    // 데이터를 백엔드에 저장
+    function saveData() {
+        const data = luckysheet.getAllSheets(); // Luckysheet에서 데이터 가져오기
+
+        $.ajax({
+            url:"/api/glo/save",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ sheetData: data }),
+            success: function(response) {
+                alert("저장 성공!");
+            },
+            error: function(xhr) {
+                console.error("저장 실패:", xhr.responseText);
+            }
+        });
+    }
+
+    // 백엔드에서 데이터를 불러와 Luckysheet에 로드
+    function loadData() {
+        fetch("/api/glo/load")
+            .then(response => response.json())
+            .then(data => {
+                let sheetData = data.sheetData;
+                if (data.sheetData) {
+                    sheetData = data.sheetData;
+                } else {
+                    sheetData = [
+                        {
+                            name: "sheet1"
+                        }
+                    ];
+                }
+                luckysheet.create({
+                    container: "luckysheet",
+                    data: sheetData,
+                    title: "Glossary",
+                    showinfobar: false
+                });
+            })
+            .catch(error => console.error("불러오기 실패:", error));
+    }
+
+    $(function () {
+        loadData();
+        $(".luckysheet-share-logo").css("display", "none");
+    })
+</script>
 
 </body>
 </html>
