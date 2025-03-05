@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SheetController {
 
-    private final SheetService luckysheetService;
+    private final SheetService sheetService;
 
     @PostMapping("/save")
     public String saveLuckysheetData(@RequestBody SheetDTO luckysheetDTO) {
-        luckysheetService.saveLuckysheetData(luckysheetDTO);
+        sheetService.saveSheetData(luckysheetDTO);
         return "데이터 저장 완료";
     }
 
     @GetMapping("/load")
     public SheetDTO loadLuckysheetData() {
-        return luckysheetService.loadLuckysheetData();
+        return sheetService.loadSheetData();
     }
 
 }

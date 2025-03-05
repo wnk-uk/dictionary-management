@@ -38,4 +38,12 @@ public class PageController {
         return "langList";
     }
 
+    @GetMapping("/user/lists")
+    public String userHome(Model model, Authentication authentication) {
+        if (authentication != null) {
+            model.addAttribute("username", authentication.getName());
+        }
+        return "userList";
+    }
+
 }

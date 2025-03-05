@@ -1,30 +1,45 @@
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS USERS (
                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                      username VARCHAR(50) NOT NULL UNIQUE,
                                      password VARCHAR(255) NOT NULL,
-                                     role ENUM('USER', 'ADMIN') NOT NULL
+                                     role ENUM('USER', 'ADMIN', 'SYS_ADMIN') NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS sheet_data (
+CREATE TABLE IF NOT EXISTS SHEET_DATA (
                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                     data CLOB NOT NULL
+                                     json_data CLOB NOT NULL
 );
 
--- CREATE TABLE IF NOT EXISTS MULTLANG (
--- 	                                    MULTLANG_CCD VARCHAR2(50) NOT NULL,
--- 										MULTLANG_KEY VARCHAR2(500) NOT NULL,
--- 										MULTLANG_TRANSL_CONT VARCHAR2(500),
--- 										MULTLANG_MOD_DTTM TIMESTAMP,
--- 										MULTLANG_TRANSL_CONT_ABBR VARCHAR2(100),
--- 										MULTLANG_ABBR_USE_YN CHAR(1),
--- 										MULTLANG_TYP VARCHAR2(100) NOT NULL,
--- 										RMK VARCHAR2(1000),
--- 										STS CHAR(1) DEFAULT 'C',
--- 										REGR_ID VARCHAR2(50),
--- 										REG_DTTM TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
--- 										MODR_ID VARCHAR2(50),
--- 										MOD_DTTM TIMESTAMP,
--- 										MULTLANG_TRANSL_FNL_CONT VARCHAR2(500)
--- );
+CREATE TABLE IF NOT EXISTS DIC_REQ (
+                                    dic_req_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                    req_usr_nm VARCHAR(50) NOT NULL,
+                                    req_dttm TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
+                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                       dic_req_id INT,
+                                       multlang_ccd VARCHAR2(50) NOT NULL,
+                                       multlang_key VARCHAR2(500) NOT NULL
+);
+
+
+
+CREATE TABLE IF NOT EXISTS MULTLANG (
+	                                    multlang_ccd VARCHAR2(50) NOT NULL,
+										multlang_key VARCHAR2(500) NOT NULL,
+										multlang_transl_cont VARCHAR2(500),
+										multlang_mod_dttm TIMESTAMP,
+										multlang_transl_cont_abbr VARCHAR2(100),
+										multlang_abbr_use_yn CHAR(1),
+										multlang_typ VARCHAR2(100) NOT NULL,
+										rmk VARCHAR2(1000),
+										sts CHAR(1) DEFAULT 'C',
+										regr_id VARCHAR2(50),
+										reg_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+										modr_id VARCHAR2(50),
+										mod_dttm TIMESTAMP,
+										multlang_transl_fnl_cont VARCHAR2(500)
+);
 
 

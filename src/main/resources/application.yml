@@ -15,7 +15,10 @@ spring:
       mode: always  # 스키마 및 데이터 초기화 실행
       encoding: UTF-8
   mybatis:
+    configuration:
+      map-underscore-to-camel-case: true
     mapper-locations: classpath:mappers/*.xml
+
 
 logging:
   level:

@@ -46,6 +46,7 @@ public class SecurityConfig {
                 ).authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .requestMatchers("/api/glo/**").hasRole("ADMIN")
+                        .requestMatchers("/api/user/**").hasRole("SYS_ADMIN")
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
