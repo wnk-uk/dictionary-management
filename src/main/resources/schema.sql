@@ -13,14 +13,17 @@ CREATE TABLE IF NOT EXISTS SHEET_DATA (
 CREATE TABLE IF NOT EXISTS DIC_REQ (
                                     dic_req_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                     req_usr_nm VARCHAR(50) NOT NULL,
-                                    req_dttm TIMESTAMP
+                                    req_dttm TIMESTAMP,
+									sts CHAR(1) DEFAULT 'C',
+									acpt_sts VARCHAR(50) /* REQ, HOLD, ACPT, DEL */
 );
 
 CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
                                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                        dic_req_id INT,
                                        multlang_ccd VARCHAR2(50) NOT NULL,
-                                       multlang_key VARCHAR2(500) NOT NULL
+                                       multlang_key VARCHAR2(500) NOT NULL,
+									   reg_sts VARCHAR(50)	/* APPROVAL, REJECT */
 );
 
 
