@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS USERS (
                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                      username VARCHAR(50) NOT NULL UNIQUE,
                                      password VARCHAR(255) NOT NULL,
-                                     role ENUM('USER', 'ADMIN', 'SYS_ADMIN') NOT NULL
+                                     role ENUM('USER', 'ADMIN', 'SYS_ADMIN') NOT NULL,
+                                     DEPT VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS SHEET_DATA (
