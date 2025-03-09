@@ -26,3 +26,8 @@
 body {
     font-family: 'Pretendard',Segoe UI, Inter, '맑은 고딕', 'Malgun Gothic', Arial, sans-serif;
 }
+
+.sidebar .sidebar-card p:hover {
+    cursor: pointer;
+    color:#fff;
+}
