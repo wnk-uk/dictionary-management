@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS USERS (
                                      username VARCHAR(50) NOT NULL UNIQUE,
                                      password VARCHAR(255) NOT NULL,
                                      role ENUM('USER', 'ADMIN', 'SYS_ADMIN') NOT NULL,
-                                     DEPT VARCHAR(50)
+                                     DEPT_NM VARCHAR(50),
+                                     USR_NM VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS SHEET_DATA (

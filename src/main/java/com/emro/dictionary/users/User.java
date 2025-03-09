@@ -11,7 +11,8 @@ public class User {
     private Long id;
     private String username;
     private String password;
-    private String dept;
+    private String deptNm;
+    private String usrNm;
     private Role role;
 }
 

@@ -47,21 +47,25 @@
     </div>
 </div>
 
-<div class="modal fade" id="registModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="registModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
+            <form>
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <h5 class="modal-title" id="exampleModalLabel">User registration</h5>
                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="login.html">Logout</a>
+            <div class="modal-body">
+
+
             </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Registration</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -74,7 +78,8 @@
             ajaxURL: "/api/user/lists", // Spring Boot에서 REST API로 데이터 제공
             columns: [
                 { title: "username", field: "username" },
-                { title: "dept", field: "dept" },
+                { title: "usrNm", field: "usrNm" },
+                { title: "deptNm", field: "deptNm" },
                 { title: "role", field: "role" },
             ]
         });

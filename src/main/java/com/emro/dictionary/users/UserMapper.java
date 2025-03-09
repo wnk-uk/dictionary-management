@@ -12,9 +12,9 @@ public interface UserMapper {
     @Select("SELECT * FROM users WHERE username = #{username}")
     User findByUsername(@Param("username") String username);
 
-    @Insert("INSERT INTO users (username, password, role) VALUES (#{username}, #{password}, #{role})")
-    void insertUser(User user);
+    @Insert("INSERT INTO users (username, password, role, dept_nm, usr_nm) VALUES (#{username}, #{password}, #{role}, #{userNm}, #{deptNm})")
+    void save(User user);
 
-    @Select("SELECT * FROM users")
+    @Select("SELECT users.*, users.usr_nm as usrNm, users.dept_nm as deptNm FROM users")
     List<User> findAll(UserRequest request);
 }
