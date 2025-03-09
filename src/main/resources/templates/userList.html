@@ -145,9 +145,22 @@
     });
 
     function filterData() {
-        table.setFilter([
-             { field: "username", type: "like", value: $("#searchText").val()}
-            ]);
+        // table.setFilter([
+        //      { field: "username", type: "like", value: $("#searchText").val()}
+        //     ]);
+
+
+        table.setFilter(function(row) {
+            let searchValue = $("#searchText").val().toLowerCase(); // 검색어 가져오기
+            let rowData = row; // 현재 행 데이터
+
+            return rowData.username.toLowerCase().includes(searchValue) ||
+                rowData.deptNm.toLowerCase().includes(searchValue) ||
+                rowData.usrNm.toLowerCase().includes(searchValue) ||
+                rowData.role.toLowerCase().includes(searchValue);
+        });
+
+
     }
 
 
