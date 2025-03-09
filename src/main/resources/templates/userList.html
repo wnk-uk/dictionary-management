@@ -22,17 +22,17 @@
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <!--                        <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
-                        <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" style="float:right;">
+                        <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" style="float:right;">
                             <div class="input-group">
-                                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                                <input id="searchText" type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
                                        aria-label="Search" aria-describedby="basic-addon2" style="border:1px solid lightgray !important;">
                                 <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button">
+                                    <button class="btn btn-primary" type="button" onclick="filterData()">
                                         <i class="fas fa-search fa-sm"></i>
                                     </button>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -94,12 +94,13 @@
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
+    let table;
     $(function() {
-        const table = new Tabulator("#userTable", {
+        table = new Tabulator("#userTable", {
             layout: "fitColumns",
             ajaxURL: "/api/user/lists",
             columns: [
-                { title: "UserID", field: "username" },
+                { title: "UserID", field: "username"},
                 { title: "UserName", field: "usrNm" },
                 { title: "DeptName", field: "deptNm" },
                 { title: "Role", field: "role" },
@@ -113,6 +114,7 @@
             });
             $("#username").attr("readonly", true);
         });
+
 
         $("#userRegBtn").on("click", function() {
             $("#userForm input").each(function(index, item) {
@@ -140,8 +142,15 @@
                 }
             });
         });
-
     });
+
+    function filterData() {
+        table.setFilter([
+             { field: "username", type: "like", value: $("#searchText").val()}
+            ]);
+    }
+
+
 
 </script>
 
