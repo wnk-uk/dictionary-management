@@ -14,5 +14,7 @@ public interface LangMapper {
     @Select("SELECT * FROM DIC_REQ_DTL")
     LangDTO findByReqDetailListAll();
 
+    @Select("SELECT * FROM Multlang")
+    List<MultLangDTO> findAll();
 
 }

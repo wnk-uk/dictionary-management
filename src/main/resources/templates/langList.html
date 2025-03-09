@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head th:replace="fragments.html :: head"></head>
+<head th:replace="fragments.html :: head">
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.4.3/luxon.min.js" async></script>-->
+</head>
 <body id="page-top">
 <div id="wrapper">
     <div th:replace="fragments.html :: main-sidebar"></div>
 
     <div id="content-wrapper" class="d-flex flex-column">
-
         <div id="content">
 
             <div th:replace="fragments.html :: main-nav"></div>
@@ -17,29 +18,16 @@
                     <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">Registration request</button>
                 </div>
 
-                <!-- write -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-<!--                        <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
-                        <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" style="float:right;">
-                            <div class="input-group">
-                                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                                       aria-label="Search" aria-describedby="basic-addon2" style="border:1px solid lightgray !important;">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button">
-                                        <i class="fas fa-search fa-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                        <h6 class="m-0 font-weight-bold text-primary">MULTLANG Data</h6>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <div id="userTable"></div>
+                            <div id="multlangTable"></div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
         <footer th:replace="fragments.html :: main-footer"></footer>
@@ -48,14 +36,42 @@
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
-    $(function() {
-        const table = new Tabulator("#userTable", {
+    document.addEventListener("DOMContentLoaded", function () {
+        const table = new Tabulator("#multlangTable", {
             layout: "fitColumns",
-            ajaxURL: "/api/lang/req/lists", // Spring Boot에서 REST API로 데이터 제공
+            ajaxURL: "/api/lang/multlang/list", // API 호출
             columns: [
-                { title: "reqUsrNm", field: "reqUsrNm" },
+                { title: "Code", field: "multlangCcd", headerFilter: "input" },
+                { title: "Key", field: "multlangKey", headerFilter: "input" },
+                { title: "Type", field: "multlangTyp", headerFilter: "input"  },
+                { title: "Translation", field: "multlangTranslCont", headerFilter: "input"  },
+                { title: "Translation Abbr", field: "multlangTranslContAbbr", headerFilter: "input"  },
+                { title: "Abbr Use (Y/N)", field: "multlangAbbrUseYn",headerFilter: "input"  },
+                { title: "Modified Date", field: "multlangModDttm", formatter: formatDate },
+                { title: "Final Translation", field: "multlangTranslFnlCont", headerFilter: "input"  },
+                { title: "Remarks", field: "rmk", headerFilter: "input"  },
+                // { title: "Status", field: "sts" },
+                { title: "Registered By", field: "regrId", headerFilter: "input"  },
+                { title: "Registration Date", field: "regDttm", formatter: formatDate },
+                { title: "Modified By", field: "modrId", headerFilter: "input"  },
+                { title: "Modification Date", field: "modDttm", formatter: formatDate },
             ]
         });
+
+        // 날짜 변환 함수 (Luxon 없이 JavaScript의 Date 객체 사용)
+        function formatDate(cell) {
+            console.log("Cell Data:", cell.getData()); // 행 전체 데이터 출력
+            console.log("Cell Value:", cell.getValue()); // 현재 컬럼 값 출력
+
+            const dateStr = cell.getValue();
+            if (!dateStr) return "(No Data)"; // 값이 없는 경우 예외 처리
+
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return "(Invalid Date)"; // 유효하지 않은 날짜 처리
+
+            return date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0]; // yyyy-MM-dd HH:mm:ss 포맷
+        }
+
     });
 </script>
 <th:block th:replace="fragments.html :: common-scripts"></th:block>

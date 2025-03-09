@@ -21,4 +21,8 @@ public class LangService {
     public LangDTO findByReqDetailListAll(LangRequest langRequest) {
         return langMapper.findByReqDetailListAll();
     }
+
+    public List<MultLangDTO> getAllMultlangs() {
+        return langMapper.findAll();
+    }
 }

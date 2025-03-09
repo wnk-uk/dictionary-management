@@ -1,6 +1,7 @@
 package com.emro.dictionary.lang;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,12 @@ public class LangController {
     @GetMapping("/lists")
     public LangDTO findByDetailList(@RequestParam LangRequest langRequest) {
         return langService.findByReqDetailListAll(langRequest);
+    }
+
+    @GetMapping(value = "/multlang/list")
+    public ResponseEntity<List<MultLangDTO>> getMultlangList() {
+        List<MultLangDTO> multLangDTOs = langService.getAllMultlangs();
+        return ResponseEntity.ok(multLangDTOs);
     }
 
 }
