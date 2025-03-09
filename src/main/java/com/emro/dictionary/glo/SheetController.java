@@ -11,8 +11,8 @@ public class SheetController {
     private final SheetService sheetService;
 
     @PostMapping("/save")
-    public String saveLuckysheetData(@RequestBody SheetDTO luckysheetDTO) {
-        sheetService.saveSheetData(luckysheetDTO);
+    public String saveLuckysheetData(@RequestBody SheetDTO sheetDTO) {
+        sheetService.saveSheetData(sheetDTO);
         return "데이터 저장 완료";
     }
 
