@@ -1,0 +1,138 @@
+<div class="modal fade" id="registrationModal" tabindex="-1" role="dialog" aria-labelledby="registrationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registrationModalLabel">New Multi Language Registration</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="reqUsrNm">Requested By</label>
+                        <input type="text" class="form-control" id="reqUsrNm" required>
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>As-Is (Existing Key)</th>
+                            <th>Language</th>
+                            <th>To-Be (New Translation)</th>
+                            <th>Abbreviation</th>
+                            <th>Type</th>
+                            <th>Screen Path</th>
+                            <th>Source Path</th>
+                            <th>Comment</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="requestTable">
+                        <tr>
+                            <td><input type="text" class="form-control existingKey"></td>
+                            <td>
+                                <select class="form-control langCode">
+                                    <option value="EN">English</option>
+                                    <option value="KR">Korean</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="form-control newTranslation"></td>
+                            <td><input type="text" class="form-control newAbbr"></td>
+                            <td>
+                                <select class="form-control wordType">
+                                    <option value="GREETING">Greeting</option>
+                                    <option value="CONFIRM">Confirmation</option>
+                                    <option value="POLITE">Politeness</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="form-control screenPath"></td>
+                            <td><input type="text" class="form-control sourcePath"></td>
+                            <td><input type="text" class="form-control comment"></td>
+                            <td><button type="button" class="btn btn-danger removeRow">X</button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-secondary" id="addRow">Add More</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="submitRequest">Submit Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 새로운 단어 입력 필드 추가
+        document.getElementById("addRow").addEventListener("click", function () {
+            let newRow = `<tr>
+            <td><input type="text" class="form-control existingKey"></td>
+            <td>
+                <select class="form-control langCode">
+                    <option value="EN">English</option>
+                    <option value="KR">Korean</option>
+                </select>
+            </td>
+            <td><input type="text" class="form-control newTranslation"></td>
+            <td><input type="text" class="form-control newAbbr"></td>
+            <td>
+                <select class="form-control wordType">
+                    <option value="GREETING">Greeting</option>
+                    <option value="CONFIRM">Confirmation</option>
+                    <option value="POLITE">Politeness</option>
+                </select>
+            </td>
+            <td><input type="text" class="form-control screenPath"></td>
+            <td><input type="text" class="form-control sourcePath"></td>
+            <td><input type="text" class="form-control comment"></td>
+            <td><button type="button" class="btn btn-danger removeRow">X</button></td>
+        </tr>`;
+            document.getElementById("requestTable").insertAdjacentHTML("beforeend", newRow);
+        });
+
+        // 행 삭제 버튼
+        document.getElementById("requestTable").addEventListener("click", function (e) {
+            if (e.target.classList.contains("removeRow")) {
+                e.target.closest("tr").remove();
+            }
+        });
+
+        // 요청 제출 버튼
+        document.getElementById("submitRequest").addEventListener("click", function () {
+            let requestData = {
+                reqUsrNm: document.getElementById("reqUsrNm").value,
+                details: []
+            };
+
+            // 테이블에서 입력된 값 수집
+            document.querySelectorAll("#requestTable tr").forEach(row => {
+                requestData.details.push({
+                    multlangCcd: row.querySelector(".langCode").value,
+                    multlangKey: row.querySelector(".existingKey").value,
+                    multlangTranslCont: row.querySelector(".newTranslation").value,
+                    multlangTranslContAbbr: row.querySelector(".newAbbr").value,
+                    multlangTyp: row.querySelector(".wordType").value,
+                    screenPath: row.querySelector(".screenPath").value,
+                    sourcePath: row.querySelector(".sourcePath").value,
+                    comment: row.querySelector(".comment").value
+                });
+            });
+
+            // API 호출
+            fetch("/api/lang/multlang/request", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestData)
+            }).then(response => response.json()).then(data => {
+                alert("Request submitted successfully!");
+                location.reload();
+            }).catch(error => {
+                console.error("Error:", error);
+                alert("Failed to submit request.");
+            });
+        });
+    });
+</script>

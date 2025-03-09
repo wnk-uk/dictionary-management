@@ -25,4 +25,15 @@ public class LangService {
     public List<MultLangDTO> getAllMultlangs() {
         return langMapper.findAll();
     }
+
+    @Transactional
+    public void saveRequest(MultLangRequestDTO request) {
+        // 1. DIC_REQ 테이블에 저장
+        langMapper.insertRequest(request);
+
+        // 2. DIC_REQ_DTL 테이블에 각 단어 정보 저장
+        for (MultLangDetailDTO detail : request.getDetails()) {
+            langMapper.insertRequestDetail(request.getDicReqId(), detail);
+        }
+    }
 }

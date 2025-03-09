@@ -34,4 +34,10 @@ public class LangController {
         return ResponseEntity.ok(multLangDTOs);
     }
 
+    @PostMapping("/multlang/request")
+    public ResponseEntity<String> submitRequest(@RequestBody MultLangRequestDTO request) {
+        langService.saveRequest(request);
+        return ResponseEntity.ok("Request submitted successfully");
+    }
+
 }
