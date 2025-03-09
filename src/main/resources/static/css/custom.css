@@ -2,3 +2,7 @@
     border-radius:10rem;
     height:50px;
 }
+
+.sidebar .sidebar-card {
+    padding-bottom: 0px;
+}
