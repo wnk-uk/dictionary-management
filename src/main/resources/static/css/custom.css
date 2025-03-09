@@ -6,3 +6,23 @@
 .sidebar .sidebar-card {
     padding-bottom: 0px;
 }
+
+.bg-gradient-primary {
+    background-color:#532DF6;
+    background-image: none;
+}
+
+.btn-primary:hover {
+    background: #E8E8FF !important;
+    color: #532DF6 !important;
+}
+
+.btn-primary {
+    background:#532DF6 !important;
+    border: 1px solid #532DF6 !important;
+    color:#fff !important;
+}
+
+body {
+    font-family: 'Pretendard',Segoe UI, Inter, '맑은 고딕', 'Malgun Gothic', Arial, sans-serif;
+}
