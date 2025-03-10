@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 ).authorizeHttpRequests(auth -> auth
+				        .requestMatchers("/ssoLogin").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .requestMatchers("/api/glo/**").hasAnyRole("ADMIN", "SYS_ADMIN")
                         .requestMatchers("/api/user/**").hasRole("SYS_ADMIN")

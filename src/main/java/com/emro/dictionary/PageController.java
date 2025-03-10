@@ -1,12 +1,22 @@
 package com.emro.dictionary;
 
+import com.emro.dictionary.users.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
+@RequiredArgsConstructor
 public class PageController {
+
+	private final CustomUserDetailsService userDetailsService;
 
     @GetMapping("/login")
     public String loginPage() {
@@ -53,5 +63,25 @@ public class PageController {
 		}
 		return "registration_modal";
 	}
+
+	@GetMapping("/ssoLogin")
+	public String ssoLogin(Model model, HttpServletRequest request) {
+		UserDetails user = userDetailsService.loadUserByUsername("sys_admin");
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		if (authentication != null) {
+			model.addAttribute("username", authentication.getName());
+		}
+
+		request.getSession().setAttribute(
+				HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+				SecurityContextHolder.getContext()
+		);
+
+		return "redirect:/lang/lists";
+	}
+
+
 
 }
