@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+## domain data
+**/extra-data.sql
