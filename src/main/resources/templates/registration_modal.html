@@ -105,7 +105,7 @@
 			}
 			
 			$.ajax({
-				url: "/api/lang/multlang/search",
+				url: "/api/multlang/search",
 				type: "GET",
 				data: {request: request},
 				dataType: "json",
@@ -241,7 +241,7 @@
 			// 모든 필드가 유효하면 AJAX 요청 실행
 			$.ajax({
 				type: "POST",
-				url: "/api/lang/multlang/request",
+				url: "/api/request/multlang",
 				contentType: "application/json",
 				data: JSON.stringify(requestData),
 				success: function(response) {

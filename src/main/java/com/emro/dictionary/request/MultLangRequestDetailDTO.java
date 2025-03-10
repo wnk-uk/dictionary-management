@@ -1,9 +1,9 @@
-package com.emro.dictionary.lang;
+package com.emro.dictionary.request;
 
 import lombok.Data;
 
 @Data
-public class MultLangDetailDTO {
+public class MultLangRequestDetailDTO {
 	private String existingWord;
     private String multlangCcd;
     private String multlangKey;

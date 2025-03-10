@@ -1,6 +1,5 @@
 package com.emro.dictionary.lang;
 
-import com.emro.dictionary.glo.SheetDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,22 +23,5 @@ public class LangService {
         return langMapper.findByReqDetailListAll();
     }
 
-    public List<MultLangDTO> getAllMultlangs() {
-        return langMapper.findAll();
-    }
 
-	public List<String> searchExistingWord(String request) {
-		return langMapper.findExistingWords(request);
-	}
-
-    @Transactional
-    public void saveRequest(MultLangRequestDTO request) {
-        // 1. DIC_REQ 테이블에 저장
-        langMapper.insertRequest(request);
-
-        // 2. DIC_REQ_DTL 테이블에 각 단어 정보 저장
-        for (MultLangDetailDTO detail : request.getDetails()) {
-            langMapper.insertRequestDetail(request.getDicReqId(), detail);
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package com.emro.dictionary.lang;
+package com.emro.dictionary.request;
 
 import java.util.List;
 import lombok.Data;
@@ -7,5 +7,5 @@ import lombok.Data;
 public class MultLangRequestDTO {
     private Long dicReqId;
     private String reqUsrNm;
-    private List<MultLangDetailDTO> details;
+    private List<MultLangRequestDetailDTO> details;
 }

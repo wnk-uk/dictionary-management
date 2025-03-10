@@ -42,7 +42,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         const table = new Tabulator("#multlangTable", {
             layout: "fitColumns",
-            ajaxURL: "/api/lang/multlang/list", // API 호출
+            ajaxURL: "/api/multlang/list", // API 호출
             columns: [
                 { title: "Code", field: "multlangCcd", headerFilter: "input" },
 				{ title: "Type", field: "multlangTyp", headerFilter: "input"  },

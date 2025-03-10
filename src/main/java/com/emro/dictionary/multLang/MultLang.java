@@ -1,4 +1,4 @@
-package com.emro.dictionary.lang;
+package com.emro.dictionary.multLang;
 
 import lombok.AllArgsConstructor;
 import lombok.Generated;
