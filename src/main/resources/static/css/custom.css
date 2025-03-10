@@ -31,3 +31,7 @@ body {
     cursor: pointer;
     color:#fff;
 }
+
+.tabulator-wrapper {
+    width:700px;
+}
