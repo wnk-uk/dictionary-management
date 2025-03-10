@@ -3,183 +3,218 @@
 <head th:replace="fragments.html :: head"></head>
 <body id="page-top">
 <div id="wrapper">
-<div th:replace="fragments.html :: main-sidebar"></div>
-
-<div id="content-wrapper" class="d-flex flex-column">
-
-    <!-- Main Content -->
-    <div id="content">
-
-        <div th:replace="fragments.html :: main-nav"></div>
-
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
-
-            <!-- Page Heading -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-<!--                <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i-->
-<!--                        class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>-->
-            </div>
-
-            <!-- Content Row -->
-            <div class="row">
-
-                <!-- Earnings (Monthly) Card Example -->
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Pending Request</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">20</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Earnings (Monthly) Card Example -->
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-success shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                        Holding Request</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">5</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-pause fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Earnings (Monthly) Card Example -->
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-info shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('glo')">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Glossary</div>
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col-auto">
-                                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">1871</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pending Requests Card Example -->
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-warning shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('lang')">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                        Total Dictionary</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">8892</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-comments fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Content Row -->
-
-            <div class="row">
-
-                <!-- Area Chart -->
-                <div class="col-xl-6 col-lg-6">
-                    <div class="card shadow mb-4">
-                        <!-- Card Header - Dropdown -->
-                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Top10 Request Overview</h6>
-                            <div class="dropdown no-arrow">
-                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                     aria-labelledby="dropdownMenuLink">
-                                    <div class="dropdown-header">Dropdown Header:</div>
-                                    <a class="dropdown-item" href="#">Action</a>
-                                    <a class="dropdown-item" href="#">Another action</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">Something else here</a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Card Body -->
-                        <div class="card-body">
-                            <div class="pt-4 pb-2">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pie Chart -->
-                <div class="col-xl-6 col-lg-6">
-                    <div class="card shadow mb-4">
-                        <!-- Card Header - Dropdown -->
-                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Top10 Holding Overview</h6>
-                            <div class="dropdown no-arrow">
-                                <a class="dropdown-toggle" href="#" role="button" id="holdingDropdown"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                     aria-labelledby="holdingDropdown">
-                                    <div class="dropdown-header">Dropdown Header:</div>
-                                    <a class="dropdown-item" href="#">Action</a>
-                                    <a class="dropdown-item" href="#">Another action</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">Something else here</a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Card Body -->
-                        <div class="card-body">
-                            <div class="pt-4 pb-2">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <!-- /.container-fluid -->
-
-    </div>
-    <!-- End of Main Content -->
-
-    <!-- Footer -->
-    <footer th:replace="fragments.html :: main-footer"></footer>
-    <!-- End of Footer -->
+	<div th:replace="fragments.html :: main-sidebar"></div>
+	
+	<div id="content-wrapper" class="d-flex flex-column">
+		<div id="content">
+			<div th:replace="fragments.html :: main-nav"></div>
+			
+			<div class="container-fluid">
+				<div class="d-sm-flex align-items-center justify-content-between mb-4">
+					<h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+				</div>
+				
+				<!-- Content Row -->
+				<div class="row">
+					
+					<!-- ✅ PENDING 요청 리스트 이동 (기본 리스트) -->
+					<div class="col-xl-3 col-md-6 mb-4">
+						<div class="card border-left-primary shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('req')">
+							<div class="card-body">
+								<div class="row no-gutters align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+											Pending Request
+										</div>
+										<div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingCount">-</div>
+									</div>
+									<div class="col-auto">
+										<i class="fas fa-calendar fa-2x text-gray-300"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- ✅ HOLD 상태 요청 리스트 이동 -->
+					<div class="col-xl-3 col-md-6 mb-4">
+						<div class="card border-left-success shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('req', 'HOLD')">
+							<div class="card-body">
+								<div class="row no-gutters align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+											Holding Request
+										</div>
+										<div class="h5 mb-0 font-weight-bold text-gray-800" id="holdingCount">-</div>
+									</div>
+									<div class="col-auto">
+										<i class="fas fa-pause fa-2x text-gray-300"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-xl-3 col-md-6 mb-4">
+						<div class="card border-left-info shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('glo')">
+							<div class="card-body">
+								<div class="row no-gutters align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Glossary</div>
+										<div class="row no-gutters align-items-center">
+											<div class="col-auto">
+												<div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">1871</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-auto">
+										<i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-xl-3 col-md-6 mb-4">
+						<div class="card border-left-warning shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('lang')">
+							<div class="card-body">
+								<div class="row no-gutters align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+											Total Dictionary
+										</div>
+										<div class="h5 mb-0 font-weight-bold text-gray-800">8892</div>
+									</div>
+									<div class="col-auto">
+										<i class="fas fa-comments fa-2x text-gray-300"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!-- Content Row -->
+				<div class="row">
+					<!-- Top 10 Requests -->
+					<div class="col-xl-6 col-lg-6">
+						<div class="card shadow mb-4">
+							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+								<h6 class="m-0 font-weight-bold text-primary">Top 10 Requests</h6>
+							</div>
+							<div class="card-body">
+								<ul id="recentRequests" class="list-group"></ul>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Top 10 Holding Requests -->
+					<div class="col-xl-6 col-lg-6">
+						<div class="card shadow mb-4">
+							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+								<h6 class="m-0 font-weight-bold text-primary">Top 10 Holding Requests</h6>
+							</div>
+							<div class="card-body">
+								<ul id="holdingRequests" class="list-group"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<footer th:replace="fragments.html :: main-footer"></footer>
+	</div>
 </div>
-</div>
+
+<script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
-    function cardClick(name) {
-        location.href = `/${name}/lists`
-    }
-
+	document.addEventListener("DOMContentLoaded", function () {
+		loadRequestCounts();
+	});
+	
+	function loadRequestCounts() {
+		// PENDING COUNT 가져오기
+		$.ajax({
+			url: "/api/request/count",
+			type: "GET",
+			data: { regSts: "PENDING" },
+			success: function (count) {
+				$("#pendingCount").text(count);
+			},
+			error: function () {
+				console.error("Failed to load PENDING request count");
+			}
+		});
+		
+		// HOLDING COUNT 가져오기
+		$.ajax({
+			url: "/api/request/count",
+			type: "GET",
+			data: { regSts: "HOLDING" },
+			success: function (count) {
+				$("#holdingCount").text(count);
+			},
+			error: function () {
+				console.error("Failed to load HOLDING request count");
+			}
+		});
+		
+		// Top 10 Requests
+		$.ajax({
+			url: "/api/request/top10",
+			type: "GET",
+			success: function (data) {
+				let list = $("#recentRequests");
+				list.empty();
+				if (data.length === 0) {
+					list.append("<li class='list-group-item text-center'>No recent requests found</li>");
+				} else {
+					data.forEach(item => {
+						let listItem = `<li class='list-group-item'>
+                            <strong>${item.reqUsrNm}</strong> requested <strong>${item.multlangKey}</strong>
+                            (${item.multlangCcd}) - ${UT.formatDate(item.reqDttm)}
+                        </li>`;
+						list.append(listItem);
+					});
+				}
+			},
+			error: function () {
+				console.error("Failed to load top 10 requests");
+			}
+		});
+		
+		// Top 10 Holding Requests
+		$.ajax({
+			url: "/api/request/top10",
+			type: "GET",
+			data: { regSts: "HOLDING" },
+			success: function (data) {
+				let list = $("#holdingRequests");
+				list.empty();
+				if (data.length === 0) {
+					list.append("<li class='list-group-item text-center'>No holding requests found</li>");
+				} else {
+					data.forEach(item => {
+						let listItem = `<li class='list-group-item'>
+                            <strong>${item.reqUsrNm}</strong> requested <strong>${item.multlangKey}</strong>
+                            (${item.multlangCcd}) - ${UT.formatDate(item.reqDttm)}
+                        </li>`;
+						list.append(listItem);
+					});
+				}
+			},
+			error: function () {
+				console.error("Failed to load top 10 holding requests");
+			}
+		});
+	}
+	
+	function cardClick(name, status = "") {
+		let url = `/${name}/lists`;
+		if (status) url += `?acptSts=${status}`;
+		location.href = url;
+	}
 </script>
 <th:block th:replace="fragments.html :: common-scripts"></th:block>
 </body>

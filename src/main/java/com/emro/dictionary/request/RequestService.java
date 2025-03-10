@@ -34,4 +34,21 @@ public class RequestService {
 			return requestMapper.findAllRequestsExceptHold();
 		}
 	}
+
+	public Integer getPendingRequests(String regSts) {
+		if (regSts == null || regSts.trim().isEmpty()) {
+			throw new IllegalArgumentException("Invalid request status");
+		}
+		return requestMapper.countPendingRequestDetails(regSts);
+	}
+
+	public List<MultLangListDTO> getTop10RecentRequests(String regSts) {
+		if (regSts != null && !regSts.isEmpty()) {
+			// 특정 ACPT_STS 값으로 조회
+			return requestMapper.findTop10RecentHoldingRequests(regSts);
+		} else {
+			// STS가 HOLDING이 아닌 데이터 조회
+			return requestMapper.findTop10RecentRequests();
+		}
+	}
 }

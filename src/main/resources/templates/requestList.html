@@ -11,7 +11,7 @@
 			
 			<div class="container-fluid">
 				<div class="d-sm-flex align-items-center justify-content-between mb-4">
-					<h1 class="h3 mb-0 text-gray-800">Request List</h1>
+					<h1 class="h3 mb-0 text-gray-800" id="requestListTitle">Request List</h1>
 				</div>
 				<div class="card shadow mb-4">
 					<div class="card-header py-3">
@@ -45,6 +45,12 @@
 	let table;
 	document.addEventListener("DOMContentLoaded", function () {
 		let acptSts = "[[${acptSts}]]";
+		
+		if (!acptSts || acptSts === "null") {
+			document.getElementById("requestListTitle").innerText = "Request List";
+		} else {
+			document.getElementById("requestListTitle").innerText = "Holding Request List";
+		}
 		
 		// Tabulator 설정
 		table = new Tabulator("#requestTable", {

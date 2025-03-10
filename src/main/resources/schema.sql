@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS DIC_REQ (
                                     REQ_USR_NM VARCHAR(50),
                                     REQ_DTTM TIMESTAMP,
                                     STS CHAR(1) DEFAULT 'C',
-                                    ACPT_STS VARCHAR(50)
+                                    ACPT_STS VARCHAR(50) -- REQ, PROG, HOLD, ACPT
 );
 
 CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
@@ -31,11 +31,11 @@ CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
                                     multlang_key VARCHAR(500) NOT NULL, -- 등록할 단어
                                     multlang_transl_cont VARCHAR(500), -- 등록할 번역
                                     multlang_transl_cont_abbr VARCHAR(100), -- 등록할 약어
-                                    multlang_typ VARCHAR(100), -- 단어 유형 button, label
+                                    multlang_typ VARCHAR(100), -- 등록 유형 button, label
                                     screen_path VARCHAR(255), -- 화면 경로
                                     source_path VARCHAR(255), -- 소스 코드 경로
                                     comment VARCHAR(1000), -- 요청자의 코멘트
-                                    reg_sts VARCHAR(50) DEFAULT 'PENDING', -- 등록 상태 (PENDING, APPROVAL, REJECT)
+                                    reg_sts VARCHAR(50) DEFAULT 'PENDING', -- 등록 상태 (PENDING, PROGRESS, COMPLETE, HOLDING)
                                     FOREIGN KEY (dic_req_id) REFERENCES DIC_REQ(dic_req_id) ON DELETE CASCADE
 );
 
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS MULTLANG (
 									multlang_mod_dttm TIMESTAMP, -- 등록시간
 									multlang_transl_cont_abbr VARCHAR2(100), -- 약어
 									multlang_abbr_use_yn CHAR(1), -- 약어 사용 여부
-									multlang_typ VARCHAR2(100) NOT NULL, -- 단어 유형 button, label
+									multlang_typ VARCHAR2(100) NOT NULL, -- 등록 유형 button, label
 									rmk VARCHAR2(1000),
 									sts CHAR(1) DEFAULT 'C',
 									regr_id VARCHAR2(50),

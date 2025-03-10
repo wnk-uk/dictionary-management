@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -26,4 +27,23 @@ public class RequestController {
 		List<MultLangListDTO> requests = requestService.getRequestsByAcptSts(acptSts);
 		return ResponseEntity.ok(requests);
 	}
+
+	@GetMapping("/count")
+	public ResponseEntity<Integer> getPendingRequests(@RequestParam String regSts) {
+		List<String> validStatuses = Arrays.asList("PENDING", "PROGRESS", "COMPLETE", "HOLDING");
+
+		if (!validStatuses.contains(regSts.toUpperCase())) {
+			return ResponseEntity.badRequest().body(0);
+		}
+
+		int count = requestService.getPendingRequests(regSts.toUpperCase());
+		return ResponseEntity.ok(count);
+	}
+
+	@GetMapping("/top10")
+	public ResponseEntity<List<MultLangListDTO>> getTop10RecentRequests(@RequestParam(required = false) String regSts) {
+		List<MultLangListDTO> top10Requests = requestService.getTop10RecentRequests(regSts);
+		return ResponseEntity.ok(top10Requests);
+	}
+
 }

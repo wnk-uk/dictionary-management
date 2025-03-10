@@ -84,7 +84,7 @@ public class PageController {
 	}
 
 
-	@GetMapping("/lang/req/lists")
+	@GetMapping("/req/lists")
 	public String reqLists(
 			@RequestParam(value = "acptSts", required = false) String acptSts,
 			Model model,
