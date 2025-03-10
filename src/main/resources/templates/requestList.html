@@ -132,7 +132,6 @@
 		}, {});
 		
 		let updateData = Object.values(groupedData);
-		console.log(updateData);
 		
 		$.ajax({
 			type: "POST",
@@ -153,7 +152,7 @@
 	function filterData() {
 		table.setFilter(function(row) {
 			let searchValue = $("#searchText").val().toLowerCase();
-			let rowData = row.getData();
+			let rowData = row;
 			
 			return rowData.reqUsrNm?.toLowerCase().includes(searchValue) ||
 					rowData.details?.toLowerCase().includes(searchValue);
