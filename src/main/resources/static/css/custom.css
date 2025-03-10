@@ -36,3 +36,7 @@ body {
     height:700px;
 
 }
+
+.sidebar .nav-item .collapse {
+    z-index: 50;
+}
