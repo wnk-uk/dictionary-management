@@ -15,9 +15,9 @@
             <div class="container-fluid">
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">Multi Language</h1>
-                    <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#registrationModal">
-                        Registration request
-                    </button>
+					<button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick="openRegistrationPage()">
+						Registration request
+					</button>
                 </div>
 
                 <div class="card shadow mb-4">
@@ -44,8 +44,8 @@
             ajaxURL: "/api/lang/multlang/list", // API 호출
             columns: [
                 { title: "Code", field: "multlangCcd", headerFilter: "input" },
+				{ title: "Type", field: "multlangTyp", headerFilter: "input"  },
                 { title: "Key", field: "multlangKey", headerFilter: "input" },
-                { title: "Type", field: "multlangTyp", headerFilter: "input"  },
                 { title: "Translation", field: "multlangTranslCont", headerFilter: "input"  },
                 { title: "Translation Abbr", field: "multlangTranslContAbbr", headerFilter: "input"  },
                 { title: "Abbr Use (Y/N)", field: "multlangAbbrUseYn",headerFilter: "input"  },
@@ -62,9 +62,6 @@
 
         // 날짜 변환 함수 (Luxon 없이 JavaScript의 Date 객체 사용)
         function formatDate(cell) {
-            console.log("Cell Data:", cell.getData()); // 행 전체 데이터 출력
-            console.log("Cell Value:", cell.getValue()); // 현재 컬럼 값 출력
-
             const dateStr = cell.getValue();
             if (!dateStr) return "(No Data)"; // 값이 없는 경우 예외 처리
 
@@ -75,6 +72,10 @@
         }
 
     });
+	
+	function openRegistrationPage() {
+		window.open('/lang/registration', '_blank', 'width=1200,height=600,scrollbars=yes');
+	}
 </script>
 <th:block th:replace="fragments.html :: common-scripts"></th:block>
 </body>
