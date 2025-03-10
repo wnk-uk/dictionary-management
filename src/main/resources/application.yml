@@ -1,7 +1,6 @@
 server:
   port: 9090
 
-
 spring:
   datasource:
     url: jdbc:h2:mem:testdb
@@ -21,10 +20,6 @@ spring:
       data-locations:
         - classpath:data.sql
         - classpath:extra-data.sql
-  mybatis:
-    configuration:
-      map-underscore-to-camel-case: true
-    mapper-locations: classpath:mappers/*.xml
 
 mybatis:
   configuration:

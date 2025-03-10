@@ -44,8 +44,8 @@
             success: function(response) {
                 alert("저장 성공!");
             },
-            error: function(xhr) {
-                console.error("저장 실패:", xhr.responseText);
+            error: function(error) {
+				UT.handleAjaxError(error);
             }
         });
     }
@@ -72,7 +72,7 @@
                     showinfobar: false
                 });
             })
-            .catch(error => console.error("불러오기 실패:", error));
+            .catch(error => UT.handleAjaxError(error));
     }
 
     $(function () {

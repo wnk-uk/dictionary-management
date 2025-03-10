@@ -36,7 +36,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <div id="userTable"></div>
+                            <div class="tabulator-wrapper" id="userTable"></div>
                         </div>
                     </div>
                 </div>
@@ -137,8 +137,8 @@
                 success: function(data) {
                     location.reload();
                 },
-                error: function(xhr) {
-                    console.error("저장 실패:", xhr.responseText);
+                error: function(error) {
+					UT.handleAjaxError(error);
                 }
             });
         });
