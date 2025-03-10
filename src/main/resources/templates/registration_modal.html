@@ -97,9 +97,9 @@
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
 		// 🔹 As-Is 검색 기능 (자동 완성)
-		window.searchExistingWord = function (input) {
+		window.searchExistingWord = function(input) {
 			const request = input.value.trim();
-			if (request.length < 2) {
+			if(request.length < 2) {
 				closeDropdown(input);
 				return;
 			}
@@ -107,12 +107,12 @@
 			$.ajax({
 				url: "/api/lang/multlang/search",
 				type: "GET",
-				data: { request: request },
+				data: {request: request},
 				dataType: "json",
-				success: function (data) {
+				success: function(data) {
 					showDropdown(input, data);
 				},
-				error: function (xhr, status, error) {
+				error: function(xhr, status, error) {
 					console.error("Error:", xhr.responseText);
 				}
 			});
@@ -121,14 +121,14 @@
 		
 		function showDropdown(input, words) {
 			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
-			if (!dropdown) {
+			if(!dropdown) {
 				dropdown = document.createElement("div");
 				dropdown.classList.add("dropdown-menu", "show", "existingWordsDropdown");
 				input.parentElement.appendChild(dropdown);
 			}
 			
 			dropdown.innerHTML = "";
-			if (words.length === 0) {
+			if(words.length === 0) {
 				dropdown.style.display = "none";
 				return;
 			}
@@ -137,7 +137,7 @@
 				let option = document.createElement("a");
 				option.classList.add("dropdown-item");
 				option.textContent = word;
-				option.onclick = function () {
+				option.onclick = function() {
 					input.value = word;
 					dropdown.style.display = "none";
 				};
@@ -152,25 +152,25 @@
 		
 		function closeDropdown(input) {
 			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
-			if (dropdown) {
+			if(dropdown) {
 				dropdown.style.display = "none";
 			}
 		}
 		
 		// 🔹 기존 `.existingWord` 필드에 `keyup` 이벤트 자동 적용
 		document.querySelectorAll(".existingWord").forEach(input => {
-			input.addEventListener("keyup", function () {
+			input.addEventListener("keyup", function() {
 				searchExistingWord(this);
 			});
 		});
 		
 		// 🔹 새로운 단어 입력 필드 추가 (Add More)
-		document.getElementById("addRow").addEventListener("click", function () {
+		document.getElementById("addRow").addEventListener("click", function() {
 			let newRow = document.querySelector("#requestTable tr").cloneNode(true);
 			newRow.querySelectorAll("input").forEach(input => input.value = "");
 			
 			// 새로 추가된 행에서도 `keyup` 이벤트 적용
-			newRow.querySelector(".existingWord").addEventListener("keyup", function () {
+			newRow.querySelector(".existingWord").addEventListener("keyup", function() {
 				searchExistingWord(this);
 			});
 			
@@ -178,26 +178,52 @@
 		});
 		
 		// 🔹 행 삭제 기능 (Remove Row)
-		document.getElementById("requestTable").addEventListener("click", function (e) {
-			if (e.target.classList.contains("removeRow")) {
-				e.target.closest("tr").remove();
+		document.getElementById("requestTable").addEventListener("click", function(e) {
+			if(e.target.classList.contains("removeRow")) {
+				let rows = document.querySelectorAll("#requestTable tr");
+				if(rows.length > 1) {
+					e.target.closest("tr").remove();
+				} else {
+					alert("At least one row must remain.");
+				}
 			}
 		});
 		
 		// 🔹 요청 제출 기능 (Submit Request)
-		document.getElementById("submitRequest").addEventListener("click", function () {
+		document.getElementById("submitRequest").addEventListener("click", function() {
 			let requestData = {
 				reqUsrNm: document.getElementById("reqUsrNm").value,
 				details: []
 			};
 			
-			// 테이블에서 입력된 값 수집
+			let isValid = true; // 🔹 유효성 검사 플래그
+			
+			// 🔹 모든 행을 검사하면서 `is-invalid` 표시 적용
 			document.querySelectorAll("#requestTable tr").forEach(row => {
+				let newWord = row.querySelector(".newWord").value.trim();
+				let newTranslation = row.querySelector(".newTranslation").value.trim();
+				let wordField = row.querySelector(".newWord");
+				let translationField = row.querySelector(".newTranslation");
+				
+				if (newWord === "") {
+					isValid = false;
+					wordField.classList.add("is-invalid");
+				} else {
+					wordField.classList.remove("is-invalid");
+				}
+				if (newTranslation === "") {
+					isValid = false;
+					translationField.classList.add("is-invalid");
+				} else {
+					translationField.classList.remove("is-invalid");
+				}
+				
+				// 🔹 requestData 수집
 				requestData.details.push({
 					existingWord: row.querySelector(".existingWord").value,
 					multlangCcd: row.querySelector(".langCode").value,
-					multlangKey: row.querySelector(".newWord").value,
-					multlangTranslCont: row.querySelector(".newTranslation").value,
+					multlangKey: newWord,
+					multlangTranslCont: newTranslation,
 					multlangTranslContAbbr: row.querySelector(".newAbbr").value,
 					multlangTyp: row.querySelector(".wordType").value,
 					screenPath: row.querySelector(".screenPath").value,
@@ -206,21 +232,26 @@
 				});
 			});
 			
+			// 유효성 검사 실패 시 AJAX 요청 차단
+			if (!isValid) {
+				alert("🚨 'To-Be (New Word)'와 'New Translation' 필드는 필수 입력 항목입니다.");
+				return;
+			}
+			
+			// 모든 필드가 유효하면 AJAX 요청 실행
 			$.ajax({
 				type: "POST",
 				url: "/api/lang/multlang/request",
 				contentType: "application/json",
 				data: JSON.stringify(requestData),
-				success: function (response) {
-					alert("Request submitted successfully!");
+				success: function(response) {
+					alert("✅ Request submitted successfully!");
 					location.reload();
 				},
-				error: function (xhr, status, error) {
-					console.error("Error:", xhr.responseText);
-					alert("Failed to submit request.");
-				}
+				error: UT.handleAjaxError
 			});
 		});
+
 	});
 
 </script>
