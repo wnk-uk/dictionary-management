@@ -76,6 +76,11 @@ public interface RequestMapper {
 	@Select("""
     SELECT req.dic_req_id, req.req_usr_nm, req.req_dttm, req.acpt_sts
     FROM DIC_REQ req
+    WHERE req.dic_req_id IN (
+        SELECT DISTINCT dic_req_id 
+        FROM DIC_REQ_DTL 
+        WHERE reg_sts <> 'HOLDING'
+    )
     ORDER BY req.req_dttm DESC
     LIMIT 10
 	""")

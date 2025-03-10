@@ -103,7 +103,7 @@
 								<h6 class="m-0 font-weight-bold text-primary">Top 10 Requests</h6>
 							</div>
 							<div class="card-body">
-								<ul id="recentRequests" class="list-group"></ul>
+								<div id="requestTop"></div>
 							</div>
 						</div>
 					</div>
@@ -115,7 +115,7 @@
 								<h6 class="m-0 font-weight-bold text-primary">Top 10 Holding Requests</h6>
 							</div>
 							<div class="card-body">
-								<ul id="holdingRequests" class="list-group"></ul>
+								<div id="holdingTop"></div>
 							</div>
 						</div>
 					</div>
@@ -160,53 +160,41 @@
 			}
 		});
 		
-		// Top 10 Requests
-		$.ajax({
-			url: "/api/request/top10",
-			type: "GET",
-			success: function (data) {
-				let list = $("#recentRequests");
-				list.empty();
-				if (data.length === 0) {
-					list.append("<li class='list-group-item text-center'>No recent requests found</li>");
-				} else {
-					data.forEach(item => {
-						let listItem = `<li class='list-group-item'>
-                            <strong>${item.reqUsrNm}</strong> requested <strong>${item.multlangKey}</strong>
-                            (${item.multlangCcd}) - ${UT.formatDate(item.reqDttm)}
-                        </li>`;
-						list.append(listItem);
+		new Tabulator("#requestTop", {
+			layout: "fitColumns",
+			ajaxURL: "/api/request/top10",
+			columns: [
+				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center"},
+				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center", formatter: function(cell, formatterParams, onRendered) {
+					console.log(cell.getData());
+					let joinTxt = "";
+					cell.getValue().forEach(row => {
+						joinTxt += row.multlangKey + ",";
 					});
-				}
-			},
-			error: function () {
-				console.error("Failed to load top 10 requests");
-			}
+					return joinTxt.slice(0, -1);
+				}, headerSort: false},
+				{ title: "Request Date", field: "reqDttm", hozAlign: "center", headerHozAlign: "center", headerSort: false, formatter: function(cell) {
+						return UT.formatDate(cell.getValue());
+				}},
+			],
 		});
 		
-		// Top 10 Holding Requests
-		$.ajax({
-			url: "/api/request/top10",
-			type: "GET",
-			data: { regSts: "HOLDING" },
-			success: function (data) {
-				let list = $("#holdingRequests");
-				list.empty();
-				if (data.length === 0) {
-					list.append("<li class='list-group-item text-center'>No holding requests found</li>");
-				} else {
-					data.forEach(item => {
-						let listItem = `<li class='list-group-item'>
-                            <strong>${item.reqUsrNm}</strong> requested <strong>${item.multlangKey}</strong>
-                            (${item.multlangCcd}) - ${UT.formatDate(item.reqDttm)}
-                        </li>`;
-						list.append(listItem);
-					});
-				}
-			},
-			error: function () {
-				console.error("Failed to load top 10 holding requests");
-			}
+		new Tabulator("#holdingTop", {
+			layout: "fitColumns",
+			ajaxURL: "/api/request/top10?regSts=HOLDING",
+			columns: [
+				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center"},
+				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center", formatter: function(cell, formatterParams, onRendered) {
+						let joinTxt = "";
+						cell.getValue().forEach(row => {
+							joinTxt += row.multlangKey + ",";
+						});
+						return joinTxt.slice(0, -1);  // 마지막 문자 제거
+					}, headerSort: false},
+				{ title: "Request Date", field: "reqDttm" , hozAlign: "center", headerHozAlign: "center", headerSort: false, formatter: function(cell) {
+						return UT.formatDate(cell.getValue());
+				}},
+			],
 		});
 	}
 	
