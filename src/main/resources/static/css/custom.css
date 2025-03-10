@@ -40,3 +40,21 @@ body {
 .sidebar .nav-item .collapse {
     z-index: 50;
 }
+
+#registrationForm .table td, .table th {
+    font-size: 12px;
+    padding:5px;
+    text-align:center;
+}
+
+#registrationForm .table thead th {
+    vertical-align: middle;
+}
+
+#registrationForm .form-control {
+    font-size:12px;
+}
+
+#registrationForm .table tbody:nth-of-type(even) {
+     background-color: #eaecf4; /* 또는 board-style */
+ }

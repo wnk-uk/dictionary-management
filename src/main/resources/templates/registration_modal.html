@@ -10,16 +10,7 @@
 		white-space: normal;
 		max-width: 150px;
 	}
-	
-	/* Type 컬럼 너비 조정 */
-	#registrationModal .table th:nth-child(6),
-	#registrationModal .table td:nth-child(6) {
-		width: 100px;
-	}
-	
-	.wordType {
-		width: 100px !important;
-	}
+
 </style>
 <body id="page-top">
 <div class="modal fade" id="registrationModal" tabindex="-1" role="dialog" aria-labelledby="registrationModalLabel" aria-hidden="true">
@@ -31,56 +22,67 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<div class="modal-body">
+			<div class="modal-body" style="overflow-x: auto">
 				<form id="registrationForm">
 					<div class="form-group">
 						<label for="reqUsrNm">Requested By</label>
 						<input type="text" class="form-control" id="reqUsrNm" th:value="${username}" readonly>
 					</div>
 					
-					<table class="table table-bordered table-hover">
+					<table id="requestTables" class="table table-bordered table-hover">
 						<thead>
-						<tr>
-							<th>As-Is (Existing Word)</th>
-							<th>Language</th>
-							<th>To-Be (New Word)</th>
-							<th>New Translation</th>
-							<th>Abbreviation</th>
-							<th>Type</th>
-							<th>Screen Path</th>
-							<th>Source Path</th>
-							<th>Comment</th>
-							<th>Del</th>
-						</tr>
+							<tr>
+								<th>As-Is
+									<br/>
+								(Existing Word)</th>
+								<th>Language</th>
+								<th>To-Be
+									<br/>
+								(New Word)</th>
+								<th>New Translation</th>
+								<th>Abbreviation</th>
+							</tr>
+							<tr>
+								<th>Type</th>
+								<th>Screen Path</th>
+								<th>Source Path</th>
+								<th>Comment</th>
+								<th>Del</th>
+							</tr>
 						</thead>
 						<tbody id="requestTable">
-						<tr>
-							<td>
-								<input type="text" class="form-control existingWord" placeholder="Search...">
-								<div class="dropdown-menu existingWordsDropdown"></div>
-							</td>
-							<td>
-								<select class="form-control langCode">
-									<option value="ko_KR">Korean</option>
-									<option value="en_US">English</option>
-									<option value="ja_JP">Japanese</option>
-									<option value="zh_CN">Chinese</option>
-								</select>
-							</td>
-							<td><input type="text" class="form-control newWord"></td>
-							<td><input type="text" class="form-control newTranslation"></td>
-							<td><input type="text" class="form-control newAbbr"></td>
-							<td>
-								<select class="form-control wordType">
-									<option value="Label">Label</option>
-									<option value="Button">Button</option>
-								</select>
-							</td>
-							<td><input type="text" class="form-control screenPath"></td>
-							<td><input type="text" class="form-control sourcePath"></td>
-							<td><input type="text" class="form-control comment"></td>
-							<td><button type="button" class="btn btn-danger removeRow">X</button></td>
-						</tr>
+							<tr>
+								<td>
+									<input type="text" class="form-control existingWord" placeholder="Search...">
+									<div class="dropdown-menu existingWordsDropdown" style="top:initial !important; float:none !important; left:initial; height:300px; overflow:auto;"></div>
+								</td>
+								<td>
+									<select class="form-control langCode">
+										<option value="ko_KR">Korean</option>
+										<option value="en_US">English</option>
+										<option value="ja_JP">Japanese</option>
+										<option value="zh_CN">Chinese</option>
+									</select>
+								</td>
+								<td><input type="text" class="form-control newWord"></td>
+								<td><input type="text" class="form-control newTranslation"></td>
+								<td><input type="text" class="form-control newAbbr"></td>
+							</tr>
+							<tr>
+								<td>
+									<select class="form-control wordType">
+										<option value="Label">Label</option>
+										<option value="Button">Button</option>
+									</select>
+								</td>
+								<td><input type="text" class="form-control screenPath"></td>
+								<td><input type="text" class="form-control sourcePath"></td>
+								<td><input type="text" class="form-control comment"></td>
+								<td style="vertical-align: middle;">
+									<i class="fas fa-trash fa-lg text-black-900 removeRow"></i>
+<!--									<button type="button" class="btn btn-danger ">X</button>-->
+								</td>
+							</tr>
 						</tbody>
 					</table>
 					<button type="button" class="btn btn-secondary" id="addRow">Add More</button>
@@ -144,7 +146,7 @@
 				dropdown.appendChild(option);
 			});
 			
-			dropdown.style.position = "absolute";
+			dropdown.style.position = "fixed";
 			dropdown.style.width = input.offsetWidth + "px";
 			dropdown.style.zIndex = "1000"; // 🛠️ 드롭다운이 다른 요소보다 위에 오도록 설정
 			dropdown.style.display = "block";
@@ -166,28 +168,47 @@
 		
 		// 🔹 새로운 단어 입력 필드 추가 (Add More)
 		document.getElementById("addRow").addEventListener("click", function() {
-			let newRow = document.querySelector("#requestTable tr").cloneNode(true);
-			newRow.querySelectorAll("input").forEach(input => input.value = "");
+			const tbody = document.querySelector("#requestTable")
+			const newRow = tbody.cloneNode(true);
 			
-			// 새로 추가된 행에서도 `keyup` 이벤트 적용
-			newRow.querySelector(".existingWord").addEventListener("keyup", function() {
+			newRow.querySelector(".existingWord")?.addEventListener("keyup", function() {
 				searchExistingWord(this);
 			});
 			
-			document.getElementById("requestTable").appendChild(newRow);
+			newRow.querySelector(".removeRow")?.addEventListener("click", function(e) {
+				if (document.querySelector("#requestTables tbody").length === 1) return;
+				if(e.target.classList.contains("removeRow")) {
+					e.target.closest("tr").closest("tbody").remove();
+				}
+			});
+			
+			
+			newRow.querySelectorAll("input").forEach(input => input.value = "");
+			newRow.removeAttribute("id");
+			document.querySelector("#requestTables tbody:last-child").after(newRow);
+			
+			// trs.forEach(rows => {
+			// 	let newRow = rows.cloneNode(true);
+			// 	newRow.querySelectorAll("input").forEach(input => input.value = "");
+			//
+			// 	// 새로 추가된 행에서도 `keyup` 이벤트 적용
+			// 	newRow.querySelector(".existingWord")?.addEventListener("keyup", function() {
+			// 		searchExistingWord(this);
+			// 	});
+			//
+			//
+			// });
+			
+			
 		});
 		
 		// 🔹 행 삭제 기능 (Remove Row)
-		document.getElementById("requestTable").addEventListener("click", function(e) {
-			if(e.target.classList.contains("removeRow")) {
-				let rows = document.querySelectorAll("#requestTable tr");
-				if(rows.length > 1) {
-					e.target.closest("tr").remove();
-				} else {
-					alert("At least one row must remain.");
-				}
-			}
-		});
+		// document.querySelector(".removeRow").addEventListener("click", function(e) {
+		// 	if (document.querySelector("#requestTables tbody").length === 1) return;
+		// 	if(e.target.classList.contains("removeRow")) {
+		// 		e.target.closest("tr").closest("tbody").remove();
+		// 	}
+		// });
 		
 		// 🔹 요청 제출 기능 (Submit Request)
 		document.getElementById("submitRequest").addEventListener("click", function() {
@@ -199,7 +220,7 @@
 			let isValid = true; // 🔹 유효성 검사 플래그
 			
 			// 🔹 모든 행을 검사하면서 `is-invalid` 표시 적용
-			document.querySelectorAll("#requestTable tr").forEach(row => {
+			document.querySelectorAll("#requestTables tbody").forEach(row => {
 				let newWord = row.querySelector(".newWord").value.trim();
 				let newTranslation = row.querySelector(".newTranslation").value.trim();
 				let wordField = row.querySelector(".newWord");
