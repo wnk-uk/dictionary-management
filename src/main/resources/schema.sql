@@ -26,11 +26,12 @@ CREATE TABLE IF NOT EXISTS DIC_REQ (
 CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
                                     id BIGINT AUTO_INCREMENT PRIMARY KEY, -- 상세 요청 ID (PK)
                                     dic_req_id INT,
-                                    multlang_ccd VARCHAR(50) NOT NULL, -- 언어 코드 (예: EN, KR)
-                                    multlang_key VARCHAR(500) NOT NULL, -- 기존 키
-                                    multlang_transl_cont VARCHAR(500), -- 새로운 번역
-                                    multlang_transl_cont_abbr VARCHAR(100), -- 새로운 약어
-                                    multlang_typ VARCHAR(100), -- 단어 유형
+									existing_word VARCHAR(500), -- 기존 단어
+                                    multlang_ccd VARCHAR(50) NOT NULL, -- 언어 코드 ko_KR, en_US, ja_JP, zh_CN
+                                    multlang_key VARCHAR(500) NOT NULL, -- 등록할 단어
+                                    multlang_transl_cont VARCHAR(500), -- 등록할 번역
+                                    multlang_transl_cont_abbr VARCHAR(100), -- 등록할 약어
+                                    multlang_typ VARCHAR(100), -- 단어 유형 button, label
                                     screen_path VARCHAR(255), -- 화면 경로
                                     source_path VARCHAR(255), -- 소스 코드 경로
                                     comment VARCHAR(1000), -- 요청자의 코멘트
@@ -39,13 +40,13 @@ CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
 );
 
 CREATE TABLE IF NOT EXISTS MULTLANG (
-	                                multlang_ccd VARCHAR2(50) NOT NULL,
-									multlang_key VARCHAR2(500) NOT NULL,
-									multlang_transl_cont VARCHAR2(500),
-									multlang_mod_dttm TIMESTAMP,
-									multlang_transl_cont_abbr VARCHAR2(100),
-									multlang_abbr_use_yn CHAR(1),
-									multlang_typ VARCHAR2(100) NOT NULL,
+	                                multlang_ccd VARCHAR2(50) NOT NULL, --언어 코드 ko_KR, en_US, ja_JP, zh_CN
+									multlang_key VARCHAR2(500) NOT NULL, -- 입력 단어, 내용
+									multlang_transl_cont VARCHAR2(500), -- 단어, 내용에 대한 출력
+									multlang_mod_dttm TIMESTAMP, -- 등록시간
+									multlang_transl_cont_abbr VARCHAR2(100), -- 약어
+									multlang_abbr_use_yn CHAR(1), -- 약어 사용 여부
+									multlang_typ VARCHAR2(100) NOT NULL, -- 단어 유형 button, label
 									rmk VARCHAR2(1000),
 									sts CHAR(1) DEFAULT 'C',
 									regr_id VARCHAR2(50),
