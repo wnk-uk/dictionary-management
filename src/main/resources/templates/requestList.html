@@ -54,7 +54,7 @@
 		
 		// Tabulator 설정
 		table = new Tabulator("#requestTable", {
-			layout: "fitDataTable", // 데이터를 컬럼에 맞게 조정
+			layout: "fitColumns", // 데이터를 컬럼에 맞게 조정
 			columnMinWidth: 120,
 			ajaxURL: "/api/request/list", // API 요청 URL
 			ajaxParams: acptSts ? { acptSts: acptSts } : {}, // acptSts가 있으면 필터링
@@ -93,13 +93,13 @@
 				return rows;
 			},
 			columns: [
-				{ title: "Requester", field: "reqUsrNm"},
-				{ title: "Existing Word", field: "existingWord"},
-				{ title: "New Word", field: "newWord"},
-				{ title: "Translation", field: "translation"},
-				{ title: "TranslationAbbr", field: "translationAbbr"},
-				{ title: "Request Time", field: "requestTime"},
-				{ title: "Status", field: "status"}
+				{ title: "Requester", field: "reqUsrNm", minWidth:200},
+				{ title: "Existing Word", field: "existingWord", minWidth:200},
+				{ title: "New Word", field: "newWord", minWidth:200},
+				{ title: "Translation", field: "translation", minWidth:200},
+				{ title: "TranslationAbbr", field: "translationAbbr", minWidth:200},
+				{ title: "Request Time", field: "requestTime", minWidth:200},
+				{ title: "Status", field: "status", minWidth:200}
 			],
 		});
 	});
