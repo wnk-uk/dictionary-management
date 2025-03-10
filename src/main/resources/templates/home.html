@@ -100,7 +100,7 @@
 					<div class="col-xl-6 col-lg-6">
 						<div class="card shadow mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Top 10 Requests</h6>
+								<h6 class="m-0 font-weight-bold text-primary">Top 10 Recent Requests</h6>
 							</div>
 							<div class="card-body">
 								<div id="requestTop"></div>
@@ -112,7 +112,7 @@
 					<div class="col-xl-6 col-lg-6">
 						<div class="card shadow mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Top 10 Holding Requests</h6>
+								<h6 class="m-0 font-weight-bold text-primary">Top 10 Recent Holding Requests</h6>
 							</div>
 							<div class="card-body">
 								<div id="holdingTop"></div>
@@ -164,8 +164,8 @@
 			layout: "fitColumns",
 			ajaxURL: "/api/request/top10",
 			columns: [
-				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center"},
-				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center", formatter: function(cell, formatterParams, onRendered) {
+				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200},
+				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center" , minWidth:200, formatter: function(cell, formatterParams, onRendered) {
 					console.log(cell.getData());
 					let joinTxt = "";
 					cell.getValue().forEach(row => {
@@ -173,7 +173,7 @@
 					});
 					return joinTxt.slice(0, -1);
 				}, headerSort: false},
-				{ title: "Request Date", field: "reqDttm", hozAlign: "center", headerHozAlign: "center", headerSort: false, formatter: function(cell) {
+				{ title: "Request Date", field: "reqDttm", hozAlign: "center", headerHozAlign: "center" , minWidth:200, headerSort: false, formatter: function(cell) {
 						return UT.formatDate(cell.getValue());
 				}},
 			],
@@ -183,15 +183,15 @@
 			layout: "fitColumns",
 			ajaxURL: "/api/request/top10?regSts=HOLDING",
 			columns: [
-				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center"},
-				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center", formatter: function(cell, formatterParams, onRendered) {
+				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200},
+				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center", minWidth:200, formatter: function(cell, formatterParams, onRendered) {
 						let joinTxt = "";
 						cell.getValue().forEach(row => {
 							joinTxt += row.multlangKey + ",";
 						});
 						return joinTxt.slice(0, -1);  // 마지막 문자 제거
 					}, headerSort: false},
-				{ title: "Request Date", field: "reqDttm" , hozAlign: "center", headerHozAlign: "center", headerSort: false, formatter: function(cell) {
+				{ title: "Request Date", field: "reqDttm" , hozAlign: "center", headerHozAlign: "center", minWidth:200, headerSort: false, formatter: function(cell) {
 						return UT.formatDate(cell.getValue());
 				}},
 			],
