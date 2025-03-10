@@ -57,7 +57,7 @@ public class PageController {
         return "userList";
     }
 
-	@GetMapping("/lang/registration")
+	@GetMapping("/registration")
 	public String registration(Model model, Authentication authentication) {
 		if (authentication != null) {
 			model.addAttribute("username", authentication.getName());
@@ -97,6 +97,14 @@ public class PageController {
 		model.addAttribute("acptSts", acptSts);
 
 		return "requestList"; // 동일한 HTML 파일 사용
+	}
+
+	@GetMapping("/registrationVertical")
+	public String registrationVertical(Model model, Authentication authentication) {
+		if (authentication != null) {
+			model.addAttribute("username", authentication.getName());
+		}
+		return "registration_modal_vertical";
 	}
 
 }
