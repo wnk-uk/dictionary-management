@@ -267,7 +267,7 @@
 				data: JSON.stringify(requestData),
 				success: function(response) {
 					alert("✅ Request submitted successfully!");
-					location.reload();
+					location.href = "/lang/req/lists";
 				},
 				error: UT.handleAjaxError
 			});
