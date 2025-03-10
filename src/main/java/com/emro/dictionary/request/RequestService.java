@@ -51,4 +51,23 @@ public class RequestService {
 			return requestMapper.findTop10RecentRequests();
 		}
 	}
+
+	/**
+	 * 선택된 요청들의 상태를 업데이트하는 메서드
+	 */
+	public void updateRequestStatus(List<UpdateRequestStatusDTO> updateList) {
+		for (UpdateRequestStatusDTO update : updateList) {
+			Long dicReqId = update.getDicReqId();
+			String newAcptSts = update.getAcptSts();
+
+			// ✅ DIC_REQ 테이블의 acpt_sts 업데이트
+			requestMapper.updateRequestAcptSts(dicReqId, newAcptSts);
+
+			// ✅ DIC_REQ_DTL 테이블의 reg_sts 업데이트
+			for (UpdateRequestDetailStatusDTO detail : update.getDetails()) {
+				requestMapper.updateRequestDetailRegSts(detail.getId(), detail.getRegSts());
+			}
+		}
+	}
+
 }

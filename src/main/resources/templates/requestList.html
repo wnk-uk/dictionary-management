@@ -14,21 +14,31 @@
 					<h1 class="h3 mb-0 text-gray-800" id="requestListTitle">Request List</h1>
 				</div>
 				<div class="card shadow mb-4">
-					<div class="card-header py-3">
-						<div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" style="float:right;">
-							<div class="input-group">
-								<input id="searchText" type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-									   aria-label="Search" aria-describedby="basic-addon2" style="border:1px solid lightgray !important;">
-								<div class="input-group-append">
-									<button class="btn btn-primary" type="button" onclick="filterData()">
-										<i class="fas fa-search fa-sm"></i>
-									</button>
-								</div>
+					<div class="card-header py-3 d-flex justify-content-between align-items-center">
+						<!-- ✅ 상태 변경 버튼 -->
+						<div class="d-flex align-items-center">
+							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('PROG')">
+								<i class="fas fa-check"></i> ACCEPT
+							</button>
+							<button class="btn btn-danger btn-sm mr-3" onclick="updateSelectedStatus('HOLD')">
+								<i class="fas fa-times"></i> REJECT
+							</button>
+						</div>
+						
+						<!-- ✅ 검색창 -->
+						<div class="input-group w-50">
+							<input id="searchText" type="text" class="form-control bg-light border-0 small"
+								   placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2"
+								   style="border:1px solid lightgray !important;">
+							<div class="input-group-append">
+								<button class="btn btn-primary btn-sm" type="button" onclick="filterData()">
+									<i class="fas fa-search fa-sm"></i>
+								</button>
 							</div>
 						</div>
 					</div>
+					
 					<div class="card-body">
-						<!-- Tabulator 테이블 -->
 						<div class="table-responsive">
 							<div class="tabulator-wrapper" id="requestTable"></div>
 						</div>
@@ -54,61 +64,109 @@
 		
 		// Tabulator 설정
 		table = new Tabulator("#requestTable", {
-			layout: "fitColumns", // 데이터를 컬럼에 맞게 조정
+			layout: "fitColumns",
 			columnMinWidth: 120,
-			ajaxURL: "/api/request/list", // API 요청 URL
-			ajaxParams: acptSts ? { acptSts: acptSts } : {}, // acptSts가 있으면 필터링
+			selectable: true,
+			ajaxURL: "/api/request/list",
+			ajaxParams: acptSts ? { acptSts: acptSts } : {},
 			ajaxConfig: "GET",
 			ajaxContentType: "json",
 			ajaxResponse: function (url, params, response) {
-				// 기존 데이터 구조를 개별 행으로 변환
 				let rows = [];
 				response.forEach(item => {
 					if (item.details && item.details.length > 0) {
 						item.details.forEach(detail => {
-							console.log(item)
 							rows.push({
+								id: detail.id,
+								dicReqId: item.dicReqId,
 								reqUsrNm: item.reqUsrNm,
 								existingWord: detail.existingWord || "-",
 								newWord: detail.multlangKey,
 								translation: detail.multlangTranslCont,
 								translationAbbr: detail.multlangTranslContAbbr,
 								requestTime: UT.formatDate(item.reqDttm),
-								status: item.acptSts
+								status: item.acptSts,
+								ReqStatus: detail.regSts
 							});
-						});
-					} else {
-						// details가 없을 경우 빈 행 추가
-						rows.push({
-							reqUsrNm: item.reqUsrNm,
-							existingWord: "-",
-							newWord: "-",
-							translation: "-",
-							translationAbbr: "-",
-							requestTime: UT.formatDate(item.reqDttm),
-							status: item.acptSts
 						});
 					}
 				});
 				return rows;
 			},
 			columns: [
-				{ title: "Requester", field: "reqUsrNm", minWidth:200},
-				{ title: "Existing Word", field: "existingWord", minWidth:200},
-				{ title: "New Word", field: "newWord", minWidth:200},
-				{ title: "Translation", field: "translation", minWidth:200},
-				{ title: "TranslationAbbr", field: "translationAbbr", minWidth:200},
-				{ title: "Request Time", field: "requestTime", minWidth:200},
-				{ title: "Status", field: "status", minWidth:200}
+				{
+					title: `<input type='checkbox' id='selectAll' onclick='toggleSelectAll(this)'>`,
+					field: "select",
+					hozAlign: "center",
+					formatter: "rowSelection",
+					width: 50,
+					headerSort: false
+				},
+				{ title: "Requester", field: "reqUsrNm", minWidth: 200},
+				{ title: "Existing Word", field: "existingWord", minWidth: 200},
+				{ title: "New Word", field: "newWord", minWidth: 200},
+				{ title: "Translation", field: "translation", minWidth: 200},
+				{ title: "TranslationAbbr", field: "translationAbbr", minWidth: 200},
+				{ title: "Request Time", field: "requestTime", minWidth: 200},
+				{ title: "Status", field: "status", minWidth: 200},
+				{ title: "ReqStatus", field: "ReqStatus", minWidth: 200}
 			],
 		});
 	});
 	
-	// 검색 기능 추가
+	// ✅ 전체 선택 기능
+	function toggleSelectAll(headerCheckbox) {
+		if (headerCheckbox.checked) {
+			table.selectRow("visible");
+		} else {
+			table.deselectRow("visible");
+		}
+	}
+	
+	// ✅ 선택된 행의 상태 변경 기능
+	function updateSelectedStatus(status) {
+		let selectedRows = table.getSelectedData();
+		
+		if (selectedRows.length === 0) {
+			alert("🚨 Please select at least one row.");
+			return;
+		}
+		
+		let groupedData = selectedRows.reduce((acc, row) => {
+			if (!acc[row.dicReqId]) {
+				acc[row.dicReqId] = {
+					dicReqId: row.dicReqId,
+					acptSts: status,
+					details: []
+				};
+			}
+			acc[row.dicReqId].details.push({ id: row.id, regSts: status });
+			return acc;
+		}, {});
+		
+		let updateData = Object.values(groupedData);
+		console.log(updateData);
+		
+		$.ajax({
+			type: "POST",
+			url: "/api/request/updateStatus",
+			contentType: "application/json",
+			data: JSON.stringify(updateData),
+			success: function () {
+				alert("✅ Status updated successfully!");
+				table.replaceData();
+			},
+			error: function () {
+				alert("🚨 Failed to update status.");
+			}
+		});
+	}
+	
+	// ✅ 검색 기능 추가
 	function filterData() {
 		table.setFilter(function(row) {
-			let searchValue = $("#searchText").val().toLowerCase(); // 검색어 가져오기
-			let rowData = row; // 현재 행 데이터
+			let searchValue = $("#searchText").val().toLowerCase();
+			let rowData = row.getData();
 			
 			return rowData.existingWord?.toLowerCase().includes(searchValue) ||
 					rowData.newWord?.toLowerCase().includes(searchValue) ||
@@ -116,6 +174,7 @@
 		});
 	}
 </script>
+
 
 <th:block th:replace="fragments.html :: common-scripts"></th:block>
 </body>

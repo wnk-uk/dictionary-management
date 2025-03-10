@@ -46,4 +46,15 @@ public class RequestController {
 		return ResponseEntity.ok(top10Requests);
 	}
 
+	/**
+	 * 선택된 요청들의 상태를 업데이트하는 API
+	 */
+	@PostMapping("/updateStatus")
+	public ResponseEntity<?> updateRequestStatus(@RequestBody List<
+			UpdateRequestStatusDTO> requestList) {
+		requestService.updateRequestStatus(requestList);  // 여러 개 처리하는 서비스 메서드
+		return ResponseEntity.ok("✅ Status Updated successfully");
+	}
+
+
 }

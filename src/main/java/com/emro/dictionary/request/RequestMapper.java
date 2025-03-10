@@ -123,4 +123,21 @@ public interface RequestMapper {
 	""")
 	List<MultLangDetailListDTO> findRequestDetailsByDicReqId(@Param("dicReqId") Long dicReqId);
 
+	/**
+	 * 선택된 요청들의 상태를 업데이트하는 SQL 쿼리
+	 */
+	@Update("""
+        UPDATE DIC_REQ
+        SET acpt_sts = #{acptSts}
+        WHERE dic_req_id = #{dicReqId}
+    """)
+	void updateRequestAcptSts(@Param("dicReqId") Long dicReqId, @Param("acptSts") String acptSts);
+
+	@Update("""
+        UPDATE DIC_REQ_DTL
+        SET reg_sts = #{regSts}
+        WHERE id = #{id}
+    """)
+	void updateRequestDetailRegSts(@Param("id") Long id, @Param("regSts") String regSts);
+
 }
