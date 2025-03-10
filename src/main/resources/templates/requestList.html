@@ -62,7 +62,7 @@
 			document.getElementById("requestListTitle").innerText = "Holding Request List";
 		}
 		
-		// Tabulator 설정
+		// Tabulator 설정 (DIC_REQ 기준)
 		table = new Tabulator("#requestTable", {
 			layout: "fitColumns",
 			columnMinWidth: 120,
@@ -72,25 +72,15 @@
 			ajaxConfig: "GET",
 			ajaxContentType: "json",
 			ajaxResponse: function (url, params, response) {
-				let rows = [];
-				response.forEach(item => {
-					if (item.details && item.details.length > 0) {
-						item.details.forEach(detail => {
-							rows.push({
-								id: detail.id,
-								dicReqId: item.dicReqId,
-								reqUsrNm: item.reqUsrNm,
-								existingWord: detail.existingWord || "-",
-								newWord: detail.multlangKey,
-								translation: detail.multlangTranslCont,
-								translationAbbr: detail.multlangTranslContAbbr,
-								requestTime: UT.formatDate(item.reqDttm),
-								status: item.acptSts,
-								ReqStatus: detail.regSts
-							});
-						});
-					}
-				});
+				let rows = response.map(item => ({
+					dicReqId: item.dicReqId,
+					reqUsrNm: item.reqUsrNm,
+					requestTime: UT.formatDate(item.reqDttm),
+					status: item.acptSts,
+					details: item.details.map(detail =>
+							`${detail.existingWord || "-"} → ${detail.multlangKey} (${detail.multlangTranslCont})`
+					).join("<br>")
+				}));
 				return rows;
 			},
 			columns: [
@@ -98,18 +88,15 @@
 					title: `<input type='checkbox' id='selectAll' onclick='toggleSelectAll(this)'>`,
 					field: "select",
 					hozAlign: "center",
+					width: 120,
 					formatter: "rowSelection",
-					width: 50,
-					headerSort: false
+					headerSort: false,
+					headerHozAlign: "center"
 				},
 				{ title: "Requester", field: "reqUsrNm", minWidth: 200},
-				{ title: "Existing Word", field: "existingWord", minWidth: 200},
-				{ title: "New Word", field: "newWord", minWidth: 200},
-				{ title: "Translation", field: "translation", minWidth: 200},
-				{ title: "TranslationAbbr", field: "translationAbbr", minWidth: 200},
+				{ title: "Details", field: "details", minWidth: 400, formatter: "html" },
 				{ title: "Request Time", field: "requestTime", minWidth: 200},
 				{ title: "Status", field: "status", minWidth: 200},
-				{ title: "ReqStatus", field: "ReqStatus", minWidth: 200}
 			],
 		});
 	});
@@ -168,13 +155,11 @@
 			let searchValue = $("#searchText").val().toLowerCase();
 			let rowData = row.getData();
 			
-			return rowData.existingWord?.toLowerCase().includes(searchValue) ||
-					rowData.newWord?.toLowerCase().includes(searchValue) ||
-					rowData.translation?.toLowerCase().includes(searchValue);
+			return rowData.reqUsrNm?.toLowerCase().includes(searchValue) ||
+					rowData.details?.toLowerCase().includes(searchValue);
 		});
 	}
 </script>
-
 
 <th:block th:replace="fragments.html :: common-scripts"></th:block>
 </body>
