@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments.html :: head"></head>
+<style>
+	/* 폼 스타일 */
+	.form-group {
+		margin-bottom: 1rem;
+	}
+	.removeRow {
+		margin-top: 32px; /* 버튼 정렬 */
+	}
+</style>
+<body id="page-top">
+<div class="modal fade" id="registrationModalVertical" tabindex="-1" role="dialog" aria-labelledby="registrationModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document" style="max-width: 50vw;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="registrationModalLabel">New Multi Language Registration</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form id="registrationForm">
+					<div class="form-group">
+						<label for="reqUsrNm">Requested By</label>
+						<input type="text" class="form-control" id="reqUsrNm" th:value="${username}" readonly>
+					</div>
+					
+					<!-- 동적 입력 폼 -->
+					<div id="requestContainer">
+						<div class="requestTable row">
+							<div class="col-md-6 form-group">
+								<label>Existing Word</label>
+								<input type="text" class="form-control existingWord" placeholder="Search...">
+							</div>
+							<div class="col-md-6 form-group">
+								<label>Language</label>
+								<select class="form-control langCode">
+									<option value="ko_KR">Korean</option>
+									<option value="en_US">English</option>
+									<option value="ja_JP">Japanese</option>
+									<option value="zh_CN">Chinese</option>
+								</select>
+							</div>
+							<div class="col-md-6 form-group">
+								<label>New Word</label>
+								<input type="text" class="form-control newWord">
+							</div>
+							<div class="col-md-6 form-group">
+								<label>New Translation</label>
+								<input type="text" class="form-control newTranslation">
+							</div>
+							<div class="col-md-6 form-group">
+								<label>Abbreviation</label>
+								<input type="text" class="form-control newAbbr">
+							</div>
+							<div class="col-md-6 form-group">
+								<label>Type</label>
+								<select class="form-control wordType">
+									<option value="Label">Label</option>
+									<option value="Button">Button</option>
+								</select>
+							</div>
+							<div class="col-md-6 form-group">
+								<label>Screen Path</label>
+								<input type="text" class="form-control screenPath">
+							</div>
+							<div class="col-md-6 form-group">
+								<label>Source Path</label>
+								<input type="text" class="form-control sourcePath">
+							</div>
+							<div class="col-md-6 form-group">
+								<label>Comment</label>
+								<input type="text" class="form-control comment">
+							</div>
+							<div class="col-md-6">
+								<button type="button" class="btn btn-danger removeRow">X</button>
+							</div>
+						</div>
+					</div>
+					
+					<button type="button" class="btn btn-secondary" id="addRow">Add More</button>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="submitRequest">Submit Request</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script th:replace="fragments.html :: ajax-csrf-header"></script>
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		// 🔹 As-Is 검색 기능 (자동 완성)
+		window.searchExistingWord = function(input) {
+			const request = input.value.trim();
+			if(request.length < 2) {
+				closeDropdown(input);
+				return;
+			}
+			
+			$.ajax({
+				url: "/api/multlang/search",
+				type: "GET",
+				data: {request: request},
+				dataType: "json",
+				success: function(data) {
+					showDropdown(input, data);
+				},
+				error: function(xhr, status, error) {
+					console.error("Error:", xhr.responseText);
+				}
+			});
+		};
+		
+		
+		function showDropdown(input, words) {
+			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
+			if(!dropdown) {
+				dropdown = document.createElement("div");
+				dropdown.classList.add("dropdown-menu", "show", "existingWordsDropdown");
+				input.parentElement.appendChild(dropdown);
+			}
+			
+			dropdown.innerHTML = "";
+			if(words.length === 0) {
+				dropdown.style.display = "none";
+				return;
+			}
+			
+			words.forEach(word => {
+				let option = document.createElement("a");
+				option.classList.add("dropdown-item");
+				option.textContent = word;
+				option.onclick = function() {
+					input.value = word;
+					dropdown.style.display = "none";
+				};
+				dropdown.appendChild(option);
+			});
+			
+			dropdown.style.position = "absolute";
+			dropdown.style.width = input.offsetWidth + "px";
+			dropdown.style.zIndex = "1000"; // 🛠️ 드롭다운이 다른 요소보다 위에 오도록 설정
+			dropdown.style.display = "block";
+		}
+		
+		function closeDropdown(input) {
+			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
+			if(dropdown) {
+				dropdown.style.display = "none";
+			}
+		}
+		
+		// 🔹 새로운 입력 폼 추가 (동적)
+		document.getElementById("addRow").addEventListener("click", function () {
+			let newEntry = document.querySelector(".requestTable").cloneNode(true);
+			newEntry.querySelectorAll("input").forEach(input => input.value = "");
+			document.getElementById("requestContainer").appendChild(newEntry);
+		});
+		
+		// 🔹 행 삭제 기능 (최소 1개 유지)
+		document.getElementById("requestContainer").addEventListener("click", function (e) {
+			if (e.target.classList.contains("removeRow")) {
+				let entries = document.querySelectorAll(".requestTable");
+				if (entries.length > 1) {
+					e.target.closest(".requestTable").remove();
+				} else {
+					alert("At least one entry must remain.");
+				}
+			}
+		});
+		
+		// 🔹 요청 제출 기능 (Submit Request)
+		document.getElementById("submitRequest").addEventListener("click", function () {
+			let requestData = {
+				reqUsrNm: document.getElementById("reqUsrNm").value,
+				details: []
+			};
+			
+			let isValid = true;
+			
+			// 🔹 입력 데이터 수집
+			document.querySelectorAll(".requestTable").forEach(entry => {
+				let newWord = entry.querySelector(".newWord").value.trim();
+				let newTranslation = entry.querySelector(".newTranslation").value.trim();
+				let wordField = entry.querySelector(".newWord");
+				let translationField = entry.querySelector(".newTranslation");
+				
+				if (newWord === "") {
+					isValid = false;
+					wordField.classList.add("is-invalid");
+				} else {
+					wordField.classList.remove("is-invalid");
+				}
+				if (newTranslation === "") {
+					isValid = false;
+					translationField.classList.add("is-invalid");
+				} else {
+					translationField.classList.remove("is-invalid");
+				}
+				
+				// 🔹 requestData 수집
+				requestData.details.push({
+					existingWord: entry.querySelector(".existingWord").value,
+					multlangCcd: entry.querySelector(".langCode").value,
+					multlangKey: newWord,
+					multlangTranslCont: newTranslation,
+					multlangTranslContAbbr: entry.querySelector(".newAbbr").value,
+					multlangTyp: entry.querySelector(".wordType").value,
+					screenPath: entry.querySelector(".screenPath").value,
+					sourcePath: entry.querySelector(".sourcePath").value,
+					comment: entry.querySelector(".comment").value
+				});
+			});
+			
+			// 유효성 검사 실패 시 AJAX 요청 차단
+			if (!isValid) {
+				alert("🚨 'To-Be (New Word)'와 'New Translation' 필드는 필수 입력 항목입니다.");
+				return;
+			}
+			
+			// 모든 필드가 유효하면 AJAX 요청 실행
+			$.ajax({
+				type: "POST",
+				url: "/api/request/multlang",
+				contentType: "application/json",
+				data: JSON.stringify(requestData),
+				success: function (response) {
+					alert("✅ Request submitted successfully!");
+					location.reload();
+				},
+				error: UT.handleAjaxError
+			});
+		});
+	});
+</script>
+<th:block th:replace="fragments.html :: common-scripts"></th:block>
+</body>
+</html>
