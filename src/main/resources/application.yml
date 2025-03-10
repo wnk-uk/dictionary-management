@@ -18,6 +18,9 @@ spring:
     init:
       mode: always  # 스키마 및 데이터 초기화 실행
       encoding: UTF-8
+      data-locations:
+        - classpath:data.sql
+        - classpath:extra-data.sql
   mybatis:
     configuration:
       map-underscore-to-camel-case: true
@@ -30,4 +33,4 @@ mybatis:
 
 logging:
   level:
-    org.springframework.security: DEBUG
+    org.springframework.security: INFO
