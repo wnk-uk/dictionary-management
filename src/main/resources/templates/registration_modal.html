@@ -1,138 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments.html :: head">
+</head>
+<style>
+	/* 긴 단어 자동 줄바꿈 */
+	#registrationModal .table td {
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		white-space: normal;
+		max-width: 150px;
+	}
+	
+	/* Type 컬럼 너비 조정 */
+	#registrationModal .table th:nth-child(6),
+	#registrationModal .table td:nth-child(6) {
+		width: 100px;
+	}
+	
+	.wordType {
+		width: 100px !important;
+	}
+</style>
+<body id="page-top">
 <div class="modal fade" id="registrationModal" tabindex="-1" role="dialog" aria-labelledby="registrationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="registrationModalLabel">New Multi Language Registration</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="registrationForm">
-                    <div class="form-group">
-                        <label for="reqUsrNm">Requested By</label>
-                        <input type="text" class="form-control" id="reqUsrNm" required>
-                    </div>
-
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>As-Is (Existing Key)</th>
-                            <th>Language</th>
-                            <th>To-Be (New Translation)</th>
-                            <th>Abbreviation</th>
-                            <th>Type</th>
-                            <th>Screen Path</th>
-                            <th>Source Path</th>
-                            <th>Comment</th>
-                            <th>Action</th>
-                        </tr>
-                        </thead>
-                        <tbody id="requestTable">
-                        <tr>
-                            <td><input type="text" class="form-control existingKey"></td>
-                            <td>
-                                <select class="form-control langCode">
-                                    <option value="EN">English</option>
-                                    <option value="KR">Korean</option>
-                                </select>
-                            </td>
-                            <td><input type="text" class="form-control newTranslation"></td>
-                            <td><input type="text" class="form-control newAbbr"></td>
-                            <td>
-                                <select class="form-control wordType">
-                                    <option value="GREETING">Greeting</option>
-                                    <option value="CONFIRM">Confirmation</option>
-                                    <option value="POLITE">Politeness</option>
-                                </select>
-                            </td>
-                            <td><input type="text" class="form-control screenPath"></td>
-                            <td><input type="text" class="form-control sourcePath"></td>
-                            <td><input type="text" class="form-control comment"></td>
-                            <td><button type="button" class="btn btn-danger removeRow">X</button></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <button type="button" class="btn btn-secondary" id="addRow">Add More</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="submitRequest">Submit Request</button>
-            </div>
-        </div>
-    </div>
+	<div class="modal-dialog modal-lg" role="document" style="max-width: 90vw;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="registrationModalLabel">New Multi Language Registration</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form id="registrationForm">
+					<div class="form-group">
+						<label for="reqUsrNm">Requested By</label>
+						<input type="text" class="form-control" id="reqUsrNm" th:value="${username}" readonly>
+					</div>
+					
+					<table class="table table-bordered table-hover">
+						<thead>
+						<tr>
+							<th>As-Is (Existing Word)</th>
+							<th>Language</th>
+							<th>To-Be (New Word)</th>
+							<th>New Translation</th>
+							<th>Abbreviation</th>
+							<th>Type</th>
+							<th>Screen Path</th>
+							<th>Source Path</th>
+							<th>Comment</th>
+							<th>Del</th>
+						</tr>
+						</thead>
+						<tbody id="requestTable">
+						<tr>
+							<td>
+								<input type="text" class="form-control existingWord" placeholder="Search...">
+								<div class="dropdown-menu existingWordsDropdown"></div>
+							</td>
+							<td>
+								<select class="form-control langCode">
+									<option value="ko_KR">Korean</option>
+									<option value="en_US">English</option>
+									<option value="ja_JP">Japanese</option>
+									<option value="zh_CN">Chinese</option>
+								</select>
+							</td>
+							<td><input type="text" class="form-control newWord"></td>
+							<td><input type="text" class="form-control newTranslation"></td>
+							<td><input type="text" class="form-control newAbbr"></td>
+							<td>
+								<select class="form-control wordType">
+									<option value="Label">Label</option>
+									<option value="Button">Button</option>
+								</select>
+							</td>
+							<td><input type="text" class="form-control screenPath"></td>
+							<td><input type="text" class="form-control sourcePath"></td>
+							<td><input type="text" class="form-control comment"></td>
+							<td><button type="button" class="btn btn-danger removeRow">X</button></td>
+						</tr>
+						</tbody>
+					</table>
+					<button type="button" class="btn btn-secondary" id="addRow">Add More</button>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="submitRequest">Submit Request</button>
+			</div>
+		</div>
+	</div>
 </div>
 
-<!-- JavaScript -->
+<script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // 새로운 단어 입력 필드 추가
-        document.getElementById("addRow").addEventListener("click", function () {
-            let newRow = `<tr>
-            <td><input type="text" class="form-control existingKey"></td>
-            <td>
-                <select class="form-control langCode">
-                    <option value="EN">English</option>
-                    <option value="KR">Korean</option>
-                </select>
-            </td>
-            <td><input type="text" class="form-control newTranslation"></td>
-            <td><input type="text" class="form-control newAbbr"></td>
-            <td>
-                <select class="form-control wordType">
-                    <option value="GREETING">Greeting</option>
-                    <option value="CONFIRM">Confirmation</option>
-                    <option value="POLITE">Politeness</option>
-                </select>
-            </td>
-            <td><input type="text" class="form-control screenPath"></td>
-            <td><input type="text" class="form-control sourcePath"></td>
-            <td><input type="text" class="form-control comment"></td>
-            <td><button type="button" class="btn btn-danger removeRow">X</button></td>
-        </tr>`;
-            document.getElementById("requestTable").insertAdjacentHTML("beforeend", newRow);
-        });
+	document.addEventListener("DOMContentLoaded", function () {
+		// 🔹 As-Is 검색 기능 (자동 완성)
+		window.searchExistingWord = function (input) {
+			const request = input.value.trim();
+			if (request.length < 2) {
+				closeDropdown(input);
+				return;
+			}
+			
+			$.ajax({
+				url: "/api/lang/multlang/search",
+				type: "GET",
+				data: { request: request },
+				dataType: "json",
+				success: function (data) {
+					showDropdown(input, data);
+				},
+				error: function (xhr, status, error) {
+					console.error("Error:", xhr.responseText);
+				}
+			});
+		};
+		
+		
+		function showDropdown(input, words) {
+			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
+			if (!dropdown) {
+				dropdown = document.createElement("div");
+				dropdown.classList.add("dropdown-menu", "show", "existingWordsDropdown");
+				input.parentElement.appendChild(dropdown);
+			}
+			
+			dropdown.innerHTML = "";
+			if (words.length === 0) {
+				dropdown.style.display = "none";
+				return;
+			}
+			
+			words.forEach(word => {
+				let option = document.createElement("a");
+				option.classList.add("dropdown-item");
+				option.textContent = word;
+				option.onclick = function () {
+					input.value = word;
+					dropdown.style.display = "none";
+				};
+				dropdown.appendChild(option);
+			});
+			
+			dropdown.style.position = "absolute";
+			dropdown.style.width = input.offsetWidth + "px";
+			dropdown.style.zIndex = "1000"; // 🛠️ 드롭다운이 다른 요소보다 위에 오도록 설정
+			dropdown.style.display = "block";
+		}
+		
+		function closeDropdown(input) {
+			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
+			if (dropdown) {
+				dropdown.style.display = "none";
+			}
+		}
+		
+		// 🔹 기존 `.existingWord` 필드에 `keyup` 이벤트 자동 적용
+		document.querySelectorAll(".existingWord").forEach(input => {
+			input.addEventListener("keyup", function () {
+				searchExistingWord(this);
+			});
+		});
+		
+		// 🔹 새로운 단어 입력 필드 추가 (Add More)
+		document.getElementById("addRow").addEventListener("click", function () {
+			let newRow = document.querySelector("#requestTable tr").cloneNode(true);
+			newRow.querySelectorAll("input").forEach(input => input.value = "");
+			
+			// 새로 추가된 행에서도 `keyup` 이벤트 적용
+			newRow.querySelector(".existingWord").addEventListener("keyup", function () {
+				searchExistingWord(this);
+			});
+			
+			document.getElementById("requestTable").appendChild(newRow);
+		});
+		
+		// 🔹 행 삭제 기능 (Remove Row)
+		document.getElementById("requestTable").addEventListener("click", function (e) {
+			if (e.target.classList.contains("removeRow")) {
+				e.target.closest("tr").remove();
+			}
+		});
+		
+		// 🔹 요청 제출 기능 (Submit Request)
+		document.getElementById("submitRequest").addEventListener("click", function () {
+			let requestData = {
+				reqUsrNm: document.getElementById("reqUsrNm").value,
+				details: []
+			};
+			
+			// 테이블에서 입력된 값 수집
+			document.querySelectorAll("#requestTable tr").forEach(row => {
+				requestData.details.push({
+					existingWord: row.querySelector(".existingWord").value,
+					multlangCcd: row.querySelector(".langCode").value,
+					multlangKey: row.querySelector(".newWord").value,
+					multlangTranslCont: row.querySelector(".newTranslation").value,
+					multlangTranslContAbbr: row.querySelector(".newAbbr").value,
+					multlangTyp: row.querySelector(".wordType").value,
+					screenPath: row.querySelector(".screenPath").value,
+					sourcePath: row.querySelector(".sourcePath").value,
+					comment: row.querySelector(".comment").value
+				});
+			});
+			
+			$.ajax({
+				type: "POST",
+				url: "/api/lang/multlang/request",
+				contentType: "application/json",
+				data: JSON.stringify(requestData),
+				success: function (response) {
+					alert("Request submitted successfully!");
+					location.reload();
+				},
+				error: function (xhr, status, error) {
+					console.error("Error:", xhr.responseText);
+					alert("Failed to submit request.");
+				}
+			});
+		});
+	});
 
-        // 행 삭제 버튼
-        document.getElementById("requestTable").addEventListener("click", function (e) {
-            if (e.target.classList.contains("removeRow")) {
-                e.target.closest("tr").remove();
-            }
-        });
-
-        // 요청 제출 버튼
-        document.getElementById("submitRequest").addEventListener("click", function () {
-            let requestData = {
-                reqUsrNm: document.getElementById("reqUsrNm").value,
-                details: []
-            };
-
-            // 테이블에서 입력된 값 수집
-            document.querySelectorAll("#requestTable tr").forEach(row => {
-                requestData.details.push({
-                    multlangCcd: row.querySelector(".langCode").value,
-                    multlangKey: row.querySelector(".existingKey").value,
-                    multlangTranslCont: row.querySelector(".newTranslation").value,
-                    multlangTranslContAbbr: row.querySelector(".newAbbr").value,
-                    multlangTyp: row.querySelector(".wordType").value,
-                    screenPath: row.querySelector(".screenPath").value,
-                    sourcePath: row.querySelector(".sourcePath").value,
-                    comment: row.querySelector(".comment").value
-                });
-            });
-
-            // API 호출
-            fetch("/api/lang/multlang/request", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestData)
-            }).then(response => response.json()).then(data => {
-                alert("Request submitted successfully!");
-                location.reload();
-            }).catch(error => {
-                console.error("Error:", error);
-                alert("Failed to submit request.");
-            });
-        });
-    });
 </script>
+<th:block th:replace="fragments.html :: common-scripts"></th:block>
+</body>
+</html>

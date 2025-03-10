@@ -46,4 +46,12 @@ public class PageController {
         return "userList";
     }
 
+	@GetMapping("/lang/registration")
+	public String registration(Model model, Authentication authentication) {
+		if (authentication != null) {
+			model.addAttribute("username", authentication.getName());
+		}
+		return "registration_modal";
+	}
+
 }

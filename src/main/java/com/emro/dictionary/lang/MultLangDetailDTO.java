@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MultLangDetailDTO {
+	private String existingWord;
     private String multlangCcd;
     private String multlangKey;
     private String multlangTranslCont;

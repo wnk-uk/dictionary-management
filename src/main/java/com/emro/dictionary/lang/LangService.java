@@ -2,11 +2,13 @@ package com.emro.dictionary.lang;
 
 import com.emro.dictionary.glo.SheetDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -25,6 +27,10 @@ public class LangService {
     public List<MultLangDTO> getAllMultlangs() {
         return langMapper.findAll();
     }
+
+	public List<String> searchExistingWord(String request) {
+		return langMapper.findExistingWords(request);
+	}
 
     @Transactional
     public void saveRequest(MultLangRequestDTO request) {

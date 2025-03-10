@@ -34,6 +34,12 @@ public class LangController {
         return ResponseEntity.ok(multLangDTOs);
     }
 
+	@GetMapping("/multlang/search")
+	public ResponseEntity<List<String>> searchExistingWord(@RequestParam String request) {
+		List<String> words = langService.searchExistingWord(request);
+		return ResponseEntity.ok(words);
+	}
+
     @PostMapping("/multlang/request")
     public ResponseEntity<String> submitRequest(@RequestBody MultLangRequestDTO request) {
         langService.saveRequest(request);
