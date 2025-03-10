@@ -97,13 +97,13 @@
     let table;
     $(function() {
         table = new Tabulator("#userTable", {
-            layout: "fitColumns",
+			layout: "fitColumns",
             ajaxURL: "/api/user/lists",
             columns: [
-                { title: "UserID", field: "username"},
-                { title: "UserName", field: "usrNm" },
-                { title: "DeptName", field: "deptNm" },
-                { title: "Role", field: "role" },
+                { title: "UserID", field: "username", width: 200},
+                { title: "UserName", field: "usrNm", width: 200},
+                { title: "DeptName", field: "deptNm" , width: 200},
+                { title: "Role", field: "role" , width: 200},
             ],
         });
 

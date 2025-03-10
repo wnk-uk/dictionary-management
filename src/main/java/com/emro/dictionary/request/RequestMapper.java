@@ -1,9 +1,8 @@
 package com.emro.dictionary.request;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface RequestMapper {
@@ -26,4 +25,41 @@ public interface RequestMapper {
                 #{detail.sourcePath}, #{detail.comment}, 'PENDING')
     """)
 	void insertRequestDetail(@Param("dicReqId") Long dicReqId, @Param("detail") MultLangRequestDetailDTO detail);
+
+	// 특정 ACPT_STS 값으로 조회
+	@Select("""
+        SELECT * FROM DIC_REQ 
+        WHERE acpt_sts = #{acptSts}
+    """)
+	@Results({
+			@Result(property = "dicReqId", column = "dic_req_id", id = true),
+			@Result(property = "reqUsrNm", column = "req_usr_nm"),
+			@Result(property = "acptSts", column = "acpt_sts"),
+			@Result(property = "reqDttm", column = "req_dttm"),
+			@Result(property = "details", column = "dic_req_id",
+					many = @Many(select = "com.emro.dictionary.request.RequestMapper.findRequestDetails"))
+	})
+	List<MultLangListDTO> findRequestsByAcptSts(@Param("acptSts") String acptSts);
+
+	// STS가 HOLDING이 아닌 데이터 조회
+	@Select("""
+        SELECT * FROM DIC_REQ 
+        WHERE acpt_sts <> 'HOLD'
+    """)
+	@Results({
+			@Result(property = "dicReqId", column = "dic_req_id", id = true),
+			@Result(property = "reqUsrNm", column = "req_usr_nm"),
+			@Result(property = "acptSts", column = "acpt_sts"),
+			@Result(property = "reqDttm", column = "req_dttm"),
+			@Result(property = "details", column = "dic_req_id",
+					many = @Many(select = "com.emro.dictionary.request.RequestMapper.findRequestDetails"))
+	})
+	List<MultLangListDTO> findAllRequestsExceptHold();
+
+	// RequestDetail 조회 (DIC_REQ_DTL 테이블)
+	@Select("""
+        SELECT * FROM DIC_REQ_DTL 
+        WHERE dic_req_id = #{dicReqId}
+    """)
+	List<MultLangDetailListDTO> findRequestDetails(@Param("dicReqId") Long dicReqId);
 }

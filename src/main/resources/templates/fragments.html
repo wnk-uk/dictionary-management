@@ -21,7 +21,8 @@
 
     <link href="/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="/css/custom.css" rel="stylesheet">
-
+	<link th:href="@{/css/tabulator-custom.css}" rel="stylesheet" >
+	
     <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
 	<script th:src="@{/js/utils.js}"></script>
 
@@ -77,9 +78,9 @@
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
 <!--                    <h6 class="collapse-header">Custom Components:</h6>-->
-                    <a class="collapse-item" th:href="@{/lang/req/lists}">Request List</a>
-					<a class="collapse-item" th:href="@{/lang/hold/lists}">Holding List</a>
-                    <a class="collapse-item" th:href="@{/lang/lists}">List</a>
+					<a class="collapse-item" th:href="@{/lang/req/lists}">Request List</a>
+					<a class="collapse-item" th:href="@{/lang/req/lists(acptSts='HOLD')}">Holding List</a>
+					<a class="collapse-item" th:href="@{/lang/lists}">List</a>
 <!--                    <a class="collapse-item" href="cards.html">Cards</a>-->
                 </div>
             </div>

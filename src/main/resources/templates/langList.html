@@ -15,7 +15,7 @@
 
             <div class="container-fluid">
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Multi Language</h1>
+                    <h1 class="h3 mb-0 text-gray-800">Multi Language Data</h1>
 					<button id="langList" class="btn btn-primary" data-toggle="modal" data-target="#registrationModal">
 						Registration request
 					</button>
@@ -23,7 +23,17 @@
 
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">MULTLANG Data</h6>
+						<div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" style="float:right;">
+							<div class="input-group">
+								<input id="searchText" type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+									   aria-label="Search" aria-describedby="basic-addon2" style="border:1px solid lightgray !important;">
+								<div class="input-group-append">
+									<button class="btn btn-primary" type="button" onclick="filterData()">
+										<i class="fas fa-search fa-sm"></i>
+									</button>
+								</div>
+							</div>
+						</div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -39,41 +49,40 @@
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const table = new Tabulator("#multlangTable", {
-            layout: "fitColumns",
-            ajaxURL: "/api/multlang/list", // API 호출
-            columns: [
-                { title: "Code", field: "multlangCcd", headerFilter: "input" },
-				{ title: "Type", field: "multlangTyp", headerFilter: "input"  },
-                { title: "Key", field: "multlangKey", headerFilter: "input" },
-                { title: "Translation", field: "multlangTranslCont", headerFilter: "input"  },
-                { title: "Translation Abbr", field: "multlangTranslContAbbr", headerFilter: "input"  },
-                { title: "Abbr Use (Y/N)", field: "multlangAbbrUseYn",headerFilter: "input"  },
-                { title: "Modified Date", field: "multlangModDttm", formatter: formatDate },
-                { title: "Final Translation", field: "multlangTranslFnlCont", headerFilter: "input"  },
-                { title: "Remarks", field: "rmk", headerFilter: "input"  },
-                // { title: "Status", field: "sts" },
-                { title: "Registered By", field: "regrId", headerFilter: "input"  },
-                { title: "Registration Date", field: "regDttm", formatter: formatDate },
-                { title: "Modified By", field: "modrId", headerFilter: "input"  },
-                { title: "Modification Date", field: "modDttm", formatter: formatDate },
-            ]
-        });
-
-        // 날짜 변환 함수 (Luxon 없이 JavaScript의 Date 객체 사용)
-        function formatDate(cell) {
-            const dateStr = cell.getValue();
-            if (!dateStr) return "(No Data)"; // 값이 없는 경우 예외 처리
-
-            const date = new Date(dateStr);
-            if (isNaN(date.getTime())) return "(Invalid Date)"; // 유효하지 않은 날짜 처리
-
-            return date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0]; // yyyy-MM-dd HH:mm:ss 포맷
-        }
-
-    });
+	document.addEventListener("DOMContentLoaded", function () {
+		table = new Tabulator("#multlangTable", {
+			layout: "fitDataTable", // 데이터를 컬럼에 맞게 조정
+			columnMinWidth: 120,
+			ajaxURL: "/api/multlang/list", // API 호출
+			columns: [
+				{ title: "Code", field: "multlangCcd" },
+				{ title: "Type", field: "multlangTyp"  },
+				{ title: "Word(Key)", field: "multlangKey" },
+				{ title: "Translation", field: "multlangTranslCont"  },
+				{ title: "Translation Abbr", field: "multlangTranslContAbbr"  },
+				{ title: "Abbr Use (Y/N)", field: "multlangAbbrUseYn"  },
+				{ title: "Modified Date", field: "multlangModDttm", formatter: function (cell) { return UT.formatDate(cell.getValue()); } },
+				{ title: "Final Translation", field: "multlangTranslFnlCont"  },
+				{ title: "Remarks", field: "rmk"  },
+				{ title: "Registered By", field: "regrId"  },
+				{ title: "Registration Date", field: "regDttm", formatter: function (cell) { return UT.formatDate(cell.getValue()); } },
+				{ title: "Modified By", field: "modrId"  },
+				{ title: "Modification Date", field: "modDttm", formatter: function (cell) { return UT.formatDate(cell.getValue()); } }
+			]
+		});
+	});
 	
+	// 검색 기능 추가
+	function filterData() {
+		table.setFilter(function(row) {
+			let searchValue = $("#searchText").val().toLowerCase(); // 검색어 가져오기
+			let rowData = row; // 현재 행 데이터
+			
+			return rowData.multlangKey?.toLowerCase().includes(searchValue) ||
+					rowData.multlangTranslCont?.toLowerCase().includes(searchValue) ||
+					rowData.multlangTranslContAbbr?.toLowerCase().includes(searchValue);
+		});
+	}
 </script>
 <th:block th:replace="fragments.html :: common-scripts"></th:block>
 </body>

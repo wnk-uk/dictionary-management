@@ -1,5 +1,6 @@
 package com.emro.dictionary.multLang;
 
+import com.emro.dictionary.request.MultLangListDTO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

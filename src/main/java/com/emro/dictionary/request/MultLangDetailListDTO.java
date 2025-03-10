@@ -1,0 +1,19 @@
+package com.emro.dictionary.request;
+
+import lombok.Data;
+
+@Data
+public class MultLangDetailListDTO {
+	private Long id;
+	private Long dicReqId;
+	private String existingWord;
+	private String multlangCcd;
+	private String multlangKey;
+	private String multlangTranslCont;
+	private String multlangTranslContAbbr;
+	private String multlangTyp;
+	private String screenPath;
+	private String sourcePath;
+	private String comment;
+	private String regSts;
+}

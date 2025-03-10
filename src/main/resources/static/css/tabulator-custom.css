@@ -1,0 +1,25 @@
+/* 테이블 전체 스타일 */
+.tabulator {
+    width: 100%;
+    overflow-x: auto; /* 🔹 가로 스크롤 허용 */
+}
+
+/* 테이블 컨테이너 - 가로 스크롤 허용 */
+.table-responsive {
+    overflow-x: auto; /* 🔹 가로 스크롤 허용 */
+    max-width: 100%;
+}
+
+/* 테이블 헤더와 셀 스타일 */
+.tabulator .tabulator-header .tabulator-col,
+.tabulator .tabulator-cell {
+    min-width: 120px; /* 🔹 최소 너비 설정 */
+    white-space: nowrap; /* 🔹 텍스트 줄바꿈 방지 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 🔹 길면 ... 표시 */
+}
+
+/* 헤더 글자 크기 줄이기 */
+.tabulator .tabulator-header .tabulator-col {
+    font-size: 15px;
+}
