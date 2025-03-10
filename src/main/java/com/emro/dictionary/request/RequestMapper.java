@@ -45,7 +45,7 @@ public interface RequestMapper {
 	// STS가 HOLDING이 아닌 데이터 조회
 	@Select("""
         SELECT * FROM DIC_REQ 
-        WHERE acpt_sts <> 'HOLD'
+        WHERE acpt_sts <> 'HOLDING'
         ORDER BY req_dttm DESC
     """)
 	@Results({
@@ -56,7 +56,7 @@ public interface RequestMapper {
 			@Result(property = "details", column = "dic_req_id",
 					many = @Many(select = "com.emro.dictionary.request.RequestMapper.findRequestDetails"))
 	})
-	List<MultLangListDTO> findAllRequestsExceptHold();
+	List<MultLangListDTO> findAllRequestsExceptHOLDING();
 
 	// RequestDetail 조회 (DIC_REQ_DTL 테이블)
 	@Select("""
@@ -88,7 +88,7 @@ public interface RequestMapper {
 			@Result(property = "details", column = "dic_req_id",
 					many = @Many(select = "findRequestDetailsByDicReqId"))
 	})
-	List<MultLangListDTO> findTop10RecentHoldingRequests(@Param("acptSts") String acptSts);
+	List<MultLangListDTO> findTop10RecentHOLDINGingRequests(@Param("acptSts") String acptSts);
 
 	// 특정 dicReqId에 대한 요청 상세 정보 가져오기
 	@Select("""

@@ -36,9 +36,9 @@
 						</div>
 					</div>
 					
-					<!-- ✅ HOLD 상태 요청 리스트 이동 -->
+					<!-- ✅ HOLDING 상태 요청 리스트 이동 -->
 					<div class="col-xl-3 col-md-6 mb-4">
-						<div class="card border-left-success shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('req', 'HOLD')">
+						<div class="card border-left-success shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('req', 'HOLDING')">
 							<div class="card-body">
 								<div class="row no-gutters align-items-center">
 									<div class="col mr-2">
@@ -149,11 +149,10 @@
 		
 		new Tabulator("#requestTop", {
 			layout: "fitColumns",
-			ajaxURL: "/api/request/req/top10",
+			ajaxURL: "/api/request/request/top10",
 			columns: [
 				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200},
 				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center" , minWidth:200, formatter: function(cell, formatterParams, onRendered) {
-					console.log(cell.getData());
 					let joinTxt = "";
 					cell.getValue().forEach(row => {
 						joinTxt += row.multlangKey + ",";
@@ -168,7 +167,7 @@
 		
 		new Tabulator("#holdingTop", {
 			layout: "fitColumns",
-			ajaxURL: "/api/request/hold/top10",
+			ajaxURL: "/api/request/holding/top10",
 			columns: [
 				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200},
 				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center", minWidth:200, formatter: function(cell, formatterParams, onRendered) {

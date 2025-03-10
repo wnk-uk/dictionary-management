@@ -17,10 +17,10 @@
 					<div class="card-header py-3 d-flex justify-content-between align-items-center">
 						<!-- ✅ 상태 변경 버튼 -->
 						<div class="d-flex align-items-center">
-							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('PROG')">
+							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('PROGRESS')">
 								<i class="fas fa-check"></i> ACCEPT
 							</button>
-							<button class="btn btn-danger btn-sm mr-3" onclick="updateSelectedStatus('HOLD')">
+							<button class="btn btn-danger btn-sm mr-3" onclick="updateSelectedStatus('HOLDING')">
 								<i class="fas fa-times"></i> REJECT
 							</button>
 						</div>
@@ -78,7 +78,7 @@
 					requestTime: UT.formatDate(item.reqDttm),
 					status: item.acptSts,
 					details: item.details.map(detail =>
-							`${detail.existingWord || "-"} → ${detail.multlangKey} (${detail.multlangTranslCont})`
+							`${detail.existingWord || "[NULL]"} → ${detail.multlangKey} : (${detail.multlangTranslCont})`
 					).join("<br>")
 				}));
 				return rows;
@@ -103,10 +103,12 @@
 	
 	// ✅ 전체 선택 기능
 	function toggleSelectAll(headerCheckbox) {
+		let allRows = table.getRows("all"); // 🔹 모든 행 가져오기
+		
 		if (headerCheckbox.checked) {
-			table.selectRow("visible");
+			allRows.forEach(row => row.select());  // 🔹 모든 행 선택 (UI 반영)
 		} else {
-			table.deselectRow("visible");
+			allRows.forEach(row => row.deselect()); // 🔹 모든 행 해제 (UI 반영)
 		}
 	}
 	

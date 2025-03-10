@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS DIC_REQ (
                                     REQ_USR_NM VARCHAR(50),
                                     REQ_DTTM TIMESTAMP,
                                     STS CHAR(1) DEFAULT 'C',
-                                    ACPT_STS VARCHAR(50) -- REQ, PROG, HOLD, ACPT
+                                    ACPT_STS VARCHAR(50) -- REQUEST, PROGRESS, HOLDING, ACCEPTANCE
 );
 
 CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (

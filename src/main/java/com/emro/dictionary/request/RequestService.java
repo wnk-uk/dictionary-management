@@ -31,19 +31,19 @@ public class RequestService {
 			return requestMapper.findRequestsByAcptSts(acptSts);
 		} else {
 			// STS가 HOLDING이 아닌 데이터 조회
-			return requestMapper.findAllRequestsExceptHold();
+			return requestMapper.findAllRequestsExceptHOLDING();
 		}
 	}
 
 	public DashboardCountDTO findByAcptStatusCount() {
 		return DashboardCountDTO.builder()
-				.pendingCnt(requestMapper.findByAcptStatusCount("REQ"))
-				.holdingCnt(requestMapper.findByAcptStatusCount("HOLD"))
+				.pendingCnt(requestMapper.findByAcptStatusCount("REQUEST"))
+				.holdingCnt(requestMapper.findByAcptStatusCount("HOLDING"))
 				.build();
 	}
 
 	public List<MultLangListDTO> getTop10RecentRequests(String reqSts) {
-		return requestMapper.findTop10RecentHoldingRequests(reqSts);
+		return requestMapper.findTop10RecentHOLDINGingRequests(reqSts);
 	}
 
 	/**
