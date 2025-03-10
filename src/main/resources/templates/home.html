@@ -138,31 +138,18 @@
 		$.ajax({
 			url: "/api/request/count",
 			type: "GET",
-			data: { regSts: "PENDING" },
-			success: function (count) {
-				$("#pendingCount").text(count);
+			success: function (data) {
+				$("#pendingCount").text(data.pendingCnt);
+				$("#holdingCount").text(data.holdingCnt);
 			},
 			error: function () {
 				console.error("Failed to load PENDING request count");
 			}
 		});
 		
-		// HOLDING COUNT 가져오기
-		$.ajax({
-			url: "/api/request/count",
-			type: "GET",
-			data: { regSts: "HOLDING" },
-			success: function (count) {
-				$("#holdingCount").text(count);
-			},
-			error: function () {
-				console.error("Failed to load HOLDING request count");
-			}
-		});
-		
 		new Tabulator("#requestTop", {
 			layout: "fitColumns",
-			ajaxURL: "/api/request/top10",
+			ajaxURL: "/api/request/req/top10",
 			columns: [
 				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200},
 				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center" , minWidth:200, formatter: function(cell, formatterParams, onRendered) {
@@ -181,7 +168,7 @@
 		
 		new Tabulator("#holdingTop", {
 			layout: "fitColumns",
-			ajaxURL: "/api/request/top10?regSts=HOLDING",
+			ajaxURL: "/api/request/hold/top10",
 			columns: [
 				{ title: "Request UserName", field: "reqUsrNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200},
 				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center", minWidth:200, formatter: function(cell, formatterParams, onRendered) {

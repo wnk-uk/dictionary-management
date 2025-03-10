@@ -29,20 +29,13 @@ public class RequestController {
 	}
 
 	@GetMapping("/count")
-	public ResponseEntity<Integer> getPendingRequests(@RequestParam String regSts) {
-		List<String> validStatuses = Arrays.asList("PENDING", "PROGRESS", "COMPLETE", "HOLDING");
-
-		if (!validStatuses.contains(regSts.toUpperCase())) {
-			return ResponseEntity.badRequest().body(0);
-		}
-
-		int count = requestService.getPendingRequests(regSts.toUpperCase());
-		return ResponseEntity.ok(count);
+	public ResponseEntity<DashboardCountDTO> findCountAll() {
+		return ResponseEntity.ok(requestService.findByAcptStatusCount());
 	}
 
-	@GetMapping("/top10")
-	public ResponseEntity<List<MultLangListDTO>> getTop10RecentRequests(@RequestParam(required = false) String regSts) {
-		List<MultLangListDTO> top10Requests = requestService.getTop10RecentRequests(regSts);
+	@GetMapping("/{acptSts}/top10")
+	public ResponseEntity<List<MultLangListDTO>> getTop10RecentRequests(@PathVariable String acptSts) {
+		List<MultLangListDTO> top10Requests = requestService.getTop10RecentRequests(acptSts.toUpperCase());
 		return ResponseEntity.ok(top10Requests);
 	}
 
