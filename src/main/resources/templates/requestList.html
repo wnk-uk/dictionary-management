@@ -67,8 +67,7 @@
 			layout: "fitColumns",
 			columnMinWidth: 120,
 			selectable: true,
-			ajaxURL: "/api/request/list",
-			ajaxParams: acptSts ? { acptSts: acptSts } : {},
+			ajaxURL: `/api/request/${acptSts}/list`,
 			ajaxConfig: "GET",
 			ajaxContentType: "json",
 			ajaxResponse: function (url, params, response) {

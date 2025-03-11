@@ -19,7 +19,7 @@
 					
 					<!-- ✅ PENDING 요청 리스트 이동 (기본 리스트) -->
 					<div class="col-xl-3 col-md-6 mb-4">
-						<div class="card border-left-primary shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('req')">
+						<div class="card border-left-primary shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('ALL')">
 							<div class="card-body">
 								<div class="row no-gutters align-items-center">
 									<div class="col mr-2">
@@ -38,7 +38,7 @@
 					
 					<!-- ✅ HOLDING 상태 요청 리스트 이동 -->
 					<div class="col-xl-3 col-md-6 mb-4">
-						<div class="card border-left-success shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('req', 'HOLDING')">
+						<div class="card border-left-success shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('HOLDING')">
 							<div class="card-body">
 								<div class="row no-gutters align-items-center">
 									<div class="col mr-2">
@@ -184,10 +184,8 @@
 		});
 	}
 	
-	function cardClick(name, status = "") {
-		let url = `/${name}/lists`;
-		if (status) url += `?acptSts=${status}`;
-		location.href = url;
+	function cardClick(status) {
+		location.href = `/req/${status}/lists`;
 	}
 </script>
 <th:block th:replace="fragments.html :: common-scripts"></th:block>

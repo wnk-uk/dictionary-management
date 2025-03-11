@@ -11,6 +11,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -84,9 +85,9 @@ public class PageController {
 	}
 
 
-	@GetMapping("/req/lists")
+	@GetMapping("/req/{acptSts}/lists")
 	public String reqLists(
-			@RequestParam(value = "acptSts", required = false) String acptSts,
+			@PathVariable(value = "acptSts") String acptSts,
 			Model model,
 			Authentication authentication) {
 

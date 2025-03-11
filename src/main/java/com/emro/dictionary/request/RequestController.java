@@ -20,12 +20,15 @@ public class RequestController {
 		return ResponseEntity.ok("Request submitted successfully");
 	}
 
-	@GetMapping("/list")
+	@GetMapping("/{acptSts}/list")
 	public ResponseEntity<List<MultLangListDTO>> getRequests(
-			@RequestParam(required = false) String acptSts) {
+			@PathVariable String acptSts) {
 
-		List<MultLangListDTO> requests = requestService.getRequestsByAcptSts(acptSts);
-		return ResponseEntity.ok(requests);
+		if ("ALL".equalsIgnoreCase(acptSts)) {
+			return ResponseEntity.ok(requestService.getAllRequestsExceptHOLDING());
+		}
+
+		return ResponseEntity.ok(requestService.getRequestsByAcptSts(acptSts));
 	}
 
 	@GetMapping("/count")
