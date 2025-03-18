@@ -19,10 +19,10 @@ public interface RequestMapper {
 	@Insert("""
         INSERT INTO DIC_REQ_DTL (dic_req_id, existing_word, multlang_ccd, multlang_key, multlang_transl_cont, 
                                  multlang_transl_cont_abbr, multlang_typ, screen_path, 
-                                 source_path, comment, reg_sts)
+                                 source_path, comment, reg_sts, image_path, editor_content)
         VALUES (#{dicReqId}, #{detail.existingWord}, #{detail.multlangCcd}, #{detail.multlangKey}, #{detail.multlangTranslCont}, 
                 #{detail.multlangTranslContAbbr}, #{detail.multlangTyp}, #{detail.screenPath}, 
-                #{detail.sourcePath}, #{detail.comment}, 'PENDING')
+                #{detail.sourcePath}, #{detail.comment}, 'PENDING', #{detail.imagePath}, #{detail.editorContent})
     """)
 	void insertRequestDetail(@Param("dicReqId") Long dicReqId, @Param("detail") MultLangRequestDetailDTO detail);
 

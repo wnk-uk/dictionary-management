@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -15,12 +16,20 @@ public class RequestService {
 
 	private final RequestMapper requestMapper;
 
-	public void saveRequest(MultLangRequestDTO request) {
-		// 1. DIC_REQ 테이블에 저장
+	private final FileStorageService fileStorageService;
+
+	public void saveRequest(MultLangRequestDTO request) throws IOException {
+		// 1. Save to DIC_REQ
 		requestMapper.insertRequest(request);
 
-		// 2. DIC_REQ_DTL 테이블에 각 단어 정보 저장
+		// 2. Save details to DIC_REQ_DTL with files
 		for (MultLangRequestDetailDTO detail : request.getDetails()) {
+			String imagePath = null;
+			if (detail.getFiles() != null && !detail.getFiles().isEmpty()) {
+				// Save files and get the path (example logic)
+				imagePath = fileStorageService.storeFiles(detail.getFiles());
+			}
+			detail.setImagePath(imagePath); // Set the path to the detail
 			requestMapper.insertRequestDetail(request.getDicReqId(), detail);
 		}
 	}

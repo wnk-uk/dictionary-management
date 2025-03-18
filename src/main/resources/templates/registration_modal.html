@@ -10,7 +10,12 @@
 		white-space: normal;
 		max-width: 150px;
 	}
-
+	.editor-container {
+		min-height: 200px;
+	}
+	.ql-editor {
+		min-height: 100px; /* Quill 에디터 높이 조정 */
+	}
 </style>
 <body id="page-top">
 <div class="modal fade" id="registrationModal" tabindex="-1" role="dialog" aria-labelledby="registrationModalLabel" aria-hidden="true">
@@ -19,11 +24,11 @@
 			<div class="modal-header">
 				<h5 class="modal-title" id="registrationModalLabel">New Multi Language Registration</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
+					<span aria-hidden="true">×</span>
 				</button>
 			</div>
 			<div class="modal-body" style="overflow-x: auto">
-				<form id="registrationForm">
+				<form id="registrationForm" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="reqUsrNm">Requested By</label>
 						<input type="text" class="form-control" id="reqUsrNm" th:value="${username}" readonly>
@@ -31,58 +36,62 @@
 					
 					<table id="requestTables" class="table table-bordered">
 						<thead>
-							<tr>
-								<th>As-Is
-									<br/>
-								(Existing Word)</th>
-								<th>Language</th>
-								<th>To-Be
-									<br/>
-								(New Word)</th>
-								<th>New Translation</th>
-								<th>Abbreviation</th>
-							</tr>
-							<tr>
-								<th>Type</th>
-								<th>Screen Path</th>
-								<th>Source Path</th>
-								<th>Comment</th>
-								<th>Del</th>
-							</tr>
+						<tr>
+							<th>As-Is<br/>(Existing Word)</th>
+							<th>Language</th>
+							<th>To-Be<br/>(New Word)</th>
+							<th>New Translation</th>
+							<th>Abbreviation</th>
+						</tr>
+						<tr>
+							<th>Type</th>
+							<th>Screen Path</th>
+							<th>Source Path</th>
+							<th>Comment</th>
+							<th>Del</th>
+						</tr>
+						<tr>
+							<th colspan="5">Editor & File Upload</th>
+						</tr>
 						</thead>
 						<tbody id="requestTable">
-							<tr>
-								<td>
-									<input type="text" class="form-control existingWord" placeholder="Search...">
-									<div class="dropdown-menu existingWordsDropdown" style="top:initial !important; float:none !important; left:initial; height:300px; overflow:auto;"></div>
-								</td>
-								<td>
-									<select class="form-control langCode">
-										<option value="ko_KR">Korean</option>
-										<option value="en_US">English</option>
-										<option value="ja_JP">Japanese</option>
-										<option value="zh_CN">Chinese</option>
-									</select>
-								</td>
-								<td><input type="text" class="form-control newWord"></td>
-								<td><input type="text" class="form-control newTranslation"></td>
-								<td><input type="text" class="form-control newAbbr"></td>
-							</tr>
-							<tr>
-								<td>
-									<select class="form-control wordType">
-										<option value="Label">Label</option>
-										<option value="Button">Button</option>
-									</select>
-								</td>
-								<td><input type="text" class="form-control screenPath"></td>
-								<td><input type="text" class="form-control sourcePath"></td>
-								<td><input type="text" class="form-control comment"></td>
-								<td style="vertical-align: middle;">
-									<i class="fas fa-trash fa-lg text-black-900 removeRow"></i>
-<!--									<button type="button" class="btn btn-danger ">X</button>-->
-								</td>
-							</tr>
+						<tr>
+							<td>
+								<input type="text" class="form-control existingWord" placeholder="Search...">
+								<div class="dropdown-menu existingWordsDropdown" style="top:initial !important; float:none !important; left:initial; height:300px; overflow:auto;"></div>
+							</td>
+							<td>
+								<select class="form-control langCode">
+									<option value="ko_KR">Korean</option>
+									<option value="en_US">English</option>
+									<option value="ja_JP">Japanese</option>
+									<option value="zh_CN">Chinese</option>
+								</select>
+							</td>
+							<td><input type="text" class="form-control newWord"></td>
+							<td><input type="text" class="form-control newTranslation"></td>
+							<td><input type="text" class="form-control newAbbr"></td>
+						</tr>
+						<tr>
+							<td>
+								<select class="form-control wordType">
+									<option value="Label">Label</option>
+									<option value="Button">Button</option>
+								</select>
+							</td>
+							<td><input type="text" class="form-control screenPath"></td>
+							<td><input type="text" class="form-control sourcePath"></td>
+							<td><input type="text" class="form-control comment"></td>
+							<td style="vertical-align: middle;">
+								<i class="fas fa-trash fa-lg text-black-900 removeRow"></i>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="5">
+								<div class="editor-container" id="editor-0"></div>
+								<input type="file" class="form-control-file fileUpload" name="fileUpload" multiple>
+							</td>
+						</tr>
 						</tbody>
 					</table>
 					<button type="button" class="btn btn-secondary" id="addRow">Add More</button>
@@ -97,11 +106,35 @@
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
+	// Quill이 로드될 때까지 기다리기
+	function initQuillWhenReady() {
+		if(typeof Quill === 'undefined') {
+			console.log("Quill이 아직 로드되지 않았습니다. 잠시 후 재시도합니다.");
+			setTimeout(initQuillWhenReady, 100); // 100ms 후 재시도
+			return;
+		}
+	}
+	
 	document.addEventListener("DOMContentLoaded", function () {
+		let editorCount = 0;
+		const editors = {}; // Quill 인스턴스 저장
+		
+		// 첫 번째 Quill 에디터 초기화
+		editors[editorCount] = new Quill('#editor-0', {
+			theme: 'snow',
+			modules: {
+				toolbar: [
+					['bold', 'italic', 'underline'],
+					['link', 'image'],
+					[{ 'list': 'ordered' }, { 'list': 'bullet' }]
+				]
+			}
+		});
+		
 		// 🔹 As-Is 검색 기능 (자동 완성)
 		window.searchExistingWord = function(input) {
 			const request = input.value.trim();
-			if(request.length < 2) {
+			if (request.length < 2) {
 				closeDropdown(input);
 				return;
 			}
@@ -120,17 +153,16 @@
 			});
 		};
 		
-		
 		function showDropdown(input, words) {
 			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
-			if(!dropdown) {
+			if (!dropdown) {
 				dropdown = document.createElement("div");
 				dropdown.classList.add("dropdown-menu", "show", "existingWordsDropdown");
 				input.parentElement.appendChild(dropdown);
 			}
 			
 			dropdown.innerHTML = "";
-			if(words.length === 0) {
+			if (words.length === 0) {
 				dropdown.style.display = "none";
 				return;
 			}
@@ -148,83 +180,76 @@
 			
 			dropdown.style.position = "fixed";
 			dropdown.style.width = input.offsetWidth + "px";
-			dropdown.style.zIndex = "1000"; // 🛠️ 드롭다운이 다른 요소보다 위에 오도록 설정
+			dropdown.style.zIndex = "1000";
 			dropdown.style.display = "block";
 		}
 		
 		function closeDropdown(input) {
 			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
-			if(dropdown) {
+			if (dropdown) {
 				dropdown.style.display = "none";
 			}
 		}
 		
-		// 🔹 기존 `.existingWord` 필드에 `keyup` 이벤트 자동 적용
+		// 기존 .existingWord에 keyup 이벤트 적용
 		document.querySelectorAll(".existingWord").forEach(input => {
 			input.addEventListener("keyup", function() {
 				searchExistingWord(this);
 			});
 		});
 		
-		// 🔹 새로운 단어 입력 필드 추가 (Add More)
+		// 🔹 "Add More" 기능 (Quill 포함)
 		document.getElementById("addRow").addEventListener("click", function() {
-			const tbody = document.querySelector("#requestTable")
-			const newRow = tbody.cloneNode(true);
+			const tbody = document.querySelector("#requestTable").cloneNode(true);
+			tbody.querySelectorAll("input").forEach(input => input.value = ""); // 입력 필드 초기화
+			editorCount++;
+			const editorId = `editor-${editorCount}`;
+			const editorContainer = tbody.querySelector(".editor-container");
+			editorContainer.innerHTML = ""; // 기존 Quill 내용 제거
+			editorContainer.id = editorId; // 새 ID 부여
 			
-			newRow.querySelector(".existingWord")?.addEventListener("keyup", function() {
-				searchExistingWord(this);
-			});
-			
-			newRow.querySelector(".removeRow")?.addEventListener("click", function(e) {
-				if (document.querySelector("#requestTables tbody").length === 1) return;
-				if(e.target.classList.contains("removeRow")) {
-					e.target.closest("tr").closest("tbody").remove();
+			// 새 Quill 에디터 초기화
+			editors[editorCount] = new Quill(`#${editorId}`, {
+				theme: 'snow',
+				modules: {
+					toolbar: [
+						['bold', 'italic', 'underline'],
+						['link', 'image'],
+						[{ 'list': 'ordered' }, { 'list': 'bullet' }]
+					]
 				}
 			});
 			
+			// 새 행에 검색 이벤트 추가
+			tbody.querySelector(".existingWord")?.addEventListener("keyup", function() {
+				searchExistingWord(this);
+			});
 			
-			newRow.querySelectorAll("input").forEach(input => input.value = "");
-			newRow.removeAttribute("id");
-			document.querySelector("#requestTables tbody:last-child").after(newRow);
+			// 삭제 이벤트 추가
+			tbody.querySelector(".removeRow")?.addEventListener("click", function(e) {
+				if (document.querySelectorAll("#requestTables tbody").length === 1) return;
+				if (e.target.classList.contains("removeRow")) {
+					const editorIdNum = tbody.querySelector(".editor-container").id.split('-')[1];
+					delete editors[editorIdNum]; // Quill 인스턴스 제거
+					e.target.closest("tbody").remove();
+				}
+			});
 			
-			// trs.forEach(rows => {
-			// 	let newRow = rows.cloneNode(true);
-			// 	newRow.querySelectorAll("input").forEach(input => input.value = "");
-			//
-			// 	// 새로 추가된 행에서도 `keyup` 이벤트 적용
-			// 	newRow.querySelector(".existingWord")?.addEventListener("keyup", function() {
-			// 		searchExistingWord(this);
-			// 	});
-			//
-			//
-			// });
-			
-			
+			document.querySelector("#requestTables tbody:last-child").after(tbody);
 		});
 		
-		// 🔹 행 삭제 기능 (Remove Row)
-		// document.querySelector(".removeRow").addEventListener("click", function(e) {
-		// 	if (document.querySelector("#requestTables tbody").length === 1) return;
-		// 	if(e.target.classList.contains("removeRow")) {
-		// 		e.target.closest("tr").closest("tbody").remove();
-		// 	}
-		// });
-		
-		// 🔹 요청 제출 기능 (Submit Request)
+		// 🔹 "Submit Request" 기능
 		document.getElementById("submitRequest").addEventListener("click", function() {
-			let requestData = {
-				reqUsrNm: document.getElementById("reqUsrNm").value,
-				details: []
-			};
+			const formData = new FormData();
+			formData.append("reqUsrNm", document.getElementById("reqUsrNm").value);
+			let isValid = true;
+			const details = [];
 			
-			let isValid = true; // 🔹 유효성 검사 플래그
-			
-			// 🔹 모든 행을 검사하면서 `is-invalid` 표시 적용
-			document.querySelectorAll("#requestTables tbody").forEach(row => {
-				let newWord = row.querySelector(".newWord").value.trim();
-				let newTranslation = row.querySelector(".newTranslation").value.trim();
-				let wordField = row.querySelector(".newWord");
-				let translationField = row.querySelector(".newTranslation");
+			document.querySelectorAll("#requestTables tbody").forEach((row, index) => {
+				const newWord = row.querySelector(".newWord").value.trim();
+				const newTranslation = row.querySelector(".newTranslation").value.trim();
+				const wordField = row.querySelector(".newWord");
+				const translationField = row.querySelector(".newTranslation");
 				
 				if (newWord === "") {
 					isValid = false;
@@ -239,8 +264,10 @@
 					translationField.classList.remove("is-invalid");
 				}
 				
-				// 🔹 requestData 수집
-				requestData.details.push({
+				const editorContent = editors[index].root.innerHTML; // Quill 내용 가져오기
+				const files = row.querySelector(".fileUpload").files;
+				
+				const detail = {
 					existingWord: row.querySelector(".existingWord").value,
 					multlangCcd: row.querySelector(".langCode").value,
 					multlangKey: newWord,
@@ -249,8 +276,14 @@
 					multlangTyp: row.querySelector(".wordType").value,
 					screenPath: row.querySelector(".screenPath").value,
 					sourcePath: row.querySelector(".sourcePath").value,
-					comment: row.querySelector(".comment").value
-				});
+					comment: row.querySelector(".comment").value,
+					editorContent: editorContent
+				};
+				details.push(detail);
+				
+				for (let i = 0; i < files.length; i++) {
+					formData.append(`details[${index}].files`, files[i]);
+				}
 			});
 			
 			// 유효성 검사 실패 시 AJAX 요청 차단
@@ -259,12 +292,13 @@
 				return;
 			}
 			
-			// 모든 필드가 유효하면 AJAX 요청 실행
+			formData.append("details", JSON.stringify(details));
 			$.ajax({
 				type: "POST",
 				url: "/api/request/multlang",
-				contentType: "application/json",
-				data: JSON.stringify(requestData),
+				data: formData,
+				processData: false,
+				contentType: false,
 				success: function(response) {
 					alert("✅ Request submitted successfully!");
 					location.href = "/req/lists";
@@ -272,9 +306,7 @@
 				error: UT.handleAjaxError
 			});
 		});
-
 	});
-
 </script>
 </body>
 </html>

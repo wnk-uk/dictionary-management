@@ -1,9 +1,15 @@
 package com.emro.dictionary.request;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,8 +20,36 @@ public class RequestController {
 
 	private final RequestService requestService;
 
-	@PostMapping("/multlang")
-	public ResponseEntity<String> submitRequest(@RequestBody MultLangRequestDTO request) {
+	private final FileStorageService fileStorageService;
+
+	@PostMapping(value = "/multlang", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> submitRequest(
+			@RequestParam("reqUsrNm") String reqUsrNm,
+			@RequestParam("details") String detailsJson,
+			@RequestParam(value = "details[].files", required = false) List<MultipartFile> files) throws IOException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		List<MultLangRequestDetailDTO> details = objectMapper.readValue(detailsJson, new TypeReference<List<MultLangRequestDetailDTO>>() {});
+
+		MultLangRequestDTO request = new MultLangRequestDTO();
+		request.setReqUsrNm(reqUsrNm);
+		request.setDetails(details);
+
+		// Distribute files to their respective details
+// 파일을 각 detail에 분배하고 경로 설정
+		int fileIndex = 0;
+		for (int i = 0; i < details.size() && fileIndex < files.size(); i++) {
+			List<MultipartFile> detailFiles = new ArrayList<>();
+			while (fileIndex < files.size() && files.get(fileIndex) != null) {
+				detailFiles.add(files.get(fileIndex));
+				fileIndex++;
+			}
+			// 파일을 저장하고 경로를 String으로 받아서 설정
+			if (!detailFiles.isEmpty()) {
+				String imagePath = fileStorageService.storeFiles(detailFiles); // String 반환
+				details.get(i).setImagePath(imagePath); // String을 설정
+			}
+		}
+
 		requestService.saveRequest(request);
 		return ResponseEntity.ok("Request submitted successfully");
 	}
