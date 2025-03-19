@@ -2,6 +2,7 @@ package com.emro.dictionary.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +20,23 @@ public class RequestService {
 	private final FileStorageService fileStorageService;
 
 	public void saveRequest(MultLangRequestDTO request) throws IOException {
-		// 1. Save to DIC_REQ
 		requestMapper.insertRequest(request);
 
-		// 2. Save details to DIC_REQ_DTL with files
 		for (MultLangRequestDetailDTO detail : request.getDetails()) {
 			String imagePath = null;
+			String editorContent = detail.getEditorContent();
+			String textContent = null;
+
+			if (editorContent != null) {
+				textContent = Jsoup.parse(editorContent).text();
+			}
+
 			if (detail.getFiles() != null && !detail.getFiles().isEmpty()) {
-				// Save files and get the path (example logic)
 				imagePath = fileStorageService.storeFiles(detail.getFiles());
 			}
-			detail.setImagePath(imagePath); // Set the path to the detail
+
+			detail.setEditorContent(textContent);
+			detail.setImagePath(imagePath);
 			requestMapper.insertRequestDetail(request.getDicReqId(), detail);
 		}
 	}

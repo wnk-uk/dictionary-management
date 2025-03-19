@@ -26,7 +26,6 @@ mybatis:
     map-underscore-to-camel-case: true
 
 file:
-  temp-dir: D:/uploads/uploads
   upload-dir: D:/uploads/final
 
 

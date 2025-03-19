@@ -10,7 +10,7 @@ public interface RequestMapper {
 	// 요청 저장 (DIC_REQ 테이블에 데이터 삽입)
 	@Insert("""
         INSERT INTO DIC_REQ (req_usr_nm, req_dttm, sts, acpt_sts)
-        VALUES (#{reqUsrNm}, NOW(), 'C', 'REQ')
+        VALUES (#{reqUsrNm}, NOW(), 'C', 'REQUEST')
     """)
 	@Options(useGeneratedKeys = true, keyProperty = "dicReqId")
 	void insertRequest(MultLangRequestDTO request);

@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -20,13 +19,11 @@ public class RequestController {
 
 	private final RequestService requestService;
 
-	private final FileStorageService fileStorageService;
-
 	@PostMapping(value = "/multlang", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> submitRequest(
 			@RequestParam("reqUsrNm") String reqUsrNm,
 			@RequestParam("details") String detailsJson,
-			@RequestParam(value = "details[].files", required = false) List<MultipartFile> files) throws IOException {
+			@RequestParam(value = "files", required = false) List<MultipartFile> files) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		List<MultLangRequestDetailDTO> details = objectMapper.readValue(detailsJson, new TypeReference<List<MultLangRequestDetailDTO>>() {});
 
@@ -35,18 +32,16 @@ public class RequestController {
 		request.setDetails(details);
 
 		// Distribute files to their respective details
-// 파일을 각 detail에 분배하고 경로 설정
-		int fileIndex = 0;
-		for (int i = 0; i < details.size() && fileIndex < files.size(); i++) {
-			List<MultipartFile> detailFiles = new ArrayList<>();
-			while (fileIndex < files.size() && files.get(fileIndex) != null) {
-				detailFiles.add(files.get(fileIndex));
-				fileIndex++;
-			}
-			// 파일을 저장하고 경로를 String으로 받아서 설정
-			if (!detailFiles.isEmpty()) {
-				String imagePath = fileStorageService.storeFiles(detailFiles); // String 반환
-				details.get(i).setImagePath(imagePath); // String을 설정
+		if (files != null && !files.isEmpty()) {
+			int fileIndex = 0;
+			for (MultLangRequestDetailDTO detail : details) {
+				List<MultipartFile> detailFiles = new ArrayList<>();
+				while (fileIndex < files.size() && files.get(fileIndex) != null) {
+					detailFiles.add(files.get(fileIndex));
+					fileIndex++;
+				}
+				detail.setFiles(detailFiles);
+				System.out.println("Set files for detail: " + detailFiles.size()); // todo : 디버깅
 			}
 		}
 
