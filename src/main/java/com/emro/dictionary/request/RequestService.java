@@ -17,7 +17,9 @@ public class RequestService {
 
 	private final RequestMapper requestMapper;
 
-
+	/**
+	 * 요청 저장
+	 */
 	public void saveRequest(MultLangRequestDTO request) throws IOException {
 		// DIC_REQ에 저장 (editorContent와 imagePath 포함)
 		requestMapper.insertRequest(request);
@@ -28,14 +30,37 @@ public class RequestService {
 		}
 	}
 
+	/**
+	 *  STS가 HOLDING이 아닌 데이터 조회 (ROLE X)
+	 */
 	public List<MultLangListDTO> getAllRequestsExceptHOLDING() {
 		return requestMapper.findAllRequestsExceptHOLDING();
 	}
 
+	/**
+	 * 특정 ACPT_STS 값으로 조회 (ROLE X)
+	 */
 	public List<MultLangListDTO> getRequestsByAcptSts(String acptSts) {
 			return requestMapper.findRequestsByAcptSts(acptSts);
 	}
 
+	/**
+	 * HOLDING이 아닌, 특정 requester의 데이터 조회
+	 */
+	public List<MultLangListDTO> getRequestsByRequesterExceptHOLDING(String requester) {
+		return requestMapper.findRequestsByRequesterExceptHOLDING(requester);
+	}
+
+	/**
+	 * 특정 acpt_sts와 requester로 데이터 조회
+	 */
+	public List<MultLangListDTO> getRequestsByAcptStsAndRequester(String acptSts, String requester) {
+		return requestMapper.findRequestsByAcptStsAndRequester(acptSts, requester);
+	}
+
+	/**
+	 * 요청 상태에 따른 갯수 세기
+	 */
 	public DashboardCountDTO findByAcptStatusCount() {
 		return DashboardCountDTO.builder()
 				.pendingCnt(requestMapper.findByAcptStatusCount("REQUEST"))
@@ -43,6 +68,9 @@ public class RequestService {
 				.build();
 	}
 
+	/**
+	 * 요청시간 상위 Top10 특정 요청 가져오기 (특정 regSts)
+	 */
 	public List<MultLangListDTO> getTop10RecentRequests(String reqSts) {
 		return requestMapper.findTop10RecentHOLDINGingRequests(reqSts);
 	}

@@ -11,5 +11,7 @@ public class MultLangListDTO {
 	private String reqUsrNm;
 	private LocalDateTime reqDttm;
 	private List<MultLangDetailListDTO> details;
+	private String imagePath;
+	private String editorContent;
 	private String acptSts;
 }

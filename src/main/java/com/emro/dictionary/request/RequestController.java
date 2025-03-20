@@ -6,11 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -21,6 +22,9 @@ public class RequestController {
 	private final RequestService requestService;
 	private final FileStorageService fileStorageService;
 
+	/**
+	 * 유저의 등록 요청 API
+	 */
 	@PostMapping(value = "/multlang", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> submitRequest(
 			@RequestParam("reqUsrNm") String reqUsrNm,
@@ -55,22 +59,52 @@ public class RequestController {
 		return ResponseEntity.ok("Request submitted successfully");
 	}
 
+	/**
+	* Request List 상태에 따른 조회 API ( ROLE 참조 )
+	*/
 	@GetMapping("/{acptSts}/list")
 	public ResponseEntity<List<MultLangListDTO>> getRequests(
 			@PathVariable String acptSts) {
 
-		if ("ALL".equalsIgnoreCase(acptSts)) {
-			return ResponseEntity.ok(requestService.getAllRequestsExceptHOLDING());
-		}
+		// 현재 인증된 사용자 정보 가져오기
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName(); // 현재 사용자 이름
+		boolean isUserRole = authentication.getAuthorities().stream()
+				.anyMatch(authority -> authority.getAuthority().equals("ROLE_USER")); // ROLE USER 인지 확인
 
-		return ResponseEntity.ok(requestService.getRequestsByAcptSts(acptSts));
+		// 요청 상태가 전체 일 경우
+		if ("ALL".equalsIgnoreCase(acptSts)) {
+			if (isUserRole) {
+				// ROLE_USER라면 작성자 본인의 데이터만 반환
+				return ResponseEntity.ok(requestService.getRequestsByRequesterExceptHOLDING(username));
+			} else {
+				// ROLE_USER가 아니라면 전체 데이터 반환
+				return ResponseEntity.ok(requestService.getAllRequestsExceptHOLDING());
+			}
+		} 
+		// 전체가 아닐 경우
+		else {
+			if (isUserRole) {
+				// ROLE_USER라면 작성자 본인의 데이터만 반환
+				return ResponseEntity.ok(requestService.getRequestsByAcptStsAndRequester(acptSts, username));
+			} else {
+				// ROLE_USER가 아니라면 상태에 따른 전체 데이터 반환
+				return ResponseEntity.ok(requestService.getRequestsByAcptSts(acptSts));
+			}
+		}
 	}
 
+	/**
+	 * 상태에 따른 request 요청 갯수 조회 API
+	 */
 	@GetMapping("/count")
 	public ResponseEntity<DashboardCountDTO> findCountAll() {
 		return ResponseEntity.ok(requestService.findByAcptStatusCount());
 	}
 
+	/**
+	 * 상태에 따른 최상단 10개 조회 API
+	 */
 	@GetMapping("/{acptSts}/top10")
 	public ResponseEntity<List<MultLangListDTO>> getTop10RecentRequests(@PathVariable String acptSts) {
 		List<MultLangListDTO> top10Requests = requestService.getTop10RecentRequests(acptSts.toUpperCase());
@@ -78,7 +112,7 @@ public class RequestController {
 	}
 
 	/**
-	 * 선택된 요청들의 상태를 업데이트하는 API
+	 * 선택된 요청들의 상태 업데이트 API
 	 */
 	@PostMapping("/updateStatus")
 	public ResponseEntity<?> updateRequestStatus(@RequestBody List<
