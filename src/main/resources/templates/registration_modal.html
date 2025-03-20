@@ -2,17 +2,35 @@
 <html lang="en">
 <head th:replace="fragments.html :: head">
 	<style>
+		/* 테이블 셀 스타일 */
 		#registrationModal .table td {
-			word-wrap: break-word;
-			overflow-wrap: break-word;
-			white-space: normal;
-			max-width: 150px;
+			overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
+			white-space: normal; /* 텍스트 줄바꿈 허용 */
+			max-width: 150px; /* 최대 너비 설정 */
+			word-break: break-word; /* 단어 단위로 줄바꿈 */
 		}
-		.editor-container {
+		
+		/* 에디터 스타일 */
+		#registrationModal .editor-container {
 			min-height: 200px;
 		}
-		.ql-editor {
+		#registrationModal .ql-editor {
 			min-height: 150px;
+		}
+		
+		/* thead와 tbody 간격 */
+		#requestTables thead {
+			display: table-header-group;
+			margin-bottom: 20px; /* thead와 tbody 사이 간격 */
+		}
+		#requestTables tbody {
+			display: table-row-group;
+		}
+		#requestTables thead tr:last-child th {
+			padding-bottom: 20px; /* 마지막 헤더 행 아래에 추가 패딩 */
+		}
+		#requestTables tbody tr:first-child td {
+			padding-top: 20px; /* 첫 번째 tbody 행 위에 추가 패딩 */
 		}
 	</style>
 </head>
@@ -34,63 +52,67 @@
 					</div>
 					<table id="requestTables" class="table table-bordered">
 						<thead>
-						<tr>
-							<th>As-Is<br/>(Existing Word)</th>
-							<th>Language</th>
-							<th>To-Be<br/>(New Word)</th>
-							<th>New Translation</th>
-							<th>Abbreviation</th>
-						</tr>
-						<tr>
-							<th>Type</th>
-							<th>Screen Path</th>
-							<th>Source Path</th>
-							<th>Comment</th>
-							<th>Del</th>
-						</tr>
-						<tr>
-							<th colspan="5">Editor & File Upload</th>
-						</tr>
+							<tr>
+								<th>As-Is<br/>(Existing Word)</th>
+								<th>Language</th>
+								<th>To-Be<br/>(New Word)</th>
+								<th>New Translation</th>
+								<th>Abbreviation</th>
+							</tr>
+							<tr>
+								<th>Type</th>
+								<th>Screen Path</th>
+								<th>Source Path</th>
+								<th>Comment</th>
+								<th>Del</th>
+							</tr>
 						</thead>
 						<tbody id="requestTable">
-						<tr>
-							<td>
-								<input type="text" class="form-control existingWord" placeholder="Search...">
-								<div class="dropdown-menu existingWordsDropdown" style="top: initial !important; float: none !important; left: initial; height: 300px; overflow: auto;"></div>
-							</td>
-							<td>
-								<select class="form-control langCode">
-									<option value="ko_KR">Korean</option>
-									<option value="en_US">English</option>
-									<option value="ja_JP">Japanese</option>
-									<option value="zh_CN">Chinese</option>
-								</select>
-							</td>
-							<td><input type="text" class="form-control newWord"></td>
-							<td><input type="text" class="form-control newTranslation"></td>
-							<td><input type="text" class="form-control newAbbr"></td>
-						</tr>
-						<tr>
-							<td>
-								<select class="form-control wordType">
-									<option value="Label">Label</option>
-									<option value="Button">Button</option>
-								</select>
-							</td>
-							<td><input type="text" class="form-control screenPath"></td>
-							<td><input type="text" class="form-control sourcePath"></td>
-							<td><input type="text" class="form-control comment"></td>
-							<td style="vertical-align: middle;">
-								<i class="fas fa-trash fa-lg text-black-900 removeRow"></i>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="5">
-								<div class="editor-container" id="editor-0"></div>
-								<input type="file" class="form-control-file fileUpload" name="fileUpload" id="fileUpload-0" multiple>
-								<button type="button" class="btn btn-secondary downloadFileBtn">Download Uploaded File</button>
-							</td>
-						</tr>
+							<tr class="inputRow">
+								<td>
+									<input type="text" class="form-control existingWord" placeholder="Search...">
+									<div class="dropdown-menu existingWordsDropdown" style="top: initial !important; float: none !important; left: initial; height: 300px; overflow: auto;"></div>
+								</td>
+								<td>
+									<select class="form-control langCode">
+										<option value="ko_KR">Korean</option>
+										<option value="en_US">English</option>
+										<option value="ja_JP">Japanese</option>
+										<option value="zh_CN">Chinese</option>
+									</select>
+								</td>
+								<td><input type="text" class="form-control newWord"></td>
+								<td><input type="text" class="form-control newTranslation"></td>
+								<td><input type="text" class="form-control newAbbr"></td>
+							</tr>
+							<tr class="inputRow">
+								<td>
+									<select class="form-control wordType">
+										<option value="Label">Label</option>
+										<option value="Button">Button</option>
+									</select>
+								</td>
+								<td><input type="text" class="form-control screenPath"></td>
+								<td><input type="text" class="form-control sourcePath"></td>
+								<td><input type="text" class="form-control comment"></td>
+								<td style="vertical-align: middle;">
+									<i class="fas fa-trash fa-lg text-black-900 removeRow"></i>
+								</td>
+							</tr>
+						</tbody>
+						<thead>
+							<tr>
+								<th colspan="5">Editor & File Upload</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr id="editorRow">
+								<td colspan="5">
+									<div class="editor-container" id="editor"></div>
+									<input type="file" class="form-control-file fileUpload" name="fileUpload" id="fileUpload" multiple>
+									<button type="button" class="btn btn-secondary downloadFileBtn">Download Uploaded File</button>
+								</td>
+							</tr>
 						</tbody>
 					</table>
 					<button type="button" class="btn btn-secondary" id="addRow">Add More</button>
@@ -105,362 +127,299 @@
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
+	document.addEventListener("DOMContentLoaded", function () {
+		console.log("DOM 로드 완료, 초기화 시작...");
+		initQuillWhenReady();
+		initEventHandlers();
+	});
+	
 	function initQuillWhenReady() {
 		console.log("initQuillWhenReady called");
 		
-		if (typeof Quill === 'undefined') {
+		if (typeof Quill === "undefined") {
 			console.log("Quill이 아직 로드되지 않았습니다. 잠시 후 재시도합니다.");
 			setTimeout(initQuillWhenReady, 100);
 			return;
 		}
 		
 		console.log("Quill 로드 완료, 초기화 시작...");
+		const editors = new Map(); // 에디터 관리를 Map으로 개선
 		
-		let editorCount = 0;
-		const editors = {};
-		
-		// 첫 번째 Quill 에디터 초기화
-		const initialEditor = document.getElementById('editor-0');
+		// 초기 Quill 에디터 설정
+		const initialEditor = document.getElementById('editor');
 		if (initialEditor) {
-			editors[editorCount] = new Quill(initialEditor, {
-				theme: 'snow',
-				modules: {
-					toolbar: [
-						['bold', 'italic', 'underline'],
-						['link', 'image'],
-						[{ 'list': 'ordered' }, { 'list': 'bullet' }]
-					]
-				}
-			});
-			
-			// 이미지 삽입 감지
-			editors[editorCount].on('text-change', function(delta, oldDelta, source) {
-				if (source === 'user') {
-					const contents = editors[editorCount].root.innerHTML;
-					const parser = new DOMParser();
-					const doc = parser.parseFromString(contents, 'text/html');
-					const images = doc.getElementsByTagName('img');
-					if (images.length > 0) {
-						for (let img of images) {
-							const src = img.getAttribute('src');
-							if (src && src.startsWith('data:image/')) {
-								console.log("Image detected, storing in localStorage:", src);
-								localStorage.setItem(`editorImage_${editorCount}`, src);
-							}
-						}
-					}
-				}
-			});
+			editors.set(0, createQuillEditor(initialEditor, 0));
 		} else {
-			console.error("초기 컨테이너 #editor-0을 찾을 수 없습니다.");
+			console.error("초기 컨테이너 #editor을 찾을 수 없습니다.");
 		}
 		
-		// 검색 기능
-		window.searchExistingWord = function(input) {
-			const request = input.value.trim();
-			if (request.length < 2) {
-				closeDropdown(input);
-				return;
+		// 검색 기능 이벤트 위임
+		document.querySelector("#requestTable").addEventListener("keyup", function (e) {
+			if (e.target.classList.contains("existingWord")) {
+				searchExistingWord(e.target);
 			}
-			$.ajax({
-				url: "/api/multlang/search",
-				type: "GET",
-				data: { request: request },
-				dataType: "json",
-				success: function(data) {
-					showDropdown(input, data);
-				},
-				error: function(xhr, status, error) {
-					console.error("Error:", xhr.responseText);
-				}
-			});
-		};
-		
-		function showDropdown(input, words) {
-			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
-			if (!dropdown) {
-				dropdown = document.createElement("div");
-				dropdown.classList.add("dropdown-menu", "show", "existingWordsDropdown");
-				input.parentElement.appendChild(dropdown);
-			}
-			dropdown.innerHTML = "";
-			if (words.length === 0) {
-				dropdown.style.display = "none";
-				return;
-			}
-			words.forEach(word => {
-				let option = document.createElement("a");
-				option.classList.add("dropdown-item");
-				option.textContent = word;
-				option.onclick = function() {
-					input.value = word;
-					dropdown.style.display = "none";
-				};
-				dropdown.appendChild(option);
-			});
-			dropdown.style.position = "fixed";
-			dropdown.style.width = input.offsetWidth + "px";
-			dropdown.style.zIndex = "1000";
-			dropdown.style.display = "block";
-		}
-		
-		function closeDropdown(input) {
-			let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
-			if (dropdown) {
-				dropdown.style.display = "none";
-			}
-		}
-		
-		// 검색 이벤트 바인딩
-		document.querySelectorAll(".existingWord").forEach(input => {
-			input.addEventListener("keyup", function() {
-				searchExistingWord(this);
-			});
 		});
 		
-		// "Add More" 기능
-		document.getElementById("addRow").addEventListener("click", function() {
-			console.log("Add Row button clicked");
-			const tbodyTemplate = document.querySelector("#requestTable");
-			const tbody = tbodyTemplate.cloneNode(false);
-			
-			const rows = Array.from(tbodyTemplate.children).map(row => {
-				const newRow = row.cloneNode(false);
-				Array.from(row.children).forEach(cell => {
-					const newCell = cell.cloneNode(false);
-					newCell.innerHTML = cell.innerHTML;
-					newRow.appendChild(newCell);
-				});
-				return newRow;
-			});
-			rows.forEach(row => tbody.appendChild(row));
-			
-			tbody.querySelectorAll("input").forEach(input => input.value = "");
+		// 동적 에디터 관리용 클로저
+		let editorCount = 0;
+		window.getEditorCount = () => editorCount;
+		window.addEditor = (containerId) => {
 			editorCount++;
-			const editorId = `editor-${editorCount}`;
-			const editorContainer = tbody.querySelector(".editor-container");
-			
-			editorContainer.innerHTML = "";
-			editorContainer.id = editorId;
-			
-			const fileInput = tbody.querySelector(".fileUpload");
-			fileInput.id = `fileUpload-${editorCount}`;
-			
-			const downloadBtn = tbody.querySelector(".downloadFileBtn");
-			if (downloadBtn) {
-				downloadBtn.id = `downloadBtn-${editorCount}`;
-				downloadBtn.addEventListener("click", function() {
-					console.log("Download button clicked");
-					const fileInput = tbody.querySelector(`#fileUpload-${editorCount}`);
-					if (fileInput.files.length > 0) {
-						const file = fileInput.files[0];
-						const reader = new FileReader();
-						reader.onload = function(e) {
-							base64ToFile(e.target.result, file.name, file.type);
-						};
-						reader.readAsDataURL(file);
-					}
-					
-					const editorInstance = editors[editorCount];
-					if (editorInstance) {
-						const contents = editorInstance.root.innerHTML;
-						const parser = new DOMParser();
-						const doc = parser.parseFromString(contents, 'text/html');
-						const images = doc.getElementsByTagName('img');
-						if (images.length > 0) {
-							for (let img of images) {
-								const src = img.getAttribute('src');
-								if (src && src.startsWith('data:image/')) {
-									const contentType = src.match(/data:(image\/[^;]+);/)[1];
-									base64ToFile(src, `editor_image_${editorCount}.${contentType.split('/')[1]}`, contentType);
-								}
-							}
-						}
+			const container = document.getElementById(containerId);
+			if (container) {
+				editors.set(editorCount, createQuillEditor(container, editorCount));
+			}
+			return editorCount;
+		};
+		window.getEditors = () => editors;
+	}
+	
+	// Quill 에디터 생성 공통 함수
+	function createQuillEditor(container, index) {
+		const editor = new Quill(container, {
+			theme: 'snow',
+			modules: {
+				toolbar: [
+					['bold', 'italic', 'underline'],
+					['link', 'image'],
+					[{ 'list': 'ordered' }, { 'list': 'bullet' }]
+				]
+			}
+		});
+		editor.on('text-change', function (delta, oldDelta, source) {
+			if (source === 'user') {
+				const images = editor.getContents().ops.filter(op => op.insert && op.insert.image);
+				images.forEach((img, i) => {
+					if (img.insert.image.startsWith('data:image/')) {
+						console.log(`Image detected in editor ${index}:`, img.insert.image);
+						localStorage.setItem(`editorImage_${index}`, img.insert.image);
 					}
 				});
 			}
+		});
+		return editor;
+	}
+	
+	function initEventHandlers() {
+		document.getElementById("addRow").addEventListener("click", function () {
+			console.log("Add Row button clicked");
 			
-			const table = document.getElementById("requestTables");
-			table.appendChild(tbody);
+			const tbody = document.querySelector("#requestTable");
+			const lastRows = tbody.querySelectorAll(".inputRow");
 			
-			setTimeout(() => {
-				const newEditorContainer = document.getElementById(editorId);
-				if (newEditorContainer) {
-					console.log(`Initializing new editor #${editorId}`);
-					if (editors[editorCount]) { editors[editorCount] = null; }
-					editors[editorCount] = new Quill(newEditorContainer, {
-						theme: 'snow',
-						modules: {
-							toolbar: [
-								['bold', 'italic', 'underline'],
-								['link', 'image'],
-								[{ 'list': 'ordered' }, { 'list': 'bullet' }]
-							]
-						}
-					});
-					editors[editorCount].on('text-change', function(delta, oldDelta, source) {
-						if (source === 'user') {
-							const contents = editors[editorCount].root.innerHTML;
-							const parser = new DOMParser();
-							const doc = parser.parseFromString(contents, 'text/html');
-							const images = doc.getElementsByTagName('img');
-							if (images.length > 0) {
-								for (let img of images) {
-									const src = img.getAttribute('src');
-									if (src && src.startsWith('data:image/')) {
-										console.log("Image detected in new editor:", src);
-										localStorage.setItem(`editorImage_${editorCount}`, src);
-									}
-								}
-							}
-						}
-					});
-				} else {
-					console.error(`새 컨테이너 #${editorId}를 찾을 수 없습니다.`);
-				}
-			}, 10);
+			if (lastRows.length === 0) {
+				alert("⚠️ 추가할 수 있는 기본 행이 없습니다. 초기 행을 확인해주세요.");
+				return;
+			}
 			
-			tbody.querySelector(".existingWord")?.addEventListener("keyup", function() {
-				searchExistingWord(this);
+			const lastRow1 = lastRows[lastRows.length - 2].cloneNode(true);
+			const lastRow2 = lastRows[lastRows.length - 1].cloneNode(true);
+
+			// 입력값 초기화 및 기본값 설정
+			lastRow1.querySelectorAll("input, select").forEach(input => {
+				if (input.tagName === "INPUT") input.value = "";
+				if (input.classList.contains("langCode")) input.value = "ko_KR";
 			});
-			tbody.querySelector(".removeRow")?.addEventListener("click", function(e) {
-				if (document.querySelectorAll("#requestTables tbody").length === 1) return;
-				if (e.target.classList.contains("removeRow")) {
-					const editorIdNum = tbody.querySelector(".editor-container").id.split('-')[1];
-					delete editors[editorIdNum];
-					e.target.closest("tbody").remove();
-				}
+			lastRow2.querySelectorAll("input, select").forEach(input => {
+				if (input.tagName === "INPUT") input.value = "";
+				if (input.classList.contains("wordType")) input.value = "Label";
+			});
+			
+			lastRow2.querySelector(".removeRow").addEventListener("click", function () {
+				removeRow(this);
+			});
+			
+			// 동적 에디터 추가
+			const editorContainer = lastRow2.querySelector(".editor-container");
+			if (editorContainer) {
+				const newEditorId = `editor-${window.getEditorCount() + 1}`;
+				editorContainer.id = newEditorId;
+				tbody.appendChild(lastRow1);
+				tbody.appendChild(lastRow2);
+				window.addEditor(newEditorId);
+			} else {
+				tbody.appendChild(lastRow1);
+				tbody.appendChild(lastRow2);
+			}
+		});
+		
+		document.querySelectorAll(".removeRow").forEach(btn => {
+			btn.addEventListener("click", function () {
+				removeRow(this);
 			});
 		});
 		
-		// "Submit Request" 기능
-		document.getElementById("submitRequest").addEventListener("click", function() {
-			console.log("Submit button clicked");
-			const formData = new FormData();
-			formData.append("reqUsrNm", document.getElementById("reqUsrNm").value);
-			let isValid = true;
-			const details = [];
+		document.getElementById("submitRequest").addEventListener("click", function () {
+			submitForm();
+		});
+	}
+	
+	function removeRow(button) {
+		const tbody = document.querySelector("#requestTable");
+		const rows = tbody.querySelectorAll(".inputRow");
+		
+		if (rows.length <= 2) {
+			alert("⚠️ 최소 1개의 입력 필드는 유지해야 합니다.");
+			return;
+		}
+		
+		const row1 = button.closest("tr");
+		const row2 = row1.previousElementSibling;
+		row1.remove();
+		row2.remove();
+	}
+	
+	function submitForm() {
+		console.log("Submit button clicked");
+		const formData = new FormData();
+		const reqUsrNm = document.getElementById("reqUsrNm").value; // 작성자 가져오기
+		formData.append("reqUsrNm", reqUsrNm);
+		let isValid = true;
+		const details = [];
+		const editors = window.getEditors();
+		let editorContentCombined = ''; // 모든 에디터의 텍스트를 누적
+		
+		document.querySelectorAll("#requestTable .inputRow").forEach((row, index) => {
+			if (index % 2 !== 0) return;
 			
-			document.querySelectorAll("#requestTables tbody").forEach((row, index) => {
-				const newWord = row.querySelector(".newWord").value.trim();
-				const newTranslation = row.querySelector(".newTranslation").value.trim();
-				const wordField = row.querySelector(".newWord");
-				const translationField = row.querySelector(".newTranslation");
-				
-				if (newWord === "") { isValid = false; wordField.classList.add("is-invalid"); } else { wordField.classList.remove("is-invalid"); }
-				if (newTranslation === "") { isValid = false; translationField.classList.add("is-invalid"); } else { translationField.classList.remove("is-invalid"); }
-				
-				const editorContent = editors[index].root.innerHTML;
-				const fileInput = row.querySelector(`.fileUpload`);
-				
-				const detail = {
-					existingWord: row.querySelector(".existingWord").value,
-					multlangCcd: row.querySelector(".langCode").value,
-					multlangKey: newWord,
-					multlangTranslCont: newTranslation,
-					multlangTranslContAbbr: row.querySelector(".newAbbr").value,
-					multlangTyp: row.querySelector(".wordType").value,
-					screenPath: row.querySelector(".screenPath").value,
-					sourcePath: row.querySelector(".sourcePath").value,
-					comment: row.querySelector(".comment").value,
-					editorContent: editorContent
-				};
-				details.push(detail);
-				
-				// 1. 파일 업로드 처리
-				if (fileInput && fileInput.files.length > 0) {
-					for (let i = 0; i < fileInput.files.length; i++) {
-						console.log(`Adding file ${i} for index ${index}:`, fileInput.files[i]);
-						formData.append("files", fileInput.files[i]); // "details[].files" → "files"
-					}
-				} else {
-					console.log(`No files found for index ${index}`);
-				}
-				
-				// 2. Quill 에디터의 Base64 이미지 처리
+			const nextRow = row.nextElementSibling;
+			const newWord = row.querySelector(".newWord").value.trim();
+			const newTranslation = row.querySelector(".newTranslation").value.trim();
+			
+			if (!newWord || !newTranslation) {
+				isValid = false;
+				row.querySelector(".newWord").classList.add("is-invalid");
+				row.querySelector(".newTranslation").classList.add("is-invalid");
+			} else {
+				row.querySelector(".newWord").classList.remove("is-invalid");
+				row.querySelector(".newTranslation").classList.remove("is-invalid");
+			}
+			
+			const editorIndex = Math.floor(index / 2);
+			const editor = editors.get(editorIndex);
+			let editorContent = editor ? editor.root.innerHTML : '';
+			
+			// 1. 에디터에서 이미지와 텍스트 분리
+			let textContent = '';
+			if (editor) {
+				const contents = editor.getContents();
 				const parser = new DOMParser();
-				const doc = parser.parseFromString(editorContent, 'text/html');
+				const doc = parser.parseFromString(editor.root.innerHTML, 'text/html'); // editorContent 대신 editor.root.innerHTML
 				const images = doc.getElementsByTagName('img');
+				
 				if (images.length > 0) {
-					for (let img of images) {
+					Array.from(images).forEach((img, imgIndex) => {
 						const src = img.getAttribute('src');
 						if (src && src.startsWith('data:image/')) {
+							const blob = base64ToBlob(src);
 							const contentType = src.match(/data:(image\/[^;]+);/)[1];
-							const base64Data = src.split(',')[1];
-							const byteCharacters = atob(base64Data);
-							const byteNumbers = new Array(byteCharacters.length);
-							for (let i = 0; i < byteCharacters.length; i++) {
-								byteNumbers[i] = byteCharacters.charCodeAt(i);
-							}
-							const byteArray = new Uint8Array(byteNumbers);
-							const blob = new Blob([byteArray], { type: contentType });
-							console.log(`Adding editor image for index ${index}:`, `editor_image_${index}.${contentType.split('/')[1]}`);
-							formData.append("files", blob, `editor_image_${index}.${contentType.split('/')[1]}`); // "details[].files" → "files"
+							// 날짜 포맷팅 (YYYYMMDD_HHMM)
+							const now = new Date();
+							const year = now.getFullYear();
+							const month = String(now.getMonth() + 1).padStart(2, '0');
+							const day = String(now.getDate()).padStart(2, '0');
+							const hours = String(now.getHours()).padStart(2, '0');
+							const minutes = String(now.getMinutes()).padStart(2, '0');
+							const dateStr = `${year}${month}${day}_${hours}${minutes}`;
+							const sanitizedReqUsrNm = reqUsrNm.replace(/[^a-zA-Z0-9]/g, '_');
+							const fileName = `첨부이미지_${imgIndex}_${sanitizedReqUsrNm}_${dateStr}.${contentType.split('/')[1]}`;
+							console.log(`Adding editor image for index ${editorIndex}:`, fileName);
+							formData.append("files", blob, fileName);
+							img.remove();
 						}
-					}
+					});
+					textContent = doc.body.textContent.trim();
 				} else {
-					console.log(`No images found in editor for index ${index}`);
+					textContent = editor.getText().trim();
 				}
-			});
-			
-			if (!isValid) {
-				alert("🚨 'To-Be (New Word)'와 'New Translation' 필드는 필수 입력 항목입니다.");
-				return;
+				editorContentCombined += (textContent ? textContent + '\n' : '');
 			}
 			
-			formData.append("details", JSON.stringify(details));
+			// 2. details 객체 구성 (editorContent 제외)
+			const detail = {
+				existingWord: row.querySelector(".existingWord").value,
+				multlangCcd: row.querySelector(".langCode").value,
+				multlangKey: newWord,
+				multlangTranslCont: newTranslation,
+				multlangTranslContAbbr: row.querySelector(".newAbbr").value,
+				multlangTyp: nextRow.querySelector(".wordType").value,
+				screenPath: nextRow.querySelector(".screenPath").value,
+				sourcePath: nextRow.querySelector(".sourcePath").value,
+				comment: nextRow.querySelector(".comment").value
+			};
+			details.push(detail);
+			
+			// 3. 업로드된 파일 처리
+			document.querySelectorAll("#requestTables .fileUpload").forEach((fileInput, index) => {
+				if (fileInput && fileInput.files.length > 0) {
+					Array.from(fileInput.files).forEach((file, i) => {
+						console.log(`Adding uploaded file ${i} for editor ${index}:`, file.name);
+						formData.append("files", file);
+					});
+				}
+			});
+		});
+		
+		if (!isValid) {
+			alert("🚨 'To-Be (New Word)'와 'New Translation' 필드는 필수 입력 항목입니다.");
+			return;
+		}
+		
+		// FormData에 details와 editorContent 추가
+		formData.append("details", JSON.stringify(details));
+		if (editorContentCombined) {
+			formData.append("editorContent", editorContentCombined.trim()); // 이미지 제외한 텍스트만 전송
+		}
+		
+		if (console.debug) {
 			console.log("FormData contents before sending:");
 			for (let [key, value] of formData.entries()) {
 				console.log(key, value);
 			}
-			
-			$.ajax({
-				type: "POST",
-				url: "/api/request/multlang",
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function(response) {
-					alert("✅ Request submitted successfully!");
-					location.href = "/req/ALL/lists";
-				},
-				error: function(xhr, status, error) {
-					console.error("AJAX Error:", xhr.responseText);
-					if (typeof UT !== 'undefined' && UT.handleAjaxError) {
-						UT.handleAjaxError(xhr, status, error);
-					}
-				}
-			});
-		});
+		}
 		
-		// 초기 파일 다운로드 버튼 이벤트 추가
-		document.querySelectorAll(".downloadFileBtn").forEach(btn => {
-			btn.addEventListener("click", function() {
-				console.log("Download button clicked");
-				const fileInput = btn.closest("tr").querySelector(".fileUpload");
-				if (fileInput && fileInput.files.length === 0) {
-					alert("먼저 파일을 업로드해주세요!");
-					return;
-				}
-				const file = fileInput.files[0];
-				const reader = new FileReader();
-				reader.onload = function(e) {
-					base64ToFile(e.target.result, file.name, file.type);
-				};
-				reader.readAsDataURL(file);
-			});
+		$.ajax({
+			type: "POST",
+			url: "/api/request/multlang",
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function () {
+				alert("✅ Request submitted successfully!");
+				location.href = "/req/ALL/lists";
+			},
+			error: function (xhr) {
+				console.error("AJAX Error:", xhr.responseText);
+			}
 		});
 	}
 	
-	function base64ToFile(base64, fileName, contentType) {
+	// Base64를 Blob으로 변환하는 유틸리티 함수 (기존 코드에서 재사용)
+	function base64ToBlob(base64) {
 		const base64Data = base64.split(',')[1];
 		const byteCharacters = atob(base64Data);
-		const byteNumbers = new Array(byteCharacters.length);
+		const byteNumbers = new Uint8Array(byteCharacters.length);
 		for (let i = 0; i < byteCharacters.length; i++) {
 			byteNumbers[i] = byteCharacters.charCodeAt(i);
 		}
-		const byteArray = new Uint8Array(byteNumbers);
-		const blob = new Blob([byteArray], { type: contentType });
+		const contentType = base64.match(/data:([^;]+);/)[1];
+		return new Blob([byteNumbers], { type: contentType });
+	}
+	
+	// Base64를 Blob으로 변환하는 유틸리티 함수
+	function base64ToBlob(base64) {
+		const base64Data = base64.split(',')[1];
+		const byteCharacters = atob(base64Data);
+		const byteNumbers = new Uint8Array(byteCharacters.length);
+		for (let i = 0; i < byteCharacters.length; i++) {
+			byteNumbers[i] = byteCharacters.charCodeAt(i);
+		}
+		const contentType = base64.match(/data:([^;]+);/)[1];
+		return new Blob([byteNumbers], { type: contentType });
+	}
+	
+	function base64ToFile(base64, fileName, contentType) {
+		const blob = base64ToBlob(base64);
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement("a");
 		link.href = url;
@@ -471,11 +430,78 @@
 		URL.revokeObjectURL(url);
 	}
 	
-	// DOM 로드 후 초기화
-	document.addEventListener("DOMContentLoaded", function() {
-		console.log("DOM 로드 완료, 초기화 시작...");
-		initQuillWhenReady();
+	// 검색 기능
+	window.searchExistingWord = function (input) {
+		const request = input.value.trim();
+		if (request.length < 2) {
+			closeDropdown(input);
+			return;
+		}
+		$.ajax({
+			url: "/api/multlang/search",
+			type: "GET",
+			data: { request: request },
+			dataType: "json",
+			success: function (data) {
+				showDropdown(input, data);
+			},
+			error: function (xhr) {
+				console.error("Error:", xhr.responseText);
+			}
+		});
+	};
+	
+	function showDropdown(input, words) {
+		let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
+		if (!dropdown) {
+			dropdown = document.createElement("div");
+			dropdown.classList.add("dropdown-menu", "show", "existingWordsDropdown");
+			input.parentElement.appendChild(dropdown);
+		}
+		dropdown.innerHTML = "";
+		if (words.length === 0) {
+			dropdown.style.display = "none";
+			return;
+		}
+		words.forEach(word => {
+			const option = document.createElement("a");
+			option.classList.add("dropdown-item");
+			option.textContent = word;
+			option.onclick = () => {
+				input.value = word;
+				dropdown.style.display = "none";
+			};
+			dropdown.appendChild(option);
+		});
+		Object.assign(dropdown.style, {
+			position: "fixed",
+			width: `${input.offsetWidth}px`,
+			zIndex: "1000",
+			display: "block"
+		});
+	}
+	
+	function closeDropdown(input) {
+		const dropdown = input.parentElement.querySelector(".existingWordsDropdown");
+		if (dropdown) dropdown.style.display = "none";
+	}
+	
+	// 초기 다운로드 버튼 이벤트
+	document.querySelectorAll(".downloadFileBtn").forEach(btn => {
+		btn.addEventListener("click", function () {
+			console.log("Download button clicked");
+			const fileInput = btn.closest("tr").querySelector(".fileUpload");
+			if (!fileInput || fileInput.files.length === 0) {
+				alert("먼저 파일을 업로드해주세요!");
+				return;
+			}
+			const file = fileInput.files[0];
+			const reader = new FileReader();
+			reader.onload = (e) => base64ToFile(e.target.result, file.name, file.type);
+			reader.readAsDataURL(file);
+		});
 	});
 </script>
+
 </body>
 </html>

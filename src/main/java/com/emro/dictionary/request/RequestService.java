@@ -17,26 +17,13 @@ public class RequestService {
 
 	private final RequestMapper requestMapper;
 
-	private final FileStorageService fileStorageService;
 
 	public void saveRequest(MultLangRequestDTO request) throws IOException {
+		// DIC_REQ에 저장 (editorContent와 imagePath 포함)
 		requestMapper.insertRequest(request);
 
+		// DIC_REQ_DTL에 상세 정보 저장
 		for (MultLangRequestDetailDTO detail : request.getDetails()) {
-			String imagePath = null;
-			String editorContent = detail.getEditorContent();
-			String textContent = null;
-
-			if (editorContent != null) {
-				textContent = Jsoup.parse(editorContent).text();
-			}
-
-			if (detail.getFiles() != null && !detail.getFiles().isEmpty()) {
-				imagePath = fileStorageService.storeFiles(detail.getFiles());
-			}
-
-			detail.setEditorContent(textContent);
-			detail.setImagePath(imagePath);
 			requestMapper.insertRequestDetail(request.getDicReqId(), detail);
 		}
 	}

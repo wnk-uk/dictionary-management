@@ -14,12 +14,11 @@ CREATE TABLE IF NOT EXISTS SHEET_DATA (
 
 CREATE TABLE IF NOT EXISTS DIC_REQ (
                                     dic_req_id BIGINT AUTO_INCREMENT PRIMARY KEY,
---                                     multlang_ccd VARCHAR2(50) NOT NULL,
---                                     multlang_key VARCHAR2(500) NOT NULL,
---                                     reg_sts VARCHAR(50),	/* APPROVAL, REJECT */
                                     REQ_USR_NM VARCHAR(50),
                                     REQ_DTTM TIMESTAMP,
                                     STS CHAR(1) DEFAULT 'C',
+									image_path VARCHAR(MAX),
+									editor_content VARCHAR(1000),
                                     ACPT_STS VARCHAR(50) -- REQUEST, PROGRESS, HOLDING, ACCEPTANCE
 );
 
@@ -36,8 +35,6 @@ CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
                                     source_path VARCHAR(255), -- 소스 코드 경로
                                     comment VARCHAR(1000), -- 요청자의 코멘트
                                     reg_sts VARCHAR(50) DEFAULT 'PENDING', -- 등록 상태 (PENDING, PROGRESS, COMPLETE, HOLDING)
-									image_path VARCHAR(MAX),
-									editor_content VARCHAR(1000),
                                     FOREIGN KEY (dic_req_id) REFERENCES DIC_REQ(dic_req_id) ON DELETE CASCADE
 );
 

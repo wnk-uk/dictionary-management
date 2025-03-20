@@ -3,6 +3,7 @@ package com.emro.dictionary.request;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,13 @@ import java.util.List;
 public class RequestController {
 
 	private final RequestService requestService;
+	private final FileStorageService fileStorageService;
 
 	@PostMapping(value = "/multlang", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> submitRequest(
 			@RequestParam("reqUsrNm") String reqUsrNm,
 			@RequestParam("details") String detailsJson,
+			@RequestParam(value = "editorContent", required = false) String editorContent,
 			@RequestParam(value = "files", required = false) List<MultipartFile> files) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		List<MultLangRequestDetailDTO> details = objectMapper.readValue(detailsJson, new TypeReference<List<MultLangRequestDetailDTO>>() {});
@@ -31,19 +34,22 @@ public class RequestController {
 		request.setReqUsrNm(reqUsrNm);
 		request.setDetails(details);
 
-		// Distribute files to their respective details
-		if (files != null && !files.isEmpty()) {
-			int fileIndex = 0;
-			for (MultLangRequestDetailDTO detail : details) {
-				List<MultipartFile> detailFiles = new ArrayList<>();
-				while (fileIndex < files.size() && files.get(fileIndex) != null) {
-					detailFiles.add(files.get(fileIndex));
-					fileIndex++;
-				}
-				detail.setFiles(detailFiles);
-				System.out.println("Set files for detail: " + detailFiles.size()); // todo : 디버깅
-			}
+		// editorContent 처리
+		String textContent = null;
+		if (editorContent != null && !editorContent.trim().isEmpty()) {
+			textContent = Jsoup.parse(editorContent).text();
 		}
+
+		// 모든 파일을 한 번에 저장 (DIC_REQ의 image_path에 저장)
+		String imagePath = null;
+		if (files != null && !files.isEmpty()) {
+			imagePath = fileStorageService.storeFiles(files);
+		}
+
+		// MultLangRequestDTO에 editorContent와 imagePath 설정
+		request.setEditorContent(textContent);
+		request.setFiles(files);
+		request.setImagePath(imagePath);
 
 		requestService.saveRequest(request);
 		return ResponseEntity.ok("Request submitted successfully");
