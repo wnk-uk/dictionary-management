@@ -1,16 +1,11 @@
-package com.emro.dictionary.request;
+package com.emro.dictionary.request.dto;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Data
-@Getter
-@Setter
-public class MultLangRequestDetailDTO {
+public class MultLangDetailListDTO {
+	private Long id;
+	private Long dicReqId;
 	private String existingWord;
 	private String multlangCcd;
 	private String multlangKey;
@@ -20,5 +15,5 @@ public class MultLangRequestDetailDTO {
 	private String screenPath;
 	private String sourcePath;
 	private String comment;
-
+	private String regSts;
 }

@@ -1,4 +1,4 @@
-package com.emro.dictionary.request;
+package com.emro.dictionary.request.storage;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;

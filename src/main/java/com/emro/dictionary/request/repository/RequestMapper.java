@@ -1,9 +1,16 @@
-package com.emro.dictionary.request;
+package com.emro.dictionary.request.repository;
 
+import com.emro.dictionary.request.dto.MultLangDetailListDTO;
+import com.emro.dictionary.request.dto.MultLangListDTO;
+import com.emro.dictionary.request.dto.MultLangRequestDTO;
+import com.emro.dictionary.request.dto.MultLangRequestDetailDTO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
+/**
+ * DIC_REQ 및 DIC_REQ_DTL 테이블과의 데이터 액세스를 담당하는 MyBatis Mapper
+ */
 @Mapper
 public interface RequestMapper {
 
@@ -30,13 +37,13 @@ public interface RequestMapper {
     """)
 	void insertRequestDetail(@Param("dicReqId") Long dicReqId, @Param("detail") MultLangRequestDetailDTO detail);
 
-
 	/**
-	 *  STS가 HOLDING이 아닌 데이터 조회 (ROLE X)
+	 * STS가 HOLDING이 아닌 데이터 조회 (requester 선택적)
 	 */
 	@Select("""
         SELECT * FROM DIC_REQ 
         WHERE acpt_sts <> 'HOLDING'
+    	AND (#{requester} IS NULL OR req_usr_nm = #{requester}) 
         ORDER BY req_dttm DESC
     """)
 	@Results({
@@ -44,20 +51,20 @@ public interface RequestMapper {
 			@Result(property = "reqUsrNm", column = "req_usr_nm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
 			@Result(property = "reqDttm", column = "req_dttm"),
-			@Result(property = "imagePath" , column = "image_path"),
-			@Result(property = "editorContent" , column = "editor_content"),
+			@Result(property = "imagePath", column = "image_path"),
+			@Result(property = "editorContent", column = "editor_content"),
 			@Result(property = "details", column = "dic_req_id",
-					many = @Many(select = "com.emro.dictionary.request.RequestMapper.findRequestDetails"))
+					many = @Many(select = "com.emro.dictionary.request.repository.RequestMapper.findRequestDetails"))
 	})
-	List<MultLangListDTO> findAllRequestsExceptHOLDING();
-
+	List<MultLangListDTO> findAllRequestsExceptHOLDING(@Param("requester") String requester);
 
 	/**
-	 * 특정 ACPT_STS 값으로 조회 (ROLE X)
+	 * 특정 ACPT_STS 값으로 데이터 조회 (requester 선택적)
 	 */
 	@Select("""
         SELECT * FROM DIC_REQ 
         WHERE acpt_sts = #{acptSts}
+        AND (#{requester} IS NULL OR req_usr_nm = #{requester}) 
         ORDER BY req_dttm DESC
     """)
 	@Results({
@@ -65,74 +72,33 @@ public interface RequestMapper {
 			@Result(property = "reqUsrNm", column = "req_usr_nm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
 			@Result(property = "reqDttm", column = "req_dttm"),
-			@Result(property = "imagePath" , column = "image_path"),
-			@Result(property = "editorContent" , column = "editor_content"),
+			@Result(property = "imagePath", column = "image_path"),
+			@Result(property = "editorContent", column = "editor_content"),
 			@Result(property = "details", column = "dic_req_id",
-					many = @Many(select = "com.emro.dictionary.request.RequestMapper.findRequestDetails"))
+					many = @Many(select = "com.emro.dictionary.request.repository.RequestMapper.findRequestDetails"))
 	})
-	List<MultLangListDTO> findRequestsByAcptSts(@Param("acptSts") String acptSts);
-
-	/**
-	 * HOLDING이 아닌, 특정 requester의 데이터 조회
-	 */
-	@Select("""
-        SELECT * FROM DIC_REQ 
-        WHERE acpt_sts <> 'HOLDING'
-        AND req_usr_nm = #{requester}
-        ORDER BY req_dttm DESC
-    """)
-	@Results({
-			@Result(property = "dicReqId", column = "dic_req_id", id = true),
-			@Result(property = "reqUsrNm", column = "req_usr_nm"),
-			@Result(property = "acptSts", column = "acpt_sts"),
-			@Result(property = "reqDttm", column = "req_dttm"),
-			@Result(property = "imagePath" , column = "image_path"),
-			@Result(property = "editorContent" , column = "editor_content"),
-			@Result(property = "details", column = "dic_req_id",
-					many = @Many(select = "com.emro.dictionary.request.RequestMapper.findRequestDetails"))
-	})
-	List<MultLangListDTO> findRequestsByRequesterExceptHOLDING(String requester);
-
-	/**
-	 * 특정 acpt_sts와 requester로 데이터 조회
-	 */
-	@Select("""
-        SELECT * FROM DIC_REQ 
-        WHERE acpt_sts = #{acptSts}
-        AND req_usr_nm = #{requester}
-        ORDER BY req_dttm DESC
-    """)
-	@Results({
-			@Result(property = "dicReqId", column = "dic_req_id", id = true),
-			@Result(property = "reqUsrNm", column = "req_usr_nm"),
-			@Result(property = "acptSts", column = "acpt_sts"),
-			@Result(property = "reqDttm", column = "req_dttm"),
-			@Result(property = "imagePath" , column = "image_path"),
-			@Result(property = "editorContent" , column = "editor_content"),
-			@Result(property = "details", column = "dic_req_id",
-					many = @Many(select = "com.emro.dictionary.request.RequestMapper.findRequestDetails"))
-	})
-	List<MultLangListDTO> findRequestsByAcptStsAndRequester(String acptSts, String requester);
+	List<MultLangListDTO> findRequestsByAcptSts(@Param("acptSts") String acptSts, @Param("requester") String requester);
 
 	/**
 	 * 요청 상태에 따른 갯수 세기
 	 */
 	@Select("""
-		SELECT COALESCE(COUNT(*), 0) FROM DIC_REQ
-		WHERE acpt_sts = #{acptSts}
-	""")
+        SELECT COALESCE(COUNT(*), 0) FROM DIC_REQ
+        WHERE acpt_sts = #{acptSts}
+    """)
 	Integer findByAcptStatusCount(String acptSts);
 
 	/**
-	 * 요청시간 상위 Top10 특정 요청 가져오기 (특정 regSts)
+	 * 요청시간 상위 Top10 특정 요청 가져오기 (특정 acptSts)
 	 */
 	@Select("""
-    SELECT req.dic_req_id, req.req_usr_nm, req.req_dttm, req.acpt_sts
-    FROM dic_req req
-    WHERE req.acpt_sts = #{acptSts}
-    ORDER BY req.req_dttm DESC
-    LIMIT 10
-	""")
+        SELECT req.dic_req_id, req.req_usr_nm, req.req_dttm, req.acpt_sts
+        FROM dic_req req
+        WHERE req.acpt_sts = #{acptSts}
+        AND (#{requester} IS NULL OR req_usr_nm = #{requester}) 
+        ORDER BY req.req_dttm DESC
+        LIMIT 10
+    """)
 	@Results({
 			@Result(property = "dicReqId", column = "dic_req_id", id = true),
 			@Result(property = "reqUsrNm", column = "req_usr_nm"),
@@ -141,7 +107,7 @@ public interface RequestMapper {
 			@Result(property = "details", column = "dic_req_id",
 					many = @Many(select = "findRequestDetailsByDicReqId"))
 	})
-	List<MultLangListDTO> findTop10RecentHOLDINGingRequests(@Param("acptSts") String acptSts);
+	List<MultLangListDTO> findTop10RecentHOLDINGingRequests(@Param("acptSts") String acptSts,  @Param("requester") String requester);
 
 	/**
 	 * 선택된 요청(DIC_REQ)의 상태를 업데이트
@@ -163,9 +129,8 @@ public interface RequestMapper {
     """)
 	void updateRequestDetailRegSts(@Param("id") Long id, @Param("regSts") String regSts);
 
-
 	/**
-	 * RequestDetail 조회 (DIC_REQ_DTL 테이블) - 사용X
+	 * RequestDetail 조회 (DIC_REQ_DTL 테이블)
 	 */
 	@Select("""
         SELECT * FROM DIC_REQ_DTL 
@@ -174,12 +139,11 @@ public interface RequestMapper {
 	List<MultLangDetailListDTO> findRequestDetails(@Param("dicReqId") Long dicReqId);
 
 	/**
-	 * 특정 dicReqId에 대한 요청 상세 정보 가져오기 - 사용X
+	 * 특정 dicReqId에 대한 요청 상세 정보 가져오기
 	 */
 	@Select("""
-    SELECT * FROM DIC_REQ_DTL
-    WHERE dic_req_id = #{dicReqId}
-	""")
+        SELECT * FROM DIC_REQ_DTL
+        WHERE dic_req_id = #{dicReqId}
+    """)
 	List<MultLangDetailListDTO> findRequestDetailsByDicReqId(@Param("dicReqId") Long dicReqId);
-
 }

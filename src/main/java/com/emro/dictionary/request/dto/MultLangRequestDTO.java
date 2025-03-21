@@ -1,4 +1,4 @@
-package com.emro.dictionary.request;
+package com.emro.dictionary.request.dto;
 
 import java.util.List;
 import lombok.Data;

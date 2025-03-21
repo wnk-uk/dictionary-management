@@ -1,5 +1,8 @@
-package com.emro.dictionary.request;
+package com.emro.dictionary.request.api;
 
+import com.emro.dictionary.request.storage.FileStorageService;
+import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
+import com.emro.dictionary.request.dto.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +17,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * request 관련 REST API 제공
+ */
 @RestController
 @RequestMapping("/api/request")
 @RequiredArgsConstructor
 public class RequestController {
 
-	private final RequestService requestService;
+	private final RequestServiceResolver serviceResolver;
 	private final FileStorageService fileStorageService;
+
 
 	/**
 	 * 유저의 등록 요청 API
@@ -55,43 +62,22 @@ public class RequestController {
 		request.setFiles(files);
 		request.setImagePath(imagePath);
 
-		requestService.saveRequest(request);
+		serviceResolver.getService().saveRequest(request);
 		return ResponseEntity.ok("Request submitted successfully");
 	}
 
 	/**
-	* Request List 상태에 따른 조회 API ( ROLE 참조 )
-	*/
+	 * Request List 상태에 따른 조회 API (ROLE 참조)
+	 */
 	@GetMapping("/{acptSts}/list")
-	public ResponseEntity<List<MultLangListDTO>> getRequests(
-			@PathVariable String acptSts) {
-
-		// 현재 인증된 사용자 정보 가져오기
+	public ResponseEntity<List<MultLangListDTO>> getRequests(@PathVariable String acptSts) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = authentication.getName(); // 현재 사용자 이름
-		boolean isUserRole = authentication.getAuthorities().stream()
-				.anyMatch(authority -> authority.getAuthority().equals("ROLE_USER")); // ROLE USER 인지 확인
+		String username = authentication.getName();
 
-		// 요청 상태가 전체 일 경우
 		if ("ALL".equalsIgnoreCase(acptSts)) {
-			if (isUserRole) {
-				// ROLE_USER라면 작성자 본인의 데이터만 반환
-				return ResponseEntity.ok(requestService.getRequestsByRequesterExceptHOLDING(username));
-			} else {
-				// ROLE_USER가 아니라면 전체 데이터 반환
-				return ResponseEntity.ok(requestService.getAllRequestsExceptHOLDING());
-			}
-		} 
-		// 전체가 아닐 경우
-		else {
-			if (isUserRole) {
-				// ROLE_USER라면 작성자 본인의 데이터만 반환
-				return ResponseEntity.ok(requestService.getRequestsByAcptStsAndRequester(acptSts, username));
-			} else {
-				// ROLE_USER가 아니라면 상태에 따른 전체 데이터 반환
-				return ResponseEntity.ok(requestService.getRequestsByAcptSts(acptSts));
-			}
+			return ResponseEntity.ok(serviceResolver.getService().getAllRequestsExceptHOLDING(username));
 		}
+		return ResponseEntity.ok(serviceResolver.getService().getRequestsByAcptSts(acptSts, username));
 	}
 
 	/**
@@ -99,7 +85,7 @@ public class RequestController {
 	 */
 	@GetMapping("/count")
 	public ResponseEntity<DashboardCountDTO> findCountAll() {
-		return ResponseEntity.ok(requestService.findByAcptStatusCount());
+		return ResponseEntity.ok(serviceResolver.getService().findByAcptStatusCount());
 	}
 
 	/**
@@ -107,19 +93,18 @@ public class RequestController {
 	 */
 	@GetMapping("/{acptSts}/top10")
 	public ResponseEntity<List<MultLangListDTO>> getTop10RecentRequests(@PathVariable String acptSts) {
-		List<MultLangListDTO> top10Requests = requestService.getTop10RecentRequests(acptSts.toUpperCase());
-		return ResponseEntity.ok(top10Requests);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+
+		return ResponseEntity.ok(serviceResolver.getService().getTop10RecentRequests(acptSts.toUpperCase(), username));
 	}
 
 	/**
 	 * 선택된 요청들의 상태 업데이트 API
 	 */
 	@PostMapping("/updateStatus")
-	public ResponseEntity<?> updateRequestStatus(@RequestBody List<
-			UpdateRequestStatusDTO> requestList) {
-		requestService.updateRequestStatus(requestList);  // 여러 개 처리하는 서비스 메서드
+	public ResponseEntity<?> updateRequestStatus(@RequestBody List<UpdateRequestStatusDTO> requestList) {
+		serviceResolver.getService().updateRequestStatus(requestList);
 		return ResponseEntity.ok("✅ Status Updated successfully");
 	}
-
-
 }
