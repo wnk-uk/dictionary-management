@@ -59,4 +59,9 @@ public class CommonRequestService implements RequestService {
 			}
 		}
 	}
+
+	@Override
+	public MultLangListDTO getRequestById(String dicReqId) {
+		return requestMapper.findByDicReqId(dicReqId);
+	}
 }

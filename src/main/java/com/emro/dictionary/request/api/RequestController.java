@@ -71,8 +71,7 @@ public class RequestController {
 	 */
 	@GetMapping("/{acptSts}/list")
 	public ResponseEntity<List<MultLangListDTO>> getRequests(@PathVariable String acptSts) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = authentication.getName();
+		String username = serviceResolver.getUsername();
 
 		if ("ALL".equalsIgnoreCase(acptSts)) {
 			return ResponseEntity.ok(serviceResolver.getService().getAllRequestsExceptHOLDING(username));
@@ -93,8 +92,7 @@ public class RequestController {
 	 */
 	@GetMapping("/{acptSts}/top10")
 	public ResponseEntity<List<MultLangListDTO>> getTop10RecentRequests(@PathVariable String acptSts) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = authentication.getName();
+		String username = serviceResolver.getUsername();
 
 		return ResponseEntity.ok(serviceResolver.getService().getTop10RecentRequests(acptSts.toUpperCase(), username));
 	}
@@ -106,5 +104,11 @@ public class RequestController {
 	public ResponseEntity<?> updateRequestStatus(@RequestBody List<UpdateRequestStatusDTO> requestList) {
 		serviceResolver.getService().updateRequestStatus(requestList);
 		return ResponseEntity.ok("✅ Status Updated successfully");
+	}
+
+	@GetMapping("/detail/{dicReqId}")
+	public ResponseEntity<MultLangListDTO> getRequestDetail(@PathVariable String dicReqId) {
+		MultLangListDTO request = serviceResolver.getService().getRequestById(dicReqId);
+		return request != null ? ResponseEntity.ok(request) : ResponseEntity.notFound().build();
 	}
 }

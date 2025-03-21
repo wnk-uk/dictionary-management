@@ -97,6 +97,14 @@
 				{ title: "Request Time", field: "requestTime", minWidth: 200},
 				{ title: "Status", field: "status", minWidth: 200},
 			],
+			// ✅ 행 클릭 이벤트 추가
+			cellClick: function(e, cell) {
+				if (cell.getColumn().getField() !== "select") { // 체크박스 열 제외
+					console.log("Cell clicked:", cell.getRow().getData());
+					let dicReqId = cell.getRow().getData().dicReqId;
+					window.location.href = `/req/detail/${dicReqId}`;
+				}
+			}
 		});
 	});
 	

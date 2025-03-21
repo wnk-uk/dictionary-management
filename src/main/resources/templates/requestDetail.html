@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments.html :: head"></head>
+<body id="page-top">
+<div id="wrapper">
+	<div th:replace="fragments.html :: main-sidebar"></div>
+	
+	<div id="content-wrapper" class="d-flex flex-column">
+		<div id="content">
+			<div th:replace="fragments.html :: main-nav"></div>
+			
+			<div class="container-fluid">
+				<div class="d-sm-flex align-items-center justify-content-between mb-4">
+					<h1 class="h3 mb-0 text-gray-800">Request Detail</h1>
+					<a href="/req/list" class="btn btn-secondary btn-sm">
+						<i class="fas fa-arrow-left"></i> Back to List
+					</a>
+				</div>
+				
+				<div class="card shadow mb-4">
+					<div class="card-header py-3">
+						<h6 class="m-0 font-weight-bold text-primary">Request Information</h6>
+					</div>
+					<div class="card-body">
+						<div id="requestInfoTable" class="tabulator-wrapper"></div>
+					</div>
+				</div>
+				
+				<div class="card shadow mb-4">
+					<div class="card-header py-3">
+						<h6 class="m-0 font-weight-bold text-primary">Request Details</h6>
+					</div>
+					<div class="card-body">
+						<div id="requestDetailTable" class="tabulator-wrapper"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer th:replace="fragments.html :: main-footer"></footer>
+	</div>
+</div>
+
+<script th:replace="fragments.html :: ajax-csrf-header"></script>
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		let dicReqId = "[[${dicReqId}]]";
+		
+		if (!dicReqId) {
+			alert("🚨 No request ID provided.");
+			window.location.href = "/req/ALL/lists";
+			return;
+		}
+		
+		// 요청 기본 정보 테이블
+		const requestInfoTable = new Tabulator("#requestInfoTable", {
+			layout: "fitColumns",
+			ajaxURL: `/api/request/detail/${dicReqId}`,
+			ajaxConfig: "GET",
+			ajaxContentType: "json",
+			ajaxResponse: function (url, params, response) {
+				if (!response) {
+					alert("🚨 Request not found.");
+					window.location.href = "/req/list";
+					return [];
+				}
+				return [{
+					dicReqId: response.dicReqId,
+					reqUsrNm: response.reqUsrNm,
+					requestTime: UT.formatDate(response.reqDttm),
+					status: response.acptSts,
+					imagePath: response.imagePath || "N/A",
+					editorContent: response.editorContent || "N/A"
+				}];
+			},
+			columns: [
+				{ title: "Request ID", field: "dicReqId", minWidth: 150 },
+				{ title: "Requester", field: "reqUsrNm", minWidth: 150 },
+				{ title: "Request Time", field: "requestTime", minWidth: 200 },
+				{ title: "Status", field: "status", minWidth: 150 },
+				{
+					title: "Image",
+					field: "imagePath",
+					minWidth: 200,
+					formatter: function(cell, formatterParams, onRendered) {
+						const path = cell.getValue();
+						if (path === "N/A" || !path) {
+							return "No Image";
+						}
+						const img = document.createElement("img");
+						img.src = path;
+						img.alt = "Request Image";
+						img.style.maxWidth = "150px";
+						img.style.maxHeight = "150px";
+						img.onerror = function() {
+							cell.getElement().innerHTML = "Image Load Failed";
+						};
+						const link = document.createElement("a");
+						link.href = path;
+						link.target = "_blank";
+						link.appendChild(img);
+						return link;
+					}
+				},
+				{ title: "Editor Content", field: "editorContent", minWidth: 300 }
+			]
+		});
+		
+		// 요청 세부 정보 테이블
+		const requestDetailTable = new Tabulator("#requestDetailTable", {
+			layout: "fitColumns",
+			ajaxURL: `/api/request/detail/${dicReqId}`,
+			ajaxConfig: "GET",
+			ajaxContentType: "json",
+			ajaxResponse: function (url, params, response) {
+				if (!response || !response.details) return [];
+				return response.details.map(detail => ({
+					existingWord: detail.existingWord || "[NULL]",
+					multlangKey: detail.multlangKey,
+					multlangTranslCont: detail.multlangTranslCont,
+					regSts: detail.regSts
+				}));
+			},
+			columns: [
+				{ title: "Existing Word", field: "existingWord", minWidth: 200 },
+				{ title: "Multilingual Key", field: "multlangKey", minWidth: 200 },
+				{ title: "Translation Content", field: "multlangTranslCont", minWidth: 300 },
+				{ title: "Translation Content Abbr", field: "multlangTranslContAbbr", minWidth: 150 },
+				{ title: "Multilingual Type", field: "multlangTyp", minWidth: 150 },
+				{ title: "Screen Path", field: "screenPath", minWidth: 150 },
+				{ title: "Source Path", field: "sourcePath", minWidth: 150 },
+				{ title: "Comment", field: "comment", minWidth: 150 },
+				{ title: "Registration Status", field: "regSts", minWidth: 150 },
+			]
+		});
+	});
+</script>
+
+<th:block th:replace="fragments.html :: common-scripts"></th:block>
+</body>
+</html>

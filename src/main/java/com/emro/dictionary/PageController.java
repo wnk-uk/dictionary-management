@@ -107,4 +107,15 @@ public class PageController {
 		return "registration_modal_vertical";
 	}
 
+	@GetMapping("/req/detail/{dicReqId}")
+	public String requestDetail(@PathVariable(value = "dicReqId") String dicReqId,
+	                            Model model, Authentication authentication) {
+		if (authentication != null) {
+			model.addAttribute("username", authentication.getName());
+		}
+		// acptSts 값을 모델에 추가 (없으면 null)
+		model.addAttribute("dicReqId", dicReqId);
+		return "requestDetail"; // requestDetail.html
+	}
+
 }

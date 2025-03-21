@@ -54,7 +54,7 @@ public interface RequestMapper {
 			@Result(property = "imagePath", column = "image_path"),
 			@Result(property = "editorContent", column = "editor_content"),
 			@Result(property = "details", column = "dic_req_id",
-					many = @Many(select = "com.emro.dictionary.request.repository.RequestMapper.findRequestDetails"))
+					many = @Many(select = "findRequestDetails"))
 	})
 	List<MultLangListDTO> findAllRequestsExceptHOLDING(@Param("requester") String requester);
 
@@ -75,7 +75,7 @@ public interface RequestMapper {
 			@Result(property = "imagePath", column = "image_path"),
 			@Result(property = "editorContent", column = "editor_content"),
 			@Result(property = "details", column = "dic_req_id",
-					many = @Many(select = "com.emro.dictionary.request.repository.RequestMapper.findRequestDetails"))
+					many = @Many(select = "findRequestDetails"))
 	})
 	List<MultLangListDTO> findRequestsByAcptSts(@Param("acptSts") String acptSts, @Param("requester") String requester);
 
@@ -139,11 +139,43 @@ public interface RequestMapper {
 	List<MultLangDetailListDTO> findRequestDetails(@Param("dicReqId") Long dicReqId);
 
 	/**
-	 * 특정 dicReqId에 대한 요청 상세 정보 가져오기
+	 * dicReqId 을 이용한 detail 조회(DIC_REQ)
 	 */
 	@Select("""
-        SELECT * FROM DIC_REQ_DTL
-        WHERE dic_req_id = #{dicReqId}
-    """)
-	List<MultLangDetailListDTO> findRequestDetailsByDicReqId(@Param("dicReqId") Long dicReqId);
+		SELECT * 
+		FROM DIC_REQ 
+		WHERE dic_req_id = #{dicReqId}
+		""")
+	@Results({
+			@Result(property = "dicReqId", column = "dic_req_id", id = true),
+			@Result(property = "reqUsrNm", column = "req_usr_nm"),
+			@Result(property = "reqDttm", column = "req_dttm"),
+			@Result(property = "acptSts", column = "acpt_sts"),
+			@Result(property = "imagePath", column = "image_path"),
+			@Result(property = "editorContent", column = "editor_content"),
+			@Result(property = "details", column = "dic_req_id",
+					many = @Many(select = "findRequestDetailsByDicReqId"))
+	})
+	MultLangListDTO findByDicReqId(@Param("dicReqId") String dicReqId);
+
+	/**
+	 * dicReqId 을 이용한 detail 조회(DIC_REQ_DTL)
+	 */
+	@Select("""
+		SELECT * 
+		FROM DIC_REQ_DTL 
+		WHERE dic_req_id = #{dicReqId}
+		""")
+	@Results({
+			@Result(property = "existingWord", column = "existing_word"),
+			@Result(property = "multlangKey", column = "multlang_key"),
+			@Result(property = "multlangTranslCont", column = "multlang_transl_cont"),
+			@Result(property = "multlangTranslContAbbr", column = "multlang_transl_cont_abbr"),
+			@Result(property = "multlangTyp", column = "multlang_typ"),
+			@Result(property = "screenPath", column = "screen_path"),
+			@Result(property = "sourcePath", column = "source_path"),
+			@Result(property = "comment", column = "comment"),
+			@Result(property = "regSts", column = "reg_sts")
+	})
+	List<MultLangRequestDetailDTO> findRequestDetailsByDicReqId(@Param("dicReqId") String dicReqId);
 }

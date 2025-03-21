@@ -17,5 +17,6 @@ public class MultLangRequestDetailDTO {
 	private String screenPath;
 	private String sourcePath;
 	private String comment;
+	private String regSts;
 
 }
