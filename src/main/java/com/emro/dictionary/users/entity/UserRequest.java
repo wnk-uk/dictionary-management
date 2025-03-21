@@ -1,5 +1,6 @@
-package com.emro.dictionary.users;
+package com.emro.dictionary.users.entity;
 
+import com.emro.dictionary.users.enums.Role;
 import lombok.Data;
 import lombok.ToString;
 

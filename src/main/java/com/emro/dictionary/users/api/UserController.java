@@ -1,14 +1,13 @@
-package com.emro.dictionary.users;
+package com.emro.dictionary.users.api;
 
-import com.emro.dictionary.lang.LangDTO;
-import com.emro.dictionary.lang.LangRequest;
+import com.emro.dictionary.users.entity.User;
+import com.emro.dictionary.users.entity.UserRequest;
+import com.emro.dictionary.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")

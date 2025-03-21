@@ -1,5 +1,7 @@
-package com.emro.dictionary.users;
+package com.emro.dictionary.users.service;
 
+import com.emro.dictionary.users.entity.User;
+import com.emro.dictionary.users.repository.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

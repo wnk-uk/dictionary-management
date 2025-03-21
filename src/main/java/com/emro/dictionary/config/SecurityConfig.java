@@ -1,6 +1,6 @@
 package com.emro.dictionary.config;
 
-import com.emro.dictionary.users.CustomUserDetailsService;
+import com.emro.dictionary.users.service.CustomUserDetailsService;
 import com.emro.dictionary.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

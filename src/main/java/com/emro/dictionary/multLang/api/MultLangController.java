@@ -1,6 +1,7 @@
-package com.emro.dictionary.multLang;
+package com.emro.dictionary.multLang.api;
 
-import com.emro.dictionary.request.MultLangRequestDTO;
+import com.emro.dictionary.multLang.dto.MultLangDTO;
+import com.emro.dictionary.multLang.service.MultLangService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

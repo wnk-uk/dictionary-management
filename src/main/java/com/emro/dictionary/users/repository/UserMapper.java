@@ -1,5 +1,7 @@
-package com.emro.dictionary.users;
+package com.emro.dictionary.users.repository;
 
+import com.emro.dictionary.users.entity.User;
+import com.emro.dictionary.users.entity.UserRequest;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

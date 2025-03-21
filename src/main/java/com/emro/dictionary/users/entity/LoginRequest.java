@@ -1,4 +1,4 @@
-package com.emro.dictionary.users;
+package com.emro.dictionary.users.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

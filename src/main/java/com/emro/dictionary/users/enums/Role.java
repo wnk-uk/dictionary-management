@@ -1,4 +1,4 @@
-package com.emro.dictionary.users;
+package com.emro.dictionary.users.enums;
 
 public enum Role {
     USER,

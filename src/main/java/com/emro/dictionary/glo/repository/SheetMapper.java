@@ -1,4 +1,4 @@
-package com.emro.dictionary.glo;
+package com.emro.dictionary.glo.repository;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

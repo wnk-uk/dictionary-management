@@ -1,5 +1,8 @@
-package com.emro.dictionary.lang;
+package com.emro.dictionary.lang.api;
 
+import com.emro.dictionary.lang.dto.LangDTO;
+import com.emro.dictionary.lang.LangRequest;
+import com.emro.dictionary.lang.service.LangService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
 package com.emro.dictionary.filter;
 
-import com.emro.dictionary.users.CustomUserDetailsService;
+import com.emro.dictionary.users.service.CustomUserDetailsService;
 import com.emro.dictionary.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

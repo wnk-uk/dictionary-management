@@ -1,5 +1,7 @@
-package com.emro.dictionary.lang;
+package com.emro.dictionary.lang.repository;
 
+import com.emro.dictionary.lang.LangRequest;
+import com.emro.dictionary.lang.dto.LangDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

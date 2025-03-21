@@ -1,5 +1,8 @@
-package com.emro.dictionary.lang;
+package com.emro.dictionary.lang.service;
 
+import com.emro.dictionary.lang.LangRequest;
+import com.emro.dictionary.lang.dto.LangDTO;
+import com.emro.dictionary.lang.repository.LangMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

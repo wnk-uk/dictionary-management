@@ -1,4 +1,4 @@
-package com.emro.dictionary.glo;
+package com.emro.dictionary.glo.dto;
 
 import lombok.Data;
 
