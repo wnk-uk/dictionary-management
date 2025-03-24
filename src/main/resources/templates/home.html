@@ -163,6 +163,16 @@
 						return UT.formatDate(cell.getValue());
 				}},
 			],
+			// ✅ 행 클릭 이벤트 추가
+			rowFormatter: function(row) {
+				row.getElement().onclick = function(e) {
+					if (e.target.tagName !== "INPUT") {
+						let dicReqId = row.getData().dicReqId;
+						let acptSts = "ALL";
+						window.location.href = `/req/detail/${dicReqId}?acptSts=${acptSts}`;
+					}
+				};
+			}
 		});
 		
 		new Tabulator("#holdingTop", {
@@ -181,6 +191,16 @@
 						return UT.formatDate(cell.getValue());
 				}},
 			],
+			// ✅ 행 클릭 이벤트 추가
+			rowFormatter: function(row) {
+				row.getElement().onclick = function(e) {
+					if (e.target.tagName !== "INPUT") {
+						let dicReqId = row.getData().dicReqId;
+						let acptSts = "HOLDING";
+						window.location.href = `/req/detail/${dicReqId}?acptSts=${acptSts}`;
+					}
+				};
+			}
 		});
 	}
 	
