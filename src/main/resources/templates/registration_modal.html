@@ -322,7 +322,7 @@
 							const minutes = String(now.getMinutes()).padStart(2, '0');
 							const dateStr = `${year}${month}${day}_${hours}${minutes}`;
 							const sanitizedReqUsrNm = reqUsrNm.replace(/[^a-zA-Z0-9]/g, '_');
-							const fileName = `첨부이미지_${imgIndex}_${sanitizedReqUsrNm}_${dateStr}.${contentType.split('/')[1]}`;
+							const fileName = `image_${imgIndex}_${sanitizedReqUsrNm}_${dateStr}.${contentType.split('/')[1]}`;
 							console.log(`Adding editor image for index ${editorIndex}:`, fileName);
 							formData.append("files", blob, fileName);
 							img.remove();

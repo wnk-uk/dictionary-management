@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -108,13 +109,16 @@ public class PageController {
 	}
 
 	@GetMapping("/req/detail/{dicReqId}")
-	public String requestDetail(@PathVariable(value = "dicReqId") String dicReqId,
+	public String requestDetail(
+			@PathVariable(value = "dicReqId") String dicReqId,
+			@RequestParam(value = "acptSts", defaultValue = "ALL") String acptSts,
 	                            Model model, Authentication authentication) {
 		if (authentication != null) {
 			model.addAttribute("username", authentication.getName());
 		}
-		// acptSts 값을 모델에 추가 (없으면 null)
+
 		model.addAttribute("dicReqId", dicReqId);
+		model.addAttribute("acptSts", acptSts);
 		return "requestDetail"; // requestDetail.html
 	}
 

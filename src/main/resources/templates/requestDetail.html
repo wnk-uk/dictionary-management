@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head th:replace="fragments.html :: head"></head>
 <body id="page-top">
 <div id="wrapper">
@@ -12,23 +12,33 @@
 			<div class="container-fluid">
 				<div class="d-sm-flex align-items-center justify-content-between mb-4">
 					<h1 class="h3 mb-0 text-gray-800">Request Detail</h1>
-					<a href="/req/list" class="btn btn-secondary btn-sm">
+					<a th:href="@{/req/{acptSts}/lists(acptSts=${acptSts})}" class="btn btn-secondary btn-sm">
 						<i class="fas fa-arrow-left"></i> Back to List
 					</a>
 				</div>
 				
+				<!-- Request Information -->
 				<div class="card shadow mb-4">
 					<div class="card-header py-3">
 						<h6 class="m-0 font-weight-bold text-primary">Request Information</h6>
 					</div>
 					<div class="card-body">
-						<div id="requestInfoTable" class="tabulator-wrapper"></div>
+						<div id="requestInfo" class="row"></div>
 					</div>
 				</div>
 				
+				<!-- Request Details -->
 				<div class="card shadow mb-4">
-					<div class="card-header py-3">
+					<div class="card-header py-3 d-flex justify-content-between align-items-center">
 						<h6 class="m-0 font-weight-bold text-primary">Request Details</h6>
+						<div class="d-flex align-items-center" sec:authorize="!hasRole('USER')">
+							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('COMPLETE')">
+								<i class="fas fa-check"></i> ACCEPT
+							</button>
+							<button class="btn btn-danger btn-sm" onclick="updateSelectedStatus('HOLDING')">
+								<i class="fas fa-times"></i> REJECT
+							</button>
+						</div>
 					</div>
 					<div class="card-body">
 						<div id="requestDetailTable" class="tabulator-wrapper"></div>
@@ -42,85 +52,103 @@
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
+	let table;
+	
 	document.addEventListener("DOMContentLoaded", function () {
 		let dicReqId = "[[${dicReqId}]]";
+		let acptSts = "[[${acptSts}]]";
 		
 		if (!dicReqId) {
 			alert("🚨 No request ID provided.");
-			window.location.href = "/req/ALL/lists";
+			window.location.href = `/req/${acptSts}/lists`;
 			return;
 		}
 		
-		// 요청 기본 정보 테이블
-		const requestInfoTable = new Tabulator("#requestInfoTable", {
-			layout: "fitColumns",
-			ajaxURL: `/api/request/detail/${dicReqId}`,
-			ajaxConfig: "GET",
-			ajaxContentType: "json",
-			ajaxResponse: function (url, params, response) {
-				if (!response) {
-					alert("🚨 Request not found.");
-					window.location.href = "/req/list";
-					return [];
-				}
-				return [{
-					dicReqId: response.dicReqId,
-					reqUsrNm: response.reqUsrNm,
-					requestTime: UT.formatDate(response.reqDttm),
-					status: response.acptSts,
-					imagePath: response.imagePath || "N/A",
-					editorContent: response.editorContent || "N/A"
-				}];
-			},
-			columns: [
-				{ title: "Request ID", field: "dicReqId", minWidth: 150 },
-				{ title: "Requester", field: "reqUsrNm", minWidth: 150 },
-				{ title: "Request Time", field: "requestTime", minWidth: 200 },
-				{ title: "Status", field: "status", minWidth: 150 },
-				{
-					title: "Image",
-					field: "imagePath",
-					minWidth: 200,
-					formatter: function(cell, formatterParams, onRendered) {
-						const path = cell.getValue();
-						if (path === "N/A" || !path) {
-							return "No Image";
-						}
-						const img = document.createElement("img");
-						img.src = path;
-						img.alt = "Request Image";
-						img.style.maxWidth = "150px";
-						img.style.maxHeight = "150px";
-						img.onerror = function() {
-							cell.getElement().innerHTML = "Image Load Failed";
-						};
-						const link = document.createElement("a");
-						link.href = path;
-						link.target = "_blank";
-						link.appendChild(img);
-						return link;
+		// Request Information
+		fetch(`/api/request/detail/${dicReqId}`)
+				.then(response => response.json())
+				.then(data => {
+					if (!data) {
+						alert("🚨 Request not found.");
+						window.location.href = `/req/${acptSts}/lists`;
+						return;
 					}
-				},
-				{ title: "Editor Content", field: "editorContent", minWidth: 300 }
-			]
-		});
+					const requestInfo = document.getElementById("requestInfo");
+					let imageHtml = data.imagePath ? `
+                    <div class="col-md-4 text-center">
+                        <a href="${data.imagePath}" target="_blank">
+                            <img src="${data.imagePath}" alt="Request Image" class="img-fluid rounded"
+                                 style="max-height: 300px;">
+                        </a>
+                        <p class="mt-2" style="display: none; color: #dc3545;" id="imageError">Image Load Failed</p>
+                    </div>
+                ` : '';
+					requestInfo.innerHTML = `
+                    <div class="col-md-8">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Request ID</dt>
+                            <dd class="col-sm-8">${data.dicReqId}</dd>
+                            <dt class="col-sm-4">Requester</dt>
+                            <dd class="col-sm-8">${data.reqUsrNm}</dd>
+                            <dt class="col-sm-4">Request Time</dt>
+                            <dd class="col-sm-8">${UT.formatDate(data.reqDttm)}</dd>
+                            <dt class="col-sm-4">Status</dt>
+                            <dd class="col-sm-8">${data.acptSts}</dd>
+                            <dt class="col-sm-4">Editor Content</dt>
+                            <dd class="col-sm-8">${data.editorContent || "N/A"}</dd>
+                        </dl>
+                    </div>
+                    ${imageHtml}
+                `;
+					// 이미지 로드 오류 처리
+					if (data.imagePath) {
+						const img = requestInfo.querySelector("img");
+						const errorText = requestInfo.querySelector("#imageError");
+						img.onerror = function() {
+							this.src = '';
+							this.alt = 'Image Load Failed';
+							if (errorText) errorText.style.display = 'block';
+						};
+					}
+				})
+				.catch(error => {
+					console.error("Error fetching request info:", error);
+					alert("🚨 Failed to load request information.");
+					window.location.href = `/req/${acptSts}/lists`;
+				});
 		
-		// 요청 세부 정보 테이블
-		const requestDetailTable = new Tabulator("#requestDetailTable", {
+		// Request Details
+		table = new Tabulator("#requestDetailTable", {
 			layout: "fitColumns",
+			selectable: true,
 			ajaxURL: `/api/request/detail/${dicReqId}`,
 			ajaxConfig: "GET",
 			ajaxContentType: "json",
 			ajaxResponse: function (url, params, response) {
 				if (!response || !response.details) return [];
 				return response.details.map(detail => ({
+					id: detail.id,
 					existingWord: detail.existingWord || "[NULL]",
 					multlangKey: detail.multlangKey,
 					multlangTranslCont: detail.multlangTranslCont,
+					multlangTranslContAbbr: detail.multlangTranslContAbbr,
+					multlangTyp: detail.multlangTyp,
+					screenPath: detail.screenPath,
+					sourcePath: detail.sourcePath,
+					comment: detail.comment,
 					regSts: detail.regSts
 				}));
 			},
 			columns: [
+				{
+					title: `<input type='checkbox' id='selectAll' onclick='toggleSelectAll(this)'>`,
+					field: "select",
+					hozAlign: "center",
+					width: 120,
+					formatter: "rowSelection",
+					headerSort: false,
+					headerHozAlign: "center"
+				},
 				{ title: "Existing Word", field: "existingWord", minWidth: 200 },
 				{ title: "Multilingual Key", field: "multlangKey", minWidth: 200 },
 				{ title: "Translation Content", field: "multlangTranslCont", minWidth: 300 },
@@ -129,10 +157,52 @@
 				{ title: "Screen Path", field: "screenPath", minWidth: 150 },
 				{ title: "Source Path", field: "sourcePath", minWidth: 150 },
 				{ title: "Comment", field: "comment", minWidth: 150 },
-				{ title: "Registration Status", field: "regSts", minWidth: 150 },
+				{ title: "Registration Status", field: "regSts", minWidth: 150 }
 			]
 		});
 	});
+	
+	function toggleSelectAll(headerCheckbox) {
+		let allRows = table.getRows("all");
+		if (headerCheckbox.checked) {
+			allRows.forEach(row => row.select());
+		} else {
+			allRows.forEach(row => row.deselect());
+		}
+	}
+	
+	function updateSelectedStatus(status) {
+		let selectedRows = table.getSelectedData();
+		if (selectedRows.length === 0) {
+			alert("🚨 Please select at least one row.");
+			return;
+		}
+		
+		let dicReqId = "[[${dicReqId}]]";
+		let updateData = [{
+			dicReqId: dicReqId,
+			acptSts: status,
+			details: selectedRows.map(row => ({
+				id: row.id,
+				regSts: status
+			}))
+		}];
+		
+		$.ajax({
+			type: "POST",
+			url: "/api/request/updateStatus",
+			contentType: "application/json",
+			data: JSON.stringify(updateData),
+			success: function () {
+				alert("✅ Status updated successfully!");
+				table.replaceData();
+				location.reload();
+			},
+			error: function () {
+				alert("🚨 Failed to update status.");
+			}
+		});
+	}
 </script>
 
 <th:block th:replace="fragments.html :: common-scripts"></th:block>

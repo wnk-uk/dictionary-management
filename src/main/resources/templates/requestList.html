@@ -17,12 +17,12 @@
 					<div class="card-header py-3 d-flex justify-content-between align-items-center">
 						<!-- ✅ 상태 변경 버튼 -->
 						<div class="d-flex align-items-center">
-							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('PROGRESS')">
-								<i class="fas fa-check"></i> ACCEPT
-							</button>
-							<button class="btn btn-danger btn-sm mr-3" onclick="updateSelectedStatus('HOLDING')">
-								<i class="fas fa-times"></i> REJECT
-							</button>
+<!--							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('PROGRESS')">-->
+<!--								<i class="fas fa-check"></i> ACCEPT-->
+<!--							</button>-->
+<!--							<button class="btn btn-danger btn-sm mr-3" onclick="updateSelectedStatus('HOLDING')">-->
+<!--								<i class="fas fa-times"></i> REJECT-->
+<!--							</button>-->
 						</div>
 						
 						<!-- ✅ 검색창 -->
@@ -98,12 +98,14 @@
 				{ title: "Status", field: "status", minWidth: 200},
 			],
 			// ✅ 행 클릭 이벤트 추가
-			cellClick: function(e, cell) {
-				if (cell.getColumn().getField() !== "select") { // 체크박스 열 제외
-					console.log("Cell clicked:", cell.getRow().getData());
-					let dicReqId = cell.getRow().getData().dicReqId;
-					window.location.href = `/req/detail/${dicReqId}`;
-				}
+			rowFormatter: function(row) {
+				row.getElement().onclick = function(e) {
+					if (e.target.tagName !== "INPUT") {
+						let dicReqId = row.getData().dicReqId;
+						let acptSts = "[[${acptSts}]]" === "null" ? "ALL" : "[[${acptSts}]]";
+						window.location.href = `/req/detail/${dicReqId}?acptSts=${acptSts}`;
+					}
+				};
 			}
 		});
 	});

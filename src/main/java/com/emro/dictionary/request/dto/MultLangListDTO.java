@@ -14,4 +14,9 @@ public class MultLangListDTO {
 	private String imagePath;
 	private String editorContent;
 	private String acptSts;
+
+	public String getImagePath() {
+		return imagePath != null ? "/uploads/" + imagePath : null;
+	}
 }
+
