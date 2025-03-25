@@ -1,5 +1,7 @@
 package com.emro.dictionary.request.service.impl;
 
+import com.emro.dictionary.request.dto.UpdateRequestDetailStatusDTO;
+import com.emro.dictionary.request.dto.UpdateRequestStatusDTO;
 import com.emro.dictionary.request.repository.RequestMapper;
 import com.emro.dictionary.request.dto.MultLangListDTO;
 import lombok.extern.slf4j.Slf4j;

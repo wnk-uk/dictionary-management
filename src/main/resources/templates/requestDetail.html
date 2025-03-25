@@ -32,11 +32,14 @@
 					<div class="card-header py-3 d-flex justify-content-between align-items-center">
 						<h6 class="m-0 font-weight-bold text-primary">Request Details</h6>
 						<div class="d-flex align-items-center" sec:authorize="!hasRole('USER')">
-							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('COMPLETE')">
+							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('ACCEPTANCE')">
 								<i class="fas fa-check"></i> ACCEPT
 							</button>
-							<button class="btn btn-danger btn-sm" onclick="updateSelectedStatus('HOLDING')">
+							<button class="btn btn-danger btn-sm mr-2" onclick="updateSelectedStatus('REJECT')">
 								<i class="fas fa-times"></i> REJECT
+							</button>
+							<button class="btn btn-secondary btn-sm" onclick="updateSelectedStatus('HOLDING')">
+								<i class="fas fa-times"></i> HOLDING
 							</button>
 						</div>
 					</div>
@@ -173,6 +176,7 @@
 	
 	function updateSelectedStatus(status) {
 		let selectedRows = table.getSelectedData();
+		console.log("Selected Rows:", selectedRows); // 디버깅용 로그
 		if (selectedRows.length === 0) {
 			alert("🚨 Please select at least one row.");
 			return;
@@ -181,7 +185,6 @@
 		let dicReqId = "[[${dicReqId}]]";
 		let updateData = [{
 			dicReqId: dicReqId,
-			acptSts: status,
 			details: selectedRows.map(row => ({
 				id: row.id,
 				regSts: status
@@ -198,8 +201,8 @@
 				table.replaceData();
 				location.reload();
 			},
-			error: function () {
-				alert("🚨 Failed to update status.");
+			error: function (xhr) {
+				alert("🚨 Failed to update status." + xhr.responseText);
 			}
 		});
 	}

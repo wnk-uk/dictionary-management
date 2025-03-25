@@ -5,6 +5,7 @@ import com.emro.dictionary.request.dto.*;
 import com.emro.dictionary.request.service.RequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.List;
  * 요청 서비스의 공통 로직을 제공하는 클래스
  */
 @Slf4j
+@Service
 @Transactional
 @RequiredArgsConstructor
 public class CommonRequestService implements RequestService {
@@ -53,10 +55,40 @@ public class CommonRequestService implements RequestService {
 	@Override
 	public void updateRequestStatus(List<UpdateRequestStatusDTO> updateList) {
 		for (UpdateRequestStatusDTO update : updateList) {
-			requestMapper.updateRequestAcptSts(update.getDicReqId(), update.getAcptSts());
+			Long dicReqId = update.getDicReqId();
+
+			// 1. DIC_REQ_DTL 상태 업데이트
 			for (UpdateRequestDetailStatusDTO detail : update.getDetails()) {
 				requestMapper.updateRequestDetailRegSts(detail.getId(), detail.getRegSts());
 			}
+
+			// 2. DIC_REQ_DTL 상태 조회
+			List<String> detailStatuses = requestMapper.getDetailStatusesByDicReqId(dicReqId);
+
+			// 3. DIC_REQ 상태 결정 및 업데이트
+			String newAcptSts = determineAcptSts(detailStatuses);
+			requestMapper.updateRequestAcptSts(dicReqId, newAcptSts);
+		}
+	}
+
+	protected String determineAcptSts(List<String> detailStatuses) {
+		if (detailStatuses.isEmpty()) {
+			return "PENDING";
+		}
+
+		boolean hasPending = detailStatuses.contains("PENDING");
+		boolean hasHolding = detailStatuses.contains("HOLDING");
+		boolean allComplete = detailStatuses.stream()
+				.allMatch(status -> status.equals("ACCEPTANCE") || status.equals("REJECT"));
+
+		if (allComplete) {
+			return "COMPLETE";
+		} else if (hasHolding) {
+			return "HOLDING";
+		} else if (!hasPending) {
+			return "PROGRESS";
+		} else {
+			return "PENDING";
 		}
 	}
 

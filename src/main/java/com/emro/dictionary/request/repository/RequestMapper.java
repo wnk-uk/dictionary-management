@@ -130,6 +130,16 @@ public interface RequestMapper {
 	void updateRequestDetailRegSts(@Param("id") Long id, @Param("regSts") String regSts);
 
 	/**
+	 * 해당 Request Id에 대한 Detail 상태값 조회
+	 */
+	@Select("""
+        SELECT reg_sts 
+        FROM DIC_REQ_DTL 
+        WHERE dic_req_id = #{dicReqId}
+    """)
+	List<String> getDetailStatusesByDicReqId(@Param("dicReqId") Long dicReqId);
+	
+	/**
 	 * RequestDetail 조회 (DIC_REQ_DTL 테이블)
 	 */
 	@Select("""
@@ -167,6 +177,7 @@ public interface RequestMapper {
 		WHERE dic_req_id = #{dicReqId}
 		""")
 	@Results({
+			@Result(property = "id", column = "id"),
 			@Result(property = "existingWord", column = "existing_word"),
 			@Result(property = "multlangKey", column = "multlang_key"),
 			@Result(property = "multlangTranslCont", column = "multlang_transl_cont"),

@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MultLangRequestDetailDTO {
+	private Long id;
 	private String existingWord;
 	private String multlangCcd;
 	private String multlangKey;

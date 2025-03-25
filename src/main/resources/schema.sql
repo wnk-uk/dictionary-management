@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS DIC_REQ (
                                     STS CHAR(1) DEFAULT 'C',
 									image_path VARCHAR(MAX),
 									editor_content VARCHAR(1000),
-                                    ACPT_STS VARCHAR(50) -- REQUEST, PROGRESS, HOLDING, ACCEPTANCE
+                                    ACPT_STS VARCHAR(50) -- REQUEST, PROGRESS, HOLDING, COMPLETE
 );
 
 CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
                                     screen_path VARCHAR(255), -- 화면 경로
                                     source_path VARCHAR(255), -- 소스 코드 경로
                                     comment VARCHAR(1000), -- 요청자의 코멘트
-                                    reg_sts VARCHAR(50) DEFAULT 'PENDING', -- 등록 상태 (PENDING, PROGRESS, COMPLETE, HOLDING)
+                                    reg_sts VARCHAR(50) DEFAULT 'PENDING', -- 등록 상태 (PENDING, ACCEPTANCE, REJECT, HOLDING)
                                     FOREIGN KEY (dic_req_id) REFERENCES DIC_REQ(dic_req_id) ON DELETE CASCADE
 );
 
