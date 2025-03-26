@@ -59,7 +59,7 @@ public class CommonRequestService implements RequestService {
 
 			// 1. DIC_REQ_DTL 상태 업데이트
 			for (UpdateRequestDetailStatusDTO detail : update.getDetails()) {
-				requestMapper.updateRequestDetailRegSts(detail.getId(), detail.getRegSts());
+				requestMapper.updateRequestDetailRegSts(detail.getId(), detail.getRegSts(), detail.getMultlangTranslCont());
 			}
 
 			// 2. DIC_REQ_DTL 상태 조회

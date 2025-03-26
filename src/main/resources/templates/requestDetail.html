@@ -31,7 +31,7 @@
 				<div class="card shadow mb-4">
 					<div class="card-header py-3 d-flex justify-content-between align-items-center">
 						<h6 class="m-0 font-weight-bold text-primary">Request Details</h6>
-						<div class="d-flex align-items-center" sec:authorize="!hasRole('USER')">
+						<div class="d-flex align-items-center" sec:authorize="!hasRole('USER')" id="button">
 							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('ACCEPTANCE')">
 								<i class="fas fa-check"></i> ACCEPT
 							</button>
@@ -76,6 +76,15 @@
 						window.location.href = `/req/${acptSts}/lists`;
 						return;
 					}
+					
+					// data.acptSts에 따라 버튼 숨기기
+					if (data.acptSts === 'COMPLETE') {
+						const buttonContainer = document.querySelector('#button');
+						buttonContainer.classList.remove('d-flex'); // d-flex 제거
+						buttonContainer.style.display = 'none'; // display: none 적용
+					}
+					
+					
 					const requestInfo = document.getElementById("requestInfo");
 					let imageHtml = data.imagePath ? `
                     <div class="col-md-4 text-center">
@@ -133,7 +142,8 @@
 					id: detail.id,
 					existingWord: detail.existingWord || "[NULL]",
 					multlangKey: detail.multlangKey,
-					multlangTranslCont: detail.multlangTranslCont,
+					suggestedTranslCont: detail.multlangSuggestedTranslCont,
+					confirmedTranslCont: detail.multlangTranslCont,
 					multlangTranslContAbbr: detail.multlangTranslContAbbr,
 					multlangTyp: detail.multlangTyp,
 					screenPath: detail.screenPath,
@@ -141,6 +151,13 @@
 					comment: detail.comment,
 					regSts: detail.regSts
 				}));
+			},
+			rowFormatter: function(row) {
+				// regSts가 ACCEPTANCE일 때 row 전체를 회색으로
+				const rowData = row.getData();
+				if (rowData.regSts === 'ACCEPTANCE') {
+					row.getElement().style.backgroundColor = "#d3d3d3"; // 회색 배경
+				}
 			},
 			columns: [
 				{
@@ -154,9 +171,21 @@
 				},
 				{ title: "Existing Word", field: "existingWord", minWidth: 200 },
 				{ title: "Multilingual Key", field: "multlangKey", minWidth: 200 },
-				{ title: "Translation Content", field: "multlangTranslCont", minWidth: 300 },
-				{ title: "Translation Content Abbr", field: "multlangTranslContAbbr", minWidth: 150 },
-				{ title: "Multilingual Type", field: "multlangTyp", minWidth: 150 },
+				{
+					title: "Translation Content",
+					field: "suggestedTranslCont",
+					minWidth: 300,
+					formatter: function(cell) {
+						const rowData = cell.getRow().getData();
+						if (rowData.confirmedTranslCont) {
+							return `<span style="color: rebeccapurple;">Confirmed: ${rowData.confirmedTranslCont}</span>`;
+						} else {
+							return `Suggested: ${rowData.suggestedTranslCont || "[N/A]"}</span>`;
+						}
+					}
+				},
+				{ title: "Abbr", field: "multlangTranslContAbbr", minWidth: 150 },
+				{ title: "Type", field: "multlangTyp", minWidth: 150 },
 				{ title: "Screen Path", field: "screenPath", minWidth: 150 },
 				{ title: "Source Path", field: "sourcePath", minWidth: 150 },
 				{ title: "Comment", field: "comment", minWidth: 150 },
@@ -176,33 +205,82 @@
 	
 	function updateSelectedStatus(status) {
 		let selectedRows = table.getSelectedData();
-		console.log("Selected Rows:", selectedRows); // 디버깅용 로그
 		if (selectedRows.length === 0) {
 			alert("🚨 Please select at least one row.");
 			return;
 		}
 		
 		let dicReqId = "[[${dicReqId}]]";
-		let updateData = [{
-			dicReqId: dicReqId,
-			details: selectedRows.map(row => ({
-				id: row.id,
-				regSts: status
-			}))
-		}];
+		let acptSts = "[[${acptSts}]]";
 		
+		// 이미 ACCEPTANCE 상태인 row 체크
+		const alreadyAcceptedRows = selectedRows
+				.filter(row => row.regSts === 'ACCEPTANCE')
+				.map(row => row.multlangKey);
+		if (alreadyAcceptedRows.length > 0) {
+			const keys = alreadyAcceptedRows.join(", ");
+			alert(`🚨 이미 등록되어 수정할 수 없습니다. (Multlang Key: ${keys})`);
+			return;
+		}
+		
+		if (status === 'ACCEPTANCE') {
+			// ACCEPT 버튼 클릭 시 확인 알림
+			if (confirm("Translantion Content를 수정없이 등록하시겠습니까?")) {
+				// 예 선택 시
+				let updateData = [{
+					dicReqId: dicReqId,
+					details: selectedRows.map(row => ({
+						id: row.id,
+						regSts: status,
+						multlangTranslCont: row.suggestedTranslCont // 기존 값 유지
+					}))
+				}];
+				
+				sendUpdateRequest(updateData, "✅ 다국어집에 저장되었습니다!");
+			} else {
+				// 아니오 선택 시 입력창 표시
+				const newContent = prompt("변경할 Translation Content를 입력하세요:", selectedRows[0].multlangTranslCont);
+				if (newContent !== null) { // 취소 버튼이 아닌 경우
+					let updateData = [{
+						dicReqId: dicReqId,
+						details: selectedRows.map(row => ({
+							id: row.id,
+							regSts: status,
+							multlangTranslCont: newContent // 수정된 값 적용
+						}))
+					}];
+					
+					sendUpdateRequest(updateData, "✅ 수정된 내용이 다국어집에 저장되었습니다!");
+				}
+			}
+		} else {
+			// ACCEPTANCE 외의 다른 상태 업데이트
+			let updateData = [{
+				dicReqId: dicReqId,
+				details: selectedRows.map(row => ({
+					id: row.id,
+					regSts: status
+				}))
+			}];
+			
+			sendUpdateRequest(updateData, "✅ Status updated successfully!");
+		}
+	}
+	
+	// AJAX 요청을 별도 함수로 분리
+	function sendUpdateRequest(updateData, successMessage) {
 		$.ajax({
 			type: "POST",
 			url: "/api/request/updateStatus",
 			contentType: "application/json",
 			data: JSON.stringify(updateData),
 			success: function () {
-				alert("✅ Status updated successfully!");
+				alert(successMessage);
 				table.replaceData();
 				location.reload();
 			},
 			error: function (xhr) {
-				alert("🚨 Failed to update status." + xhr.responseText);
+				alert("🚨 Failed to update status: " + xhr.responseText);
 			}
 		});
 	}

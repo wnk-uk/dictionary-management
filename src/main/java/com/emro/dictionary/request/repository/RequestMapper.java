@@ -28,10 +28,10 @@ public interface RequestMapper {
 	 * 요청 상세 저장 (DIC_REQ_DTL 테이블에 데이터 삽입)
 	 */
 	@Insert("""
-        INSERT INTO DIC_REQ_DTL (dic_req_id, existing_word, multlang_ccd, multlang_key, multlang_transl_cont, 
+        INSERT INTO DIC_REQ_DTL (dic_req_id, existing_word, multlang_ccd, multlang_key, multlang_suggested_transl_cont, 
                                  multlang_transl_cont_abbr, multlang_typ, screen_path, 
                                  source_path, comment, reg_sts)
-        VALUES (#{dicReqId}, #{detail.existingWord}, #{detail.multlangCcd}, #{detail.multlangKey}, #{detail.multlangTranslCont}, 
+        VALUES (#{dicReqId}, #{detail.existingWord}, #{detail.multlangCcd}, #{detail.multlangKey}, #{detail.multlangSuggestedTranslCont}, 
                 #{detail.multlangTranslContAbbr}, #{detail.multlangTyp}, #{detail.screenPath}, 
                 #{detail.sourcePath}, #{detail.comment}, 'PENDING')
     """)
@@ -123,11 +123,14 @@ public interface RequestMapper {
 	 * 선택된 요청들(DIC_REQ_DTL)의 상태를 업데이트
 	 */
 	@Update("""
-        UPDATE DIC_REQ_DTL
-        SET reg_sts = #{regSts}
+        UPDATE 
+            DIC_REQ_DTL
+        SET 
+            reg_sts = #{regSts},
+            multlang_transl_cont = #{multlangTranslCont}
         WHERE id = #{id}
     """)
-	void updateRequestDetailRegSts(@Param("id") Long id, @Param("regSts") String regSts);
+	void updateRequestDetailRegSts(@Param("id") Long id, @Param("regSts") String regSts, @Param("multlangTranslCont") String multlangTranslCont);
 
 	/**
 	 * 해당 Request Id에 대한 Detail 상태값 조회
@@ -181,6 +184,7 @@ public interface RequestMapper {
 			@Result(property = "existingWord", column = "existing_word"),
 			@Result(property = "multlangKey", column = "multlang_key"),
 			@Result(property = "multlangTranslCont", column = "multlang_transl_cont"),
+			@Result(property = "multlangSuggestedTranslCont", column = "multlang_suggested_transl_cont"),
 			@Result(property = "multlangTranslContAbbr", column = "multlang_transl_cont_abbr"),
 			@Result(property = "multlangTyp", column = "multlang_typ"),
 			@Result(property = "screenPath", column = "screen_path"),

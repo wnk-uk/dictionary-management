@@ -10,6 +10,7 @@ public class MultLangDetailListDTO {
 	private String multlangCcd;
 	private String multlangKey;
 	private String multlangTranslCont;
+	private String multlangSuggestedTranslCont;
 	private String multlangTranslContAbbr;
 	private String multlangTyp;
 	private String screenPath;

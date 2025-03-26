@@ -6,4 +6,5 @@ import lombok.Data;
 public class UpdateRequestDetailStatusDTO {
 	private Long id;
 	private String regSts;
+	private String multlangTranslCont;
 }

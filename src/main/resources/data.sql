@@ -54,7 +54,7 @@ VALUES
 
 
 -- DIC_REQ_DTL 테이블 더미 데이터 삽입
-INSERT INTO DIC_REQ_DTL (dic_req_id, existing_word, multlang_ccd, multlang_key, multlang_transl_cont, multlang_transl_cont_abbr, multlang_typ, screen_path, source_path, comment, reg_sts)
+INSERT INTO DIC_REQ_DTL (dic_req_id, existing_word, multlang_ccd, multlang_key, multlang_suggested_transl_cont, multlang_transl_cont_abbr, multlang_typ, screen_path, source_path, comment, reg_sts)
 VALUES
 	(1, 'HI', 'en_US', 'HELLO', 'Hello', 'HI', 'button', '/home', '/src/components/button.js', 'Greeting update', 'ACCEPTANCE'),
 	(1, 'BYE', 'en_US', 'GOODBYE', 'Goodbye', 'BYE', 'label', '/exit', '/src/components/label.js', 'Farewell update', 'HOLDING'),

@@ -106,6 +106,9 @@ public class RequestController {
 		return ResponseEntity.ok("✅ Status Updated successfully");
 	}
 
+	/**
+	 * Request Id를 이용한 detail 조회
+	 */
 	@GetMapping("/detail/{dicReqId}")
 	public ResponseEntity<MultLangListDTO> getRequestDetail(@PathVariable String dicReqId) {
 		MultLangListDTO request = serviceResolver.getService().getRequestById(dicReqId);

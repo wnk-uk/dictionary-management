@@ -76,9 +76,13 @@
 					reqUsrNm: item.reqUsrNm,
 					requestTime: UT.formatDate(item.reqDttm),
 					status: item.acptSts,
-					details: item.details.map(detail =>
-							`${detail.existingWord || "[NULL]"} → ${detail.multlangKey} : (${detail.multlangTranslCont})`
-					).join("<br>")
+					details: item.details.map(detail => {
+						if (detail.multlangTranslCont) {
+							return `${detail.existingWord || "[New Word]"} → ${detail.multlangKey} : ${detail.multlangTranslCont} (Confirmed)`;
+						} else {
+							return `${detail.existingWord || "[New Word]"} → ${detail.multlangKey} : ${detail.multlangSuggestedTranslCont || "[N/A]"} (Suggested)`;
+						}
+					}).join("<br>")
 				}));
 				return rows;
 			},
@@ -93,7 +97,7 @@
 					headerHozAlign: "center"
 				},
 				{ title: "Requester", field: "reqUsrNm", minWidth: 200},
-				{ title: "Details", field: "details", minWidth: 400, formatter: "html" },
+				{ title: "Details<br><small>기존 용어 -> 변경 용어 : 번역 용어 (확정 여부)</small>", field: "details", minWidth: 400, formatter: "html" },
 				{ title: "Request Time", field: "requestTime", minWidth: 200},
 				{ title: "Status", field: "status", minWidth: 200},
 			],

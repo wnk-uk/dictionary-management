@@ -28,9 +28,10 @@ CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
 									existing_word VARCHAR(500), -- 기존 단어
                                     multlang_ccd VARCHAR(50) NOT NULL, -- 언어 코드 ko_KR, en_US, ja_JP, zh_CN
                                     multlang_key VARCHAR(500) NOT NULL, -- 등록할 단어
+                                    multlang_suggested_transl_cont VARCHAR(500), -- 사용자 제안 번역
                                     multlang_transl_cont VARCHAR(500), -- 등록할 번역
                                     multlang_transl_cont_abbr VARCHAR(100), -- 등록할 약어
-                                    multlang_typ VARCHAR(100), -- 등록 유형 button, label
+                                    multlang_typ VARCHAR(100) NOT NULL, -- 등록 유형 button, label
                                     screen_path VARCHAR(255), -- 화면 경로
                                     source_path VARCHAR(255), -- 소스 코드 경로
                                     comment VARCHAR(1000), -- 요청자의 코멘트
@@ -55,4 +56,13 @@ CREATE TABLE IF NOT EXISTS MULTLANG (
 									multlang_transl_fnl_cont VARCHAR2(500)
 );
 
+CREATE TABLE IF NOT EXISTS DIC_REQ_DTL_HIS (
+	                                history_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	                                dtl_id BIGINT NOT NULL,
+	                                comment_text TEXT,
+	                                image_path VARCHAR(255),
+									writer_nm VARCHAR(50) NOT NULL,
+									writed_dttm DATETIME DEFAULT CURRENT_TIMESTAMP,
+									FOREIGN KEY (dtl_id) REFERENCES DIC_REQ_DTL(id) ON DELETE CASCADE
+	);
 
