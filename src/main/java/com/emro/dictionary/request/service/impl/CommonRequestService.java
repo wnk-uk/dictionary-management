@@ -1,8 +1,9 @@
 package com.emro.dictionary.request.service.impl;
 
+import com.emro.dictionary.history.service.HistoryService;
 import com.emro.dictionary.multLang.service.MultLangService;
-import com.emro.dictionary.request.repository.RequestMapper;
 import com.emro.dictionary.request.dto.*;
+import com.emro.dictionary.request.repository.RequestMapper;
 import com.emro.dictionary.request.service.RequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +22,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommonRequestService implements RequestService {
 	protected final RequestMapper requestMapper;
-	private final MultLangService multLangService;
+	protected final MultLangService multLangService;
+	protected final HistoryService historyService;
 
 	@Override
-	public void saveRequest(MultLangRequestDTO request) throws IOException {
+	public void saveRequest(MultLangRequestDTO request, String requester) throws IOException {
 		requestMapper.insertRequest(request);
 		for (MultLangRequestDetailDTO detail : request.getDetails()) {
 			requestMapper.insertRequestDetail(request.getDicReqId(), detail);
+			if (detail.getComment() != null && !detail.getComment().isEmpty()) {
+				Long dtlId = detail.getId();
+				if (dtlId == null) {
+					throw new IllegalStateException("dtlId was not generated for detail: " + detail);
+				}
+				historyService.addHistory(dtlId, request.getEditorContent(), request.getImagePath(), requester);
+				historyService.addHistory(dtlId, detail.getComment(), null, requester);
+			}
 		}
 	}
 

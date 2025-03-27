@@ -119,7 +119,21 @@ public class PageController {
 
 		model.addAttribute("dicReqId", dicReqId);
 		model.addAttribute("acptSts", acptSts);
-		return "requestDetail"; // requestDetail.html
+		return "requestDetail";
+	}
+
+	@GetMapping("/req/detail/{dicReqId}/history/{dtlId}")
+	public String showDetailHistory(@PathVariable(value = "dicReqId") String dicReqId,
+	                                @PathVariable Long dtlId,
+	                                @RequestParam(value = "acptSts", defaultValue = "ALL") String acptSts,
+	                                Model model, Authentication authentication) {
+		if (authentication != null) {
+			model.addAttribute("username", authentication.getName());
+		}
+		model.addAttribute("dtlId", dtlId);
+		model.addAttribute("dicReqId", dicReqId);
+		model.addAttribute("acptSts", acptSts);
+		return "requestDetailHistory";
 	}
 
 }

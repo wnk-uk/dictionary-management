@@ -35,6 +35,7 @@ public interface RequestMapper {
                 #{detail.multlangTranslContAbbr}, #{detail.multlangTyp}, #{detail.screenPath}, 
                 #{detail.sourcePath}, #{detail.comment}, 'PENDING')
     """)
+	@Options(useGeneratedKeys = true, keyProperty = "detail.id")
 	void insertRequestDetail(@Param("dicReqId") Long dicReqId, @Param("detail") MultLangRequestDetailDTO detail);
 
 	/**

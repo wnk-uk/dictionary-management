@@ -1,10 +1,10 @@
 package com.emro.dictionary.request.service.impl;
 
+import com.emro.dictionary.history.service.HistoryService;
 import com.emro.dictionary.multLang.service.MultLangService;
-import com.emro.dictionary.request.dto.UpdateRequestDetailStatusDTO;
-import com.emro.dictionary.request.dto.UpdateRequestStatusDTO;
-import com.emro.dictionary.request.repository.RequestMapper;
 import com.emro.dictionary.request.dto.MultLangListDTO;
+import com.emro.dictionary.request.repository.RequestMapper;
+import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +17,12 @@ import java.util.List;
 @Slf4j
 public class AdminRequestServiceImpl extends CommonRequestService {
 
-	public AdminRequestServiceImpl(RequestMapper requestMapper, MultLangService multLangService) {
-		super(requestMapper, multLangService);
+	public AdminRequestServiceImpl(
+			RequestMapper requestMapper,
+			MultLangService multLangService,
+			HistoryService historyService
+			) {
+		super(requestMapper, multLangService, historyService);
 	}
 
 	@Override

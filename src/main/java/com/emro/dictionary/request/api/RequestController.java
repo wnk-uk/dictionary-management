@@ -61,8 +61,8 @@ public class RequestController {
 		request.setEditorContent(textContent);
 		request.setFiles(files);
 		request.setImagePath(imagePath);
-
-		serviceResolver.getService().saveRequest(request);
+		String username = serviceResolver.getUsername();
+		serviceResolver.getService().saveRequest(request, username);
 		return ResponseEntity.ok("Request submitted successfully");
 	}
 
