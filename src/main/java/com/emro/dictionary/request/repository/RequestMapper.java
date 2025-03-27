@@ -169,10 +169,10 @@ public interface RequestMapper {
 			@Result(property = "details", column = "dic_req_id",
 					many = @Many(select = "findRequestDetailsByDicReqId"))
 	})
-	MultLangListDTO findByDicReqId(@Param("dicReqId") String dicReqId);
+	MultLangListDTO findByDicReqId(@Param("dicReqId") Long dicReqId);
 
 	/**
-	 * dicReqId 을 이용한 detail 조회(DIC_REQ_DTL)
+	 * dicReqId 을 이용한 detail List 조회(DIC_REQ_DTL)
 	 */
 	@Select("""
 		SELECT * 
@@ -192,5 +192,28 @@ public interface RequestMapper {
 			@Result(property = "comment", column = "comment"),
 			@Result(property = "regSts", column = "reg_sts")
 	})
-	List<MultLangRequestDetailDTO> findRequestDetailsByDicReqId(@Param("dicReqId") String dicReqId);
+	List<MultLangRequestDetailDTO> findRequestDetailsByDicReqId(@Param("dicReqId") Long dicReqId);
+
+	/**
+	 * dicReqId 을 이용한 detail 조회(DIC_REQ_DTL)
+	 */
+	@Select("""
+		SELECT * 
+		FROM DIC_REQ_DTL 
+		WHERE id = #{id}
+		""")
+	@Results({
+			@Result(property = "id", column = "id"),
+			@Result(property = "existingWord", column = "existing_word"),
+			@Result(property = "multlangKey", column = "multlang_key"),
+			@Result(property = "multlangTranslCont", column = "multlang_transl_cont"),
+			@Result(property = "multlangSuggestedTranslCont", column = "multlang_suggested_transl_cont"),
+			@Result(property = "multlangTranslContAbbr", column = "multlang_transl_cont_abbr"),
+			@Result(property = "multlangTyp", column = "multlang_typ"),
+			@Result(property = "screenPath", column = "screen_path"),
+			@Result(property = "sourcePath", column = "source_path"),
+			@Result(property = "comment", column = "comment"),
+			@Result(property = "regSts", column = "reg_sts")
+	})
+	MultLangRequestDetailDTO  findRequestDetailByDicReqId(@Param("id") Long id);
 }

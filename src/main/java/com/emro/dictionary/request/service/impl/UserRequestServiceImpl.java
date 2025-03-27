@@ -1,5 +1,6 @@
 package com.emro.dictionary.request.service.impl;
 
+import com.emro.dictionary.multLang.service.MultLangService;
 import com.emro.dictionary.request.repository.RequestMapper;
 import com.emro.dictionary.request.dto.MultLangListDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,8 @@ import java.util.List;
 @Slf4j
 public class UserRequestServiceImpl extends CommonRequestService {
 
-	public UserRequestServiceImpl(RequestMapper requestMapper) {
-		super(requestMapper);
+	public UserRequestServiceImpl(RequestMapper requestMapper, MultLangService multLangService) {
+		super(requestMapper, multLangService);
 	}
 
 	@Override

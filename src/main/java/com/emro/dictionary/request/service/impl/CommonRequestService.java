@@ -1,5 +1,6 @@
 package com.emro.dictionary.request.service.impl;
 
+import com.emro.dictionary.multLang.service.MultLangService;
 import com.emro.dictionary.request.repository.RequestMapper;
 import com.emro.dictionary.request.dto.*;
 import com.emro.dictionary.request.service.RequestService;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommonRequestService implements RequestService {
 	protected final RequestMapper requestMapper;
+	private final MultLangService multLangService;
 
 	@Override
 	public void saveRequest(MultLangRequestDTO request) throws IOException {
@@ -53,13 +55,27 @@ public class CommonRequestService implements RequestService {
 	}
 
 	@Override
-	public void updateRequestStatus(List<UpdateRequestStatusDTO> updateList) {
+	public void updateRequestStatus(List<UpdateRequestStatusDTO> updateList, String requester) {
 		for (UpdateRequestStatusDTO update : updateList) {
 			Long dicReqId = update.getDicReqId();
 
 			// 1. DIC_REQ_DTL 상태 업데이트
 			for (UpdateRequestDetailStatusDTO detail : update.getDetails()) {
 				requestMapper.updateRequestDetailRegSts(detail.getId(), detail.getRegSts(), detail.getMultlangTranslCont());
+
+				// regSts가 ACCEPTANCE일 경우 MULTLANG 처리
+				if ("ACCEPTANCE".equals(detail.getRegSts())) {
+					MultLangRequestDetailDTO detailRecord = requestMapper.findRequestDetailByDicReqId(detail.getId());
+
+					multLangService.saveOrUpdateMultlang(
+							detailRecord.getMultlangCcd(),
+							detailRecord.getMultlangKey(),
+							detailRecord.getMultlangTranslCont(),
+							detailRecord.getMultlangTranslContAbbr(),
+							detailRecord.getMultlangTyp(),
+							requester
+					);
+				}
 			}
 
 			// 2. DIC_REQ_DTL 상태 조회
@@ -93,7 +109,7 @@ public class CommonRequestService implements RequestService {
 	}
 
 	@Override
-	public MultLangListDTO getRequestById(String dicReqId) {
+	public MultLangListDTO getRequestById(Long dicReqId) {
 		return requestMapper.findByDicReqId(dicReqId);
 	}
 }

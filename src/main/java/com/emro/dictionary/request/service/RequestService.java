@@ -51,12 +51,12 @@ public interface RequestService {
 	 * 선택된 요청들의 상태를 업데이트
 	 * @param updateList 업데이트할 요청 상태 리스트
 	 */
-	void updateRequestStatus(List<UpdateRequestStatusDTO> updateList);
+	void updateRequestStatus(List<UpdateRequestStatusDTO> updateList, String requester);
 
 	/**
 	 * decReqId를 이용한 detail 정보 호출
 	 * @param dicReqId
 	 * @return decReqId에 해당 하는 request Detail
 	 */
-	MultLangListDTO getRequestById(String dicReqId);
+	MultLangListDTO getRequestById(Long dicReqId);
 }

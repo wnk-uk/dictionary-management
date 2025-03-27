@@ -1,5 +1,6 @@
 package com.emro.dictionary.request.service.impl;
 
+import com.emro.dictionary.multLang.service.MultLangService;
 import com.emro.dictionary.request.dto.UpdateRequestDetailStatusDTO;
 import com.emro.dictionary.request.dto.UpdateRequestStatusDTO;
 import com.emro.dictionary.request.repository.RequestMapper;
@@ -16,8 +17,8 @@ import java.util.List;
 @Slf4j
 public class SysAdminRequestServiceImpl extends CommonRequestService {
 
-	public SysAdminRequestServiceImpl(RequestMapper requestMapper) {
-		super(requestMapper);
+	public SysAdminRequestServiceImpl(RequestMapper requestMapper, MultLangService multLangService) {
+		super(requestMapper, multLangService);
 	}
 
 	@Override

@@ -1,10 +1,15 @@
 package com.emro.dictionary.multLang.dto;
 
 import lombok.Data;
-import java.time.LocalDateTime;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class MultLangDTO {
     private String multlangCcd;
