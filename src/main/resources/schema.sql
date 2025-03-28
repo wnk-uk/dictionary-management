@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS DIC_REQ (
                                     REQ_DTTM TIMESTAMP,
                                     STS CHAR(1) DEFAULT 'C',
 									image_path VARCHAR(MAX),
-									editor_content VARCHAR(1000),
+									editor_content TEXT,
                                     ACPT_STS VARCHAR(50) -- REQUEST, PROGRESS, HOLDING, COMPLETE
 );
 
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS DIC_REQ_DTL_HIS (
 	                                history_id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	                                dtl_id BIGINT NOT NULL,
 	                                comment_text TEXT,
-	                                image_path VARCHAR(255),
+	                                image_path VARCHAR(MAX),
 									writer_nm VARCHAR(50) NOT NULL,
 									writed_dttm DATETIME DEFAULT CURRENT_TIMESTAMP,
 									FOREIGN KEY (dtl_id) REFERENCES DIC_REQ_DTL(id) ON DELETE CASCADE

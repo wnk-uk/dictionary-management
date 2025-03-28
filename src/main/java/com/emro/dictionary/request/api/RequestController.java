@@ -7,6 +7,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * request 관련 REST API 제공
@@ -45,25 +50,43 @@ public class RequestController {
 		request.setReqUsrNm(reqUsrNm);
 		request.setDetails(details);
 
-		// editorContent 처리
-		String textContent = null;
-		if (editorContent != null && !editorContent.trim().isEmpty()) {
-			textContent = Jsoup.parse(editorContent).text();
-		}
-
-		// 모든 파일을 한 번에 저장 (DIC_REQ의 image_path에 저장)
+	// 파일 저장 및 경로 생성
 		String imagePath = null;
+		Map<String, String> filePathMap = new HashMap<>();
 		if (files != null && !files.isEmpty()) {
-			imagePath = fileStorageService.storeFiles(files);
+			imagePath = fileStorageService.storeFiles(files, filePathMap);
 		}
 
-		// MultLangRequestDTO에 editorContent와 imagePath 설정
-		request.setEditorContent(textContent);
+		// 에디터 콘텐츠 처리
+		if (editorContent != null && !editorContent.trim().isEmpty()) {
+			String updatedContent = replaceBase64WithFilePath(editorContent, filePathMap);
+			request.setEditorContent(updatedContent); // 단일 String으로 설정
+		}
+
 		request.setFiles(files);
 		request.setImagePath(imagePath);
 		String username = serviceResolver.getUsername();
 		serviceResolver.getService().saveRequest(request, username);
 		return ResponseEntity.ok("Request submitted successfully");
+	}
+
+	// Base64 이미지를 파일 경로로 대체하는 메서드
+	private String replaceBase64WithFilePath(String editorContent, Map<String, String> filePathMap) {
+		Document doc = Jsoup.parse(editorContent);
+		Elements images = doc.select("img[src^=data:image/]");
+
+		for (Element img : images) {
+			String base64Src = img.attr("src");
+			String fileName = filePathMap.keySet().stream()
+					.filter(key -> filePathMap.get(key).contains(base64Src))
+					.findFirst()
+					.orElse(null);
+			if (fileName != null) {
+				String relativePath = "/uploads/" + fileName;
+				img.attr("src", relativePath); // 경로로 대체
+			}
+		}
+		return doc.body().html();
 	}
 
 	/**

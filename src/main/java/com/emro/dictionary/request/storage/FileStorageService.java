@@ -1,5 +1,6 @@
 package com.emro.dictionary.request.storage;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,14 +10,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class FileStorageService {
 	private final Path fileStorageLocation;
 
-	// 생성자에서 fileStorageLocation 초기화 (예: application.properties에서 설정)
-	public FileStorageService() {
-		this.fileStorageLocation = Paths.get("D:\\uploads\\final").toAbsolutePath().normalize();
+	// 생성자에서 fileStorageLocation 초기화
+	public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {
+		this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+
 		try {
 			Files.createDirectories(this.fileStorageLocation);
 		} catch (IOException e) {
@@ -24,7 +27,7 @@ public class FileStorageService {
 		}
 	}
 
-	public String storeFiles(List<MultipartFile> files) throws IOException {
+	public String storeFiles(List<MultipartFile> files, Map<String, String> filePathMap) throws IOException {
 		if (files == null || files.isEmpty()) {
 			return null;
 		}
@@ -36,7 +39,6 @@ public class FileStorageService {
 			String originalFilename = file.getOriginalFilename();
 			Path targetLocation = this.fileStorageLocation.resolve(originalFilename);
 
-			// 파일명 중복 처리
 			int counter = 1;
 			String fileName = originalFilename;
 			while (Files.exists(targetLocation)) {
@@ -47,10 +49,9 @@ public class FileStorageService {
 				counter++;
 			}
 
-			// 파일 저장
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-			// 파일명만 paths에 추가 (절대 경로 대신)
 			paths.append(fileName).append(";");
+			filePathMap.put(fileName, targetLocation.toString()); // 파일명과 경로 매핑
 		}
 		return paths.length() > 0 ? paths.substring(0, paths.length() - 1) : null;
 	}

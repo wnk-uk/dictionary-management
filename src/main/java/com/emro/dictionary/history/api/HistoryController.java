@@ -32,8 +32,8 @@ public class HistoryController {
 		String writerNm = SecurityContextHolder.getContext().getAuthentication().getName();
 		String imagePath = null;
 		if (files != null && !files.isEmpty()) {
-			// 이미지 저장 로직 (예: 파일 시스템 또는 S3)
-			imagePath = fileStorageService.storeFiles(files);
+			// 이미지 저장 로직
+//			imagePath = fileStorageService.storeFiles(files);
 		}
 		historyService.addHistory(dtlId, commentText, imagePath, writerNm);
 		return ResponseEntity.ok().build();

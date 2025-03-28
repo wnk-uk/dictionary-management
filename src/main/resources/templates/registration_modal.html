@@ -9,15 +9,6 @@
 			max-width: 150px; /* 최대 너비 설정 */
 			word-break: break-word; /* 단어 단위로 줄바꿈 */
 		}
-		
-		/* 에디터 스타일 */
-		#registrationModal .editor-container {
-			min-height: 200px;
-		}
-		#registrationModal .ql-editor {
-			min-height: 150px;
-		}
-		
 		/* thead와 tbody 간격 */
 		#requestTables thead {
 			display: table-header-group;
@@ -100,25 +91,24 @@
 								</td>
 							</tr>
 						</tbody>
-						<thead>
-							<tr>
-								<th colspan="5">Explain & File Upload</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr id="editorRow">
-								<td colspan="5">
-									<div class="editor-container" id="editor"></div>
-									<input type="file" class="form-control-file fileUpload" name="fileUpload" id="fileUpload" multiple>
-									<button type="button" class="btn btn-secondary downloadFileBtn">Download Uploaded File</button>
-								</td>
-							</tr>
-						</tbody>
 					</table>
-					<button type="button" class="btn btn-secondary" id="addRow">Add More</button>
+					<div>
+						<table class="table table-bordered">
+							<thead>
+						<tr>
+							<th colspan="5">Explain & File Upload</th>
+						</tr>
+							</thead>
+						</table>
+						<div class="editor-container" id="editor" style="height: 300px;"></div>
+						<input type="file" class="form-control-file fileUpload" name="fileUpload" id="fileUpload" multiple>
+<!--						<button type="button" class="btn btn-secondary downloadFileBtn">Download Uploaded File</button>-->
+					</div>
+
 				</form>
 			</div>
-			<div class="modal-footer">
+			<div class="modal-footer d-flex justify-content-between">
+				<button type="button" class="btn btn-secondary" id="addRow">Add More</button>
 				<button type="button" class="btn btn-primary" id="submitRequest">Submit Request</button>
 			</div>
 		</div>
@@ -184,7 +174,7 @@
 					['link', 'image'],
 					[{ 'list': 'ordered' }, { 'list': 'bullet' }]
 				]
-			}
+			},
 		});
 		editor.on('text-change', function (delta, oldDelta, source) {
 			if (source === 'user') {
@@ -295,44 +285,29 @@
 				row.querySelector(".newTranslation").classList.remove("is-invalid");
 			}
 			
-			const editorIndex = Math.floor(index / 2);
-			const editor = editors.get(editorIndex);
+			// 단일 에디터 콘텐츠 가져오기 (index 0만 사용)
+			const editor = editors.get(0);
 			let editorContent = editor ? editor.root.innerHTML : '';
 			
-			// 1. 에디터에서 이미지와 텍스트 분리
-			let textContent = '';
-			if (editor) {
-				const contents = editor.getContents();
+			// 에디터에서 이미지 추출 및 FormData에 추가
+			if (editorContent) {
 				const parser = new DOMParser();
-				const doc = parser.parseFromString(editor.root.innerHTML, 'text/html'); // editorContent 대신 editor.root.innerHTML
+				const doc = parser.parseFromString(editorContent, 'text/html');
 				const images = doc.getElementsByTagName('img');
 				
-				if (images.length > 0) {
-					Array.from(images).forEach((img, imgIndex) => {
-						const src = img.getAttribute('src');
-						if (src && src.startsWith('data:image/')) {
-							const blob = base64ToBlob(src);
-							const contentType = src.match(/data:(image\/[^;]+);/)[1];
-							// 날짜 포맷팅 (YYYYMMDD_HHMM)
-							const now = new Date();
-							const year = now.getFullYear();
-							const month = String(now.getMonth() + 1).padStart(2, '0');
-							const day = String(now.getDate()).padStart(2, '0');
-							const hours = String(now.getHours()).padStart(2, '0');
-							const minutes = String(now.getMinutes()).padStart(2, '0');
-							const dateStr = `${year}${month}${day}_${hours}${minutes}`;
-							const sanitizedReqUsrNm = reqUsrNm.replace(/[^a-zA-Z0-9]/g, '_');
-							const fileName = `image_${imgIndex}_${sanitizedReqUsrNm}_${dateStr}.${contentType.split('/')[1]}`;
-							console.log(`Adding editor image for index ${editorIndex}:`, fileName);
-							formData.append("files", blob, fileName);
-							img.remove();
-						}
-					});
-					textContent = doc.body.textContent.trim();
-				} else {
-					textContent = editor.getText().trim();
-				}
-				editorContentCombined += (textContent ? textContent + '\n' : '');
+				Array.from(images).forEach((img, imgIndex) => {
+					const src = img.getAttribute('src');
+					if (src && src.startsWith('data:image/')) {
+						const blob = base64ToBlob(src);
+						const contentType = src.match(/data:(image\/[^;]+);/)[1];
+						const now = new Date();
+						const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+						const sanitizedReqUsrNm = reqUsrNm.replace(/[^a-zA-Z0-9]/g, '_');
+						const fileName = `image_${imgIndex}_${sanitizedReqUsrNm}_${dateStr}.${contentType.split('/')[1]}`;
+						formData.append("files", blob, fileName);
+					}
+				});
+				formData.append("editorContent", editorContent); // 단일 editorContent로 전송
 			}
 			
 			// 2. details 객체 구성 (editorContent 제외)
@@ -350,14 +325,12 @@
 			details.push(detail);
 			
 			// 3. 업로드된 파일 처리
-			document.querySelectorAll("#requestTables .fileUpload").forEach((fileInput, index) => {
-				if (fileInput && fileInput.files.length > 0) {
-					Array.from(fileInput.files).forEach((file, i) => {
-						console.log(`Adding uploaded file ${i} for editor ${index}:`, file.name);
-						formData.append("files", file);
-					});
-				}
-			});
+			const fileInput = document.querySelector("#fileUpload");
+			if (fileInput && fileInput.files.length > 0) {
+				Array.from(fileInput.files).forEach(file => {
+					formData.append("files", file);
+				});
+			}
 		});
 		
 		if (!isValid) {
@@ -406,29 +379,6 @@
 		return new Blob([byteNumbers], { type: contentType });
 	}
 	
-	// Base64를 Blob으로 변환하는 유틸리티 함수
-	function base64ToBlob(base64) {
-		const base64Data = base64.split(',')[1];
-		const byteCharacters = atob(base64Data);
-		const byteNumbers = new Uint8Array(byteCharacters.length);
-		for (let i = 0; i < byteCharacters.length; i++) {
-			byteNumbers[i] = byteCharacters.charCodeAt(i);
-		}
-		const contentType = base64.match(/data:([^;]+);/)[1];
-		return new Blob([byteNumbers], { type: contentType });
-	}
-	
-	function base64ToFile(base64, fileName, contentType) {
-		const blob = base64ToBlob(base64);
-		const url = URL.createObjectURL(blob);
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = fileName;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		URL.revokeObjectURL(url);
-	}
 	
 	// 검색 기능
 	window.searchExistingWord = function (input) {
@@ -486,21 +436,34 @@
 		if (dropdown) dropdown.style.display = "none";
 	}
 	
-	// 초기 다운로드 버튼 이벤트
-	document.querySelectorAll(".downloadFileBtn").forEach(btn => {
-		btn.addEventListener("click", function () {
-			console.log("Download button clicked");
-			const fileInput = btn.closest("tr").querySelector(".fileUpload");
-			if (!fileInput || fileInput.files.length === 0) {
-				alert("먼저 파일을 업로드해주세요!");
-				return;
-			}
-			const file = fileInput.files[0];
-			const reader = new FileReader();
-			reader.onload = (e) => base64ToFile(e.target.result, file.name, file.type);
-			reader.readAsDataURL(file);
-		});
-	});
+	// // 초기 다운로드 버튼 이벤트
+	// document.querySelectorAll(".downloadFileBtn").forEach(btn => {
+	// 	btn.addEventListener("click", function () {
+	// 		console.log("Download button clicked");
+	// 		const fileInput = btn.closest("tr").querySelector(".fileUpload");
+	// 		if (!fileInput || fileInput.files.length === 0) {
+	// 			alert("먼저 파일을 업로드해주세요!");
+	// 			return;
+	// 		}
+	// 		const file = fileInput.files[0];
+	// 		const reader = new FileReader();
+	// 		reader.onload = (e) => base64ToFile(e.target.result, file.name, file.type);
+	// 		reader.readAsDataURL(file);
+	// 	});
+	// });
+	//
+	// function base64ToFile(base64, fileName, contentType) {
+	// 	const blob = base64ToBlob(base64);
+	// 	const url = URL.createObjectURL(blob);
+	// 	const link = document.createElement("a");
+	// 	link.href = url;
+	// 	link.download = fileName;
+	// 	document.body.appendChild(link);
+	// 	link.click();
+	// 	document.body.removeChild(link);
+	// 	URL.revokeObjectURL(url);
+	// }
+	
 </script>
 
 </body>
