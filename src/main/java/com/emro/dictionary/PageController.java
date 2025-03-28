@@ -108,10 +108,10 @@ public class PageController {
 		return "registration_modal_vertical";
 	}
 
-	@GetMapping("/req/detail/{dicReqId}")
+	@GetMapping("/req/{acptSts}/detail/{dicReqId}")
 	public String requestDetail(
 			@PathVariable(value = "dicReqId") String dicReqId,
-			@RequestParam(value = "acptSts", defaultValue = "ALL") String acptSts,
+			@PathVariable(value = "acptSts") String acptSts,
 	                            Model model, Authentication authentication) {
 		if (authentication != null) {
 			model.addAttribute("username", authentication.getName());
@@ -122,10 +122,10 @@ public class PageController {
 		return "requestDetail";
 	}
 
-	@GetMapping("/req/detail/{dicReqId}/history/{dtlId}")
+	@GetMapping("/req/{acptSts}/detail/{dicReqId}/history/{dtlId}")
 	public String showDetailHistory(@PathVariable(value = "dicReqId") String dicReqId,
 	                                @PathVariable Long dtlId,
-	                                @RequestParam(value = "acptSts", defaultValue = "ALL") String acptSts,
+	                                @PathVariable(value = "acptSts") String acptSts,
 	                                Model model, Authentication authentication) {
 		if (authentication != null) {
 			model.addAttribute("username", authentication.getName());

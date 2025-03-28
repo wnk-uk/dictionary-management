@@ -106,8 +106,8 @@
 				row.getElement().onclick = function(e) {
 					if (e.target.tagName !== "INPUT") {
 						let dicReqId = row.getData().dicReqId;
-						let acptSts = "[[${acptSts}]]" === "null" ? "ALL" : "[[${acptSts}]]";
-						window.location.href = `/req/detail/${dicReqId}?acptSts=${acptSts}`;
+						let acptSts = "[[${acptSts}]]" === "null" ? "all" : "[[${acptSts}]]";
+						window.location.href = `/req/${acptSts}/detail/${dicReqId}`;
 					}
 				};
 			}

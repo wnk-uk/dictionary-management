@@ -11,7 +11,7 @@
 			<div class="container-fluid">
 				<div class="d-sm-flex align-items-center justify-content-between mb-4">
 					<h1 class="h3 mb-0 text-gray-800">Request Detail History</h1>
-					<a th:href="@{/req/detail/{dicReqId}(dicReqId=${dicReqId})}" class="btn btn-secondary btn-sm">
+					<a th:href="@{/req/{acptSts}/detail/{dicReqId}(acptSts=${acptSts}, dicReqId=${dicReqId})}" class="btn btn-secondary btn-sm">
 						<i class="fas fa-arrow-left"></i> Back to Request Detail
 					</a>
 				</div>
@@ -45,13 +45,13 @@
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
-		const dtlId = "[[${dtlId}]]";
-		const dicReqId = "[[${dicReqId}]]";
-		const acptSts = "[[${acptSts}]]";
+		let dtlId = "[[${dtlId}]]";
+		let dicReqId = "[[${dicReqId}]]";
+		let acptSts = "[[${acptSts}]]";
 		
 		if (!dtlId) {
 			alert("🚨 No detail ID provided.");
-			window.location.href = `/req/detail/${dicReqId}`;
+			window.location.href = `/req/${acptSts}/detail/${dicReqId}`;
 			return;
 		}
 		

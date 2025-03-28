@@ -73,10 +73,10 @@ public class RequestController {
 	public ResponseEntity<List<MultLangListDTO>> getRequests(@PathVariable String acptSts) {
 		String username = serviceResolver.getUsername();
 
-		if ("ALL".equalsIgnoreCase(acptSts)) {
+		if ("all".equalsIgnoreCase(acptSts)) {
 			return ResponseEntity.ok(serviceResolver.getService().getAllRequestsExceptHOLDING(username));
 		}
-		return ResponseEntity.ok(serviceResolver.getService().getRequestsByAcptSts(acptSts, username));
+		return ResponseEntity.ok(serviceResolver.getService().getRequestsByAcptSts(acptSts.toUpperCase(), username));
 	}
 
 	/**

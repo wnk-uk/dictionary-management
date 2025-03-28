@@ -161,8 +161,7 @@
 				row.getElement().onclick = function(e) {
 					if(e.target.tagName !== "INPUT") { // 체크박스 클릭 제외
 						let dtlId = rowData.id; // DIC_REQ_DTL의 id
-						let acptStsParam = acptSts === "null" ? "ALL" : acptSts;
-						window.location.href = `/req/detail/${dicReqId}/history/${dtlId}?acptSts=${acptStsParam}`;
+						window.location.href = `/req/${acptSts}/detail/${dicReqId}/history/${dtlId}`;
 					}
 				}
 			},
