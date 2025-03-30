@@ -31,7 +31,7 @@ file:
 
 logging:
   level:
-    root: DEBUG  # 전체 기본 로그 레벨
+    root: INFO  # 전체 기본 로그 레벨
     org.mybatis: DEBUG
     org.apache.ibatis: DEBUG
     java.sql: DEBUG
