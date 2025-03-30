@@ -13,80 +13,89 @@
 				<div class="d-sm-flex align-items-center justify-content-between mb-4">
 					<h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
 				</div>
-				<div class="row">
-				</div>
 				<!-- Content Row -->
 				<div class="row">
-					<!-- ✅ PENDING 요청 리스트 이동 (기본 리스트) -->
-					<div class="col-xl-3 col-md-6 mb-4">
-						<div class="card border-left-primary shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('all')">
-							<div class="card-body">
-								<div class="row no-gutters align-items-center">
-									<div class="col mr-2">
-										<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-											Pending Request
-										</div>
-										<div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingCount">-</div>
-									</div>
-									<div class="col-auto">
-										<i class="fas fa-calendar fa-2x text-gray-300"></i>
-									</div>
-								</div>
+					<div class="col-xl-6 col-lg-6">
+						<div class="welcome mb-1" style="height:98%;">
+							<div>
+								<h2>다국어 요청 가이드 이미지 Link</h2>
+								<p>Silde Show</p>
 							</div>
 						</div>
 					</div>
-					
-					<!-- ✅ HOLDING 상태 요청 리스트 이동 -->
-					<div class="col-xl-3 col-md-6 mb-4">
-						<div class="card border-left-success shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('holding')">
-							<div class="card-body">
-								<div class="row no-gutters align-items-center">
-									<div class="col mr-2">
-										<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-											Holding Request
-										</div>
-										<div class="h5 mb-0 font-weight-bold text-gray-800" id="holdingCount">-</div>
-									</div>
-									<div class="col-auto">
-										<i class="fas fa-pause fa-2x text-gray-300"></i>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					
-					<div class="col-xl-3 col-md-6 mb-4">
-						<div class="card border-left-info shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('glo')">
-							<div class="card-body">
-								<div class="row no-gutters align-items-center">
-									<div class="col mr-2">
-										<div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Glossary</div>
+					<div class="col-xl-6 col-lg-6">
+						<div class="row">
+							<div class="col-xl-6 col-md-6 mb-1">
+								<div class="card border-left-primary shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('all')">
+									<div class="card-body">
 										<div class="row no-gutters align-items-center">
+											<div class="col mr-2">
+												<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+													Pending Request
+												</div>
+												<div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingCount">-</div>
+											</div>
 											<div class="col-auto">
-												<div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">1871</div>
+												<i class="fas fa-calendar fa-2x text-gray-300"></i>
 											</div>
 										</div>
 									</div>
-									<div class="col-auto">
-										<i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+								</div>
+							</div>
+
+							<div class="col-xl-6 col-md-6 mb-1">
+								<div class="card border-left-success shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('holding')">
+									<div class="card-body">
+										<div class="row no-gutters align-items-center">
+											<div class="col mr-2">
+												<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+													Holding Request
+												</div>
+												<div class="h5 mb-0 font-weight-bold text-gray-800" id="holdingCount">-</div>
+											</div>
+											<div class="col-auto">
+												<i class="fas fa-pause fa-2x text-gray-300"></i>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					
-					<div class="col-xl-3 col-md-6 mb-4">
-						<div class="card border-left-warning shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('lang')">
-							<div class="card-body">
-								<div class="row no-gutters align-items-center">
-									<div class="col mr-2">
-										<div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-											Total Dictionary
+						<div class="row">
+							<div class="col-xl-6 col-md-6 mb-1">
+								<div class="card border-left-info shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('glo')">
+									<div class="card-body">
+										<div class="row no-gutters align-items-center">
+											<div class="col mr-2">
+												<div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Glossary</div>
+												<div class="row no-gutters align-items-center">
+													<div class="col-auto">
+														<div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">1871</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-auto">
+												<i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+											</div>
 										</div>
-										<div class="h5 mb-0 font-weight-bold text-gray-800">8892</div>
 									</div>
-									<div class="col-auto">
-										<i class="fas fa-comments fa-2x text-gray-300"></i>
+								</div>
+							</div>
+
+							<div class="col-xl-6 col-md-6 mb-1">
+								<div class="card border-left-warning shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('lang')">
+									<div class="card-body">
+										<div class="row no-gutters align-items-center">
+											<div class="col mr-2">
+												<div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+													Total Dictionary
+												</div>
+												<div class="h5 mb-0 font-weight-bold text-gray-800">8892</div>
+											</div>
+											<div class="col-auto">
+												<i class="fas fa-comments fa-2x text-gray-300"></i>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>

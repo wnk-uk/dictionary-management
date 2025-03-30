@@ -58,3 +58,19 @@ body {
 #registrationForm .table tbody:nth-of-type(even) {
      background-color: #eaecf4; /* 또는 board-style */
  }
+
+.welcome {
+    background: linear-gradient(to right, #c8f1ff, #e7efff);
+    padding: 30px;
+    border-radius: 20px;
+    justify-content: space-between;
+    align-items: center;
+    grid-column: 1;
+}
+
+
+.welcome h2 {
+    font-size: 28px;
+    color: #4b2aad;
+    margin-bottom: 10px;
+}
