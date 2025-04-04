@@ -1,4 +1,4 @@
-package com.emro.dictionary.request.storage;
+package com.emro.dictionary.request.storage.api;
 
 import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
 import lombok.RequiredArgsConstructor;

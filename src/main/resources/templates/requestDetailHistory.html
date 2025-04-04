@@ -33,6 +33,7 @@
 					</div>
 					<div class="card-body">
 						<div id="quill-editor" style="height: 200px;"></div>
+						<input type="file" class="form-control-file mt-2" id="fileUpload" name="fileUpload" multiple>
 						<button class="btn btn-primary btn-sm mt-2" onclick="submitComment()">Submit Comment</button>
 					</div>
 				</div>
@@ -41,10 +42,6 @@
 		<footer th:replace="fragments.html :: main-footer"></footer>
 	</div>
 </div>
-
-<!-- Quill CDN -->
-<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
@@ -64,11 +61,7 @@
 			return;
 		}
 		
-		// 이미지 업로드를 위한 변수
-		let uploadedFiles = [];
-		let imageMap = {};
-		
-		// 입력용 Quill 초기화
+		// Quill 에디터 초기화
 		const quill = new Quill('#quill-editor', {
 			theme: 'snow',
 			placeholder: 'Write your comment here...',
@@ -87,18 +80,11 @@
 							input.setAttribute('type', 'file');
 							input.setAttribute('accept', 'image/*');
 							input.click();
-							input.onchange = async () => {
+							input.onchange = () => {
 								const file = input.files[0];
 								if (file) {
-									const reader = new FileReader();
-									reader.onload = (e) => {
-										const base64 = e.target.result;
-										const range = quill.getSelection(true);
-										quill.insertEmbed(range.index, 'image', base64);
-										uploadedFiles.push(file);
-										imageMap[base64] = file.name; // Base64와 파일명 매핑
-									};
-									reader.readAsDataURL(file);
+									const range = this.quill.getSelection(true) || { index: 0 };
+									uploadImageToServer(file, this.quill, range);
 								}
 							};
 						}
@@ -106,7 +92,41 @@
 				}
 			}
 		});
+		
+		// Paste 이벤트 처리
+		const editableDiv = document.querySelector('#quill-editor .ql-editor');
+		editableDiv.addEventListener('paste', (e) => {
+			e.preventDefault();
+			const clipboardData = e.clipboardData || window.clipboardData;
+			if (!clipboardData || !clipboardData.items) return;
+			
+			const items = clipboardData.items;
+			let imageHandled = false;
+			
+			for (let i = 0; i < items.length; i++) {
+				if (items[i].type.startsWith('image/')) {
+					const file = items[i].getAsFile();
+					if (file) {
+						const range = quill.getSelection(true) || { index: 0 };
+						uploadImageToServer(file, quill, range);
+						imageHandled = true;
+						break;
+					}
+				}
+			}
+			
+			if (!imageHandled) {
+				const text = clipboardData.getData('text/plain');
+				if (text && !text.startsWith('data:image/')) {
+					const range = quill.getSelection(true) || { index: 0 };
+					quill.insertText(range.index, text, Quill.sources.USER);
+					quill.setSelection(range.index + text.length, Quill.sources.SILENT);
+				}
+			}
+		});
+		
 		window.quill = quill;
+		window.quillUploadedFiles = [];
 		
 		loadHistory(dtlId);
 	});
@@ -114,13 +134,11 @@
 	function loadHistory(dtlId) {
 		fetch(`/api/history/${dtlId}`)
 				.then(response => {
-					if (!response.ok) {
-						throw new Error(`HTTP error! Status: ${response.status}`);
-					}
+					if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 					return response.json();
 				})
 				.then(data => {
-					const chatContainer = document.getElementById("historyChat");
+					const chatContainer = document.getElementById('historyChat');
 					chatContainer.innerHTML = '';
 					if (!data || data.length === 0) {
 						chatContainer.innerHTML = '<p>No comments yet.</p>';
@@ -129,29 +147,31 @@
 					data.forEach((history, index) => {
 						let fileHtml = '';
 						if (history.imagePath) {
-							const files = history.imagePath.split(';');
-							fileHtml = `
-                            <div class="attached-files text-right">
-                                ${files.map(file => `
-                                    <div class="d-block mb-2">
-                                        <a href="${getUploadUrl(file)}" target="_blank">${file}</a>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
+							const files = history.imagePath.split(';').filter(file => !/\.(jpg|jpeg|png|gif|bmp)$/i.test(file));
+							if (files.length > 0) {
+								fileHtml = `
+							<div class="attached-files text-right">
+								${files.map(file => `
+									<div class="d-block mb-2">
+										<a href="${getUploadUrl(file)}" target="_blank">${file.split('/').pop()}</a>
+									</div>
+								`).join('')}
+							</div>
+						`;
+							}
 						}
 						
 						const quillId = `quill-history-${index}`;
 						const chatBubble = `
-                        <div class="chat-bubble mb-3">
-                            <div class="d-flex justify-content-between">
-                                <strong>${history.writerNm}</strong>
-                                <small>${UT.formatDate(history.writedDttm)}</small>
-                            </div>
-                            <div id="${quillId}" class="quill-history mt-1" style="min-height: 50px;"></div>
-                            ${fileHtml}
-                        </div>
-                    `;
+					<div class="chat-bubble mb-3">
+						<div class="d-flex justify-content-between">
+							<strong>${history.writerNm}</strong>
+							<small>${UT.formatDate(history.writedDttm)}</small>
+						</div>
+						<div id="${quillId}" class="quill-history mt-1" style="min-height: 50px;"></div>
+						${fileHtml}
+					</div>
+				`;
 						chatContainer.innerHTML += chatBubble;
 						
 						const quillHistory = new Quill(`#${quillId}`, {
@@ -163,9 +183,37 @@
 					});
 				})
 				.catch(error => {
-					console.error("Error fetching history:", error);
-					alert("🚨 Failed to load history: " + error.message);
+					console.error('Error fetching history:', error);
+					alert('🚨 Failed to load history: ' + error.message);
 				});
+	}
+	
+	function uploadImageToServer(file, editor, range) {
+		const formData = new FormData();
+		formData.append('file', file);
+		
+		$.ajax({
+			url: '/api/upload/temp-image',
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function(result) {
+				if (result && result.url) {
+					let currentContent = editor.root.innerHTML;
+					const base64Regex = /<img[^>]+src=["']data:image\/[^"']+["'][^>]*>/gi;
+					currentContent = currentContent.replace(base64Regex, '');
+					editor.root.innerHTML = currentContent;
+					
+					editor.insertEmbed(range.index, 'image', result.url);
+					if (!window.quillUploadedFiles) window.quillUploadedFiles = [];
+					window.quillUploadedFiles.push({ file: file, url: result.url, wrappedImage: result.html });
+				}
+			},
+			error: function(err) {
+				console.error('Image upload failed:', err.responseText || err);
+			}
+		});
 	}
 	
 	function submitComment() {
@@ -173,33 +221,52 @@
 		const commentText = window.quill.root.innerHTML;
 		const formData = new FormData();
 		formData.append('dtlId', dtlId);
-		formData.append('commentText', commentText);
 		
-		// 업로드된 파일 추가
-		window.uploadedFiles.forEach(file => {
-			formData.append('files', file);
-		});
+		// 에디터 콘텐츠에 업로드된 이미지 처리
+		let updatedCommentText = commentText;
+		if (Array.isArray(window.quillUploadedFiles)) {
+			window.quillUploadedFiles.forEach(item => {
+				if (item.url && item.wrappedImage) {
+					const imgRegex = new RegExp(`<img\\s+src=["']${item.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>`, 'g');
+					updatedCommentText = updatedCommentText.replace(imgRegex, item.wrappedImage);
+				}
+			});
+		}
+		formData.append('commentText', updatedCommentText);
 		
-		// imageMap을 JSON 문자열로 변환해 추가
-		if (Object.keys(window.imageMap).length > 0) {
-			formData.append('imageMapJson', JSON.stringify(window.imageMap));
+		// 업로드된 이미지 파일 추가
+		if (Array.isArray(window.quillUploadedFiles)) {
+			window.quillUploadedFiles.forEach(item => {
+				if (item.file && item.url) {
+					const renamedFile = new File([item.file], item.url.split('/').pop(), { type: item.file.type });
+					formData.append('files', renamedFile);
+				}
+			});
+		}
+		
+		// 파일 업로드 처리
+		const fileInput = document.getElementById('fileUpload');
+		if (fileInput && fileInput.files.length > 0) {
+			Array.from(fileInput.files).forEach(file => {
+				formData.append('files', file);
+			});
 		}
 		
 		$.ajax({
-			type: "POST",
-			url: "/api/history/add",
+			type: 'POST',
+			url: '/api/history/add',
 			data: formData,
 			processData: false,
 			contentType: false,
-			success: function () {
-				alert("✅ Comment added successfully!");
+			success: function() {
+				alert('✅ Comment added successfully!');
 				window.quill.setContents([]); // 입력 Quill 초기화
-				window.uploadedFiles = []; // 파일 배열 초기화
-				window.imageMap = {}; // imageMap 초기화
+				window.quillUploadedFiles = []; // 업로드 파일 배열 초기화
+				document.getElementById('fileUpload').value = ''; // 파일 입력 초기화
 				loadHistory(dtlId);
 			},
-			error: function (xhr) {
-				alert("🚨 Failed to add comment: " + xhr.responseText);
+			error: function(xhr) {
+				alert('🚨 Failed to add comment: ' + xhr.responseText);
 			}
 		});
 	}

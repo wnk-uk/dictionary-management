@@ -1,7 +1,7 @@
 package com.emro.dictionary.request.api;
 
-import com.emro.dictionary.request.storage.FileStorageService;
-import com.emro.dictionary.request.storage.EditorContentService;
+import com.emro.dictionary.request.storage.service.FileStorageService;
+import com.emro.dictionary.request.storage.service.EditorContentService;
 import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
 import com.emro.dictionary.request.dto.*;
 import com.fasterxml.jackson.core.type.TypeReference;

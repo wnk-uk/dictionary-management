@@ -2,8 +2,8 @@ package com.emro.dictionary.history.api;
 
 import com.emro.dictionary.history.dto.RequestDetailHistoryDTO;
 import com.emro.dictionary.history.service.HistoryService;
-import com.emro.dictionary.request.storage.EditorContentService;
-import com.emro.dictionary.request.storage.FileStorageService;
+import com.emro.dictionary.request.storage.service.EditorContentService;
+import com.emro.dictionary.request.storage.service.FileStorageService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -48,10 +48,11 @@ public class HistoryController {
 			imagePath = fileStorageService.storeFiles(files, filePathMap);
 		}
 
-		String updatedCommentText = commentText;
-//		if (commentText != null && !commentText.trim().isEmpty()) {
-//			updatedCommentText = editorContentService.replaceBase64WithFilePath(commentText, imageMap);
-//		}
+		String updatedCommentText = "";
+		// 에디터 콘텐츠 처리 (임시 이미지 → 정식 이미지 URL 변환)
+		if (commentText != null && !commentText.trim().isEmpty()) {
+			updatedCommentText = editorContentService.moveTempImagesToUpload(commentText);
+		}
 
 		historyService.addHistory(dtlId, updatedCommentText, imagePath, writerNm);
 		return ResponseEntity.ok().build();
