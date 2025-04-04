@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -42,12 +41,12 @@ public class PageController {
         return "gloList";
     }
 
-    @GetMapping("/lang/lists")
+    @GetMapping("/multlang/lists")
     public String langHome(Model model, Authentication authentication) {
         if (authentication != null) {
             model.addAttribute("username", authentication.getName());
         }
-        return "langList";
+        return "multlangList";
     }
 
     @GetMapping("/user/lists")
@@ -81,12 +80,12 @@ public class PageController {
 				SecurityContextHolder.getContext()
 		);
 
-		return "redirect:/lang/lists";
+		return "redirect:/multlang/lists";
 	}
 
 
 	@GetMapping("/req/{acptSts}/lists")
-	public String reqLists(
+	public String requestLists(
 			@PathVariable(value = "acptSts") String acptSts,
 			Model model,
 			Authentication authentication) {
@@ -123,10 +122,10 @@ public class PageController {
 	}
 
 	@GetMapping("/req/{acptSts}/detail/{dicReqId}/history/{dtlId}")
-	public String showDetailHistory(@PathVariable(value = "dicReqId") String dicReqId,
-	                                @PathVariable Long dtlId,
-	                                @PathVariable(value = "acptSts") String acptSts,
-	                                Model model, Authentication authentication) {
+	public String requestDetailHistory(@PathVariable(value = "dicReqId") String dicReqId,
+	                                   @PathVariable(value = "dtlId") Long dtlId,
+	                                   @PathVariable(value = "acptSts") String acptSts,
+	                                   Model model, Authentication authentication) {
 		if (authentication != null) {
 			model.addAttribute("username", authentication.getName());
 		}
@@ -134,6 +133,19 @@ public class PageController {
 		model.addAttribute("dicReqId", dicReqId);
 		model.addAttribute("acptSts", acptSts);
 		return "requestDetailHistory";
+	}
+
+	@GetMapping("/multlang/history/{multlangKey}")
+	public String multlangHistory(
+			@PathVariable(value = "multlangKey") String multlangKey,
+			Model model, Authentication authentication) {
+
+		if (authentication != null) {
+			model.addAttribute("username", authentication.getName());
+		}
+
+		model.addAttribute("multlangKey", multlangKey);
+		return "multlangHistory";
 	}
 
 }

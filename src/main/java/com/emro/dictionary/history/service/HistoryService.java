@@ -1,5 +1,6 @@
 package com.emro.dictionary.history.service;
 
+import com.emro.dictionary.history.dto.MultlLangHistoryDTO;
 import com.emro.dictionary.history.dto.RequestDetailHistoryDTO;
 import com.emro.dictionary.history.repository.HistoryMapper;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +29,9 @@ public class HistoryService {
 		history.setImagePath(imagePath);
 		history.setWriterNm(writerNm);
 		historyMapper.insertHistory(history);
+	}
+
+	public List<MultlLangHistoryDTO> getRequestHistoryByMultlangKey(String multlangKey) {
+		return historyMapper.findByMultlangKey(multlangKey);
 	}
 }

@@ -1,5 +1,6 @@
 package com.emro.dictionary.history.api;
 
+import com.emro.dictionary.history.dto.MultlLangHistoryDTO;
 import com.emro.dictionary.history.dto.RequestDetailHistoryDTO;
 import com.emro.dictionary.history.service.HistoryService;
 import com.emro.dictionary.request.storage.service.EditorContentService;
@@ -56,5 +57,11 @@ public class HistoryController {
 
 		historyService.addHistory(dtlId, updatedCommentText, imagePath, writerNm);
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/multlang/{multlangKey}")
+	@ResponseBody
+	public List<MultlLangHistoryDTO> getRequestHistory(@PathVariable("multlangKey") String multlangKey) {
+		return historyService.getRequestHistoryByMultlangKey(multlangKey);
 	}
 }

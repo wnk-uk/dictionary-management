@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments.html :: head"></head>
+<body id="page-top">
+<div id="wrapper">
+	<div th:replace="fragments.html :: main-sidebar"></div>
+	
+	<div id="content-wrapper" class="d-flex flex-column">
+		<div id="content">
+			<div th:replace="fragments.html :: main-nav"></div>
+			
+			<div class="container-fluid">
+				<div class="d-sm-flex align-items-center justify-content-between mb-4">
+					<h1 class="h3 mb-0 text-gray-800" th:text="${multlangKey} + ' \'s history'"></h1>
+				</div>
+				
+				<div class="card shadow mb-4">
+					<div class="card-header py-3">
+						<h6 class="m-0 font-weight-bold text-primary">Request History</h6>
+					</div>
+					<div class="card-body">
+						<div class="table-responsive">
+							<div class="tabulator-wrapper" id="requestHistoryTable"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer th:replace="fragments.html :: main-footer"></footer>
+	</div>
+</div>
+
+<script th:replace="fragments.html :: ajax-csrf-header"></script>
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const multlangKey = "[[${multlangKey}]]";
+		
+		const table = new Tabulator("#requestHistoryTable", {
+			layout: "fitDataTable",
+			columnMinWidth: 120,
+			ajaxURL: `/api/history/multlang/${encodeURIComponent(multlangKey)}`, // API 호출
+			columns: [
+				{ title: "Request User", field: "reqUsrNm" },
+				{ title: "Request Date", field: "reqDttm", formatter: function(cell) { return UT.formatDate(cell.getValue()); } },
+				{ title: "Status", field: "regSts" },
+				{ title: "ID", field: "id" },
+				{ title: "Request ID", field: "dicReqId" },
+				{ title: "Existing Word", field: "existingWord" },
+				{ title: "Language Code", field: "multlangCcd" },
+				{ title: "Word (Key)", field: "multlangKey" },
+				{ title: "Suggested Translation", field: "multlangSuggestedTranslCont" },
+				{ title: "Translation", field: "multlangTranslCont" },
+				{ title: "Abbreviation", field: "multlangTranslContAbbr" },
+				{ title: "Type", field: "multlangTyp" },
+				{ title: "Screen Path", field: "screenPath" },
+				{ title: "Source Path", field: "sourcePath" },
+				{
+					title: "Comment",
+					field: "comment",
+					formatter: function(cell) {
+						const value = cell.getValue() || "[N/A]";
+						return `<a href="#" style="color: #007bff; text-decoration: underline;">${value}</a>`;
+					},
+					cellClick: function(e, cell) {
+						return `<a href="/req/all/detail/${cell.getRow().getData().dicReqId}/history/${cell.getRow().getData().id}">${cell.getValue() || 'No Comment'}</a>`;
+					}
+				}
+			],
+			rowFormatter: function(row) {
+				console.log("click")
+				row.getElement().onclick = function(e) {
+					if (e.target.tagName !== "A") {
+						let dicReqId = row.getData().dicReqId;
+						window.location.href = `/req/all/detail/${dicReqId}`;
+					}
+				}
+			},
+			ajaxResponse: function(url, params, response) {
+				if (!response || response.length === 0) {
+					document.getElementById("requestHistoryTable").innerHTML = `
+						<div class="alert alert-info text-center" role="alert">
+							<i class="fas fa-info-circle"></i> No history found for this key.
+						</div>`;
+					return [];
+				}
+				return response;
+			}
+		});
+	});
+</script>
+<th:block th:replace="fragments.html :: common-scripts"></th:block>
+</body>
+</html>

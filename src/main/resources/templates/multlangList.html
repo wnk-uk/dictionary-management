@@ -67,7 +67,13 @@
 				{ title: "Registration Date", field: "regDttm", formatter: function (cell) { return UT.formatDate(cell.getValue()); } },
 				{ title: "Modified By", field: "modrId"  },
 				{ title: "Modification Date", field: "modDttm", formatter: function (cell) { return UT.formatDate(cell.getValue()); } }
-			]
+			],
+			rowFormatter: function(row) {
+				row.getElement().onclick = function(e) {
+					console.log("click")
+					window.location.href = `/multlang/history/${encodeURIComponent(row.getData().multlangKey)}`;
+				}
+			}
 		});
 	});
 	
