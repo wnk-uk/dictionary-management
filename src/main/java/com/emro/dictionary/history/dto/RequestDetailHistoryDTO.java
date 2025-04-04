@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.security.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,5 +15,5 @@ public class RequestDetailHistoryDTO {
 	private String commentText;
 	private String imagePath;
 	private String writerNm;
-	private Timestamp writedDttm;
+	private LocalDateTime writedDttm;
 }

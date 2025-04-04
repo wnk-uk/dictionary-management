@@ -21,6 +21,11 @@ spring:
         - classpath:data.sql
         - classpath:extra-data.sql
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
 mybatis:
   configuration:
     map-underscore-to-camel-case: true

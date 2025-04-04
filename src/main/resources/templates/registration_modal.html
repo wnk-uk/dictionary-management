@@ -116,12 +116,52 @@
 </div>
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
+<!--<script>-->
+<!--	const Clipboard = Quill.import("modules/clipboard");-->
+<!--	const Delta = Quill.import("delta");-->
+<!--	-->
+<!--	class CustomClipboard extends Clipboard {-->
+<!--		constructor(quill, options) {-->
+<!--			super(quill, options);-->
+<!--			this.quill = quill;-->
+<!--		}-->
+<!--		-->
+<!--		onPaste(e) {-->
+<!--			e.preventDefault();-->
+<!--			console.log("Paste event triggered"); // 디버깅: 붙여넣기 이벤트 감지 확인-->
+<!--			const clipboardData = e.clipboardData || window.clipboardData;-->
+<!--			if (!clipboardData || !clipboardData.items) {-->
+<!--				console.log("No clipboard data available");-->
+<!--				return;-->
+<!--			}-->
+<!--			-->
+<!--			const items = clipboardData.items;-->
+<!--			for (let i = 0; i < items.length; i++) {-->
+<!--				if (items[i].type.startsWith("image/")) {-->
+<!--					const file = items[i].getAsFile();-->
+<!--					if (file) {-->
+<!--						console.log("Image detected in clipboard:", file); // 디버깅: 이미지 파일 확인-->
+<!--						const range = this.quill.getSelection(true) || { index: 0 };-->
+<!--						uploadImageToServer(file, this.quill, range);-->
+<!--						handled = true;-->
+<!--						break; // 이미지 처리 후 루프 종료-->
+<!--					}-->
+<!--				}-->
+<!--			}-->
+<!--			-->
+<!--			const text = clipboardData.getData("text/plain");-->
+<!--			if (text) {-->
+<!--				console.log("Text detected in clipboard:", text); // 디버깅: 텍스트 확인-->
+<!--				const range = this.quill.getSelection(true) || { index: 0 };-->
+<!--				this.quill.updateContents(new Delta().retain(range.index).insert(text), Quill.sources.USER);-->
+<!--				this.quill.setSelection(range.index + text.length, Quill.sources.SILENT);-->
+<!--			}-->
+<!--		}-->
+<!--	}-->
+<!--	-->
+<!--	Quill.register("modules/clipboard", CustomClipboard, true);-->
+<!--</script>-->
 <script>
-	document.addEventListener("DOMContentLoaded", function () {
-		console.log("DOM 로드 완료, 초기화 시작...");
-		initQuillWhenReady();
-		initEventHandlers();
-	});
 	
 	function initQuillWhenReady() {
 		console.log("initQuillWhenReady called");
@@ -133,61 +173,129 @@
 		}
 		
 		console.log("Quill 로드 완료, 초기화 시작...");
-		const editors = new Map(); // 에디터 관리를 Map으로 개선
+		const editors = new Map();
 		
-		// 초기 Quill 에디터 설정
 		const initialEditor = document.getElementById('editor');
 		if (initialEditor) {
-			editors.set(0, createQuillEditor(initialEditor, 0));
+			editors.set(0, createQuillEditor(initialEditor));
 		} else {
 			console.error("초기 컨테이너 #editor을 찾을 수 없습니다.");
 		}
 		
-		// 검색 기능 이벤트 위임
 		document.querySelector("#requestTable").addEventListener("keyup", function (e) {
 			if (e.target.classList.contains("existingWord")) {
 				searchExistingWord(e.target);
 			}
 		});
 		
-		// 동적 에디터 관리용 클로저
 		let editorCount = 0;
 		window.getEditorCount = () => editorCount;
 		window.addEditor = (containerId) => {
 			editorCount++;
 			const container = document.getElementById(containerId);
 			if (container) {
-				editors.set(editorCount, createQuillEditor(container, editorCount));
+				editors.set(editorCount, createQuillEditor(container));
 			}
 			return editorCount;
 		};
 		window.getEditors = () => editors;
+		
 	}
 	
-	// Quill 에디터 생성 공통 함수
-	function createQuillEditor(container, index) {
+	function createQuillEditor(container) {
 		const editor = new Quill(container, {
-			theme: 'snow',
+			theme: "snow",
 			modules: {
-				toolbar: [
-					['bold', 'italic', 'underline'],
-					['link', 'image'],
-					[{ 'list': 'ordered' }, { 'list': 'bullet' }]
-				]
-			},
-		});
-		editor.on('text-change', function (delta, oldDelta, source) {
-			if (source === 'user') {
-				const images = editor.getContents().ops.filter(op => op.insert && op.insert.image);
-				images.forEach((img, i) => {
-					if (img.insert.image.startsWith('data:image/')) {
-						console.log(`Image detected in editor ${index}:`, img.insert.image);
-						localStorage.setItem(`editorImage_${index}`, img.insert.image);
+				toolbar: {
+					container: [
+						[{ "header": [1, 2, false] }],
+						["bold", "italic", "underline"],
+						[{ "list": "ordered" }, { "list": "bullet" }],
+						["link", "image"],
+						["clean"]
+					],
+					handlers: {
+						image: function () {
+							const input = document.createElement("input");
+							input.setAttribute("type", "file");
+							input.setAttribute("accept", "image/*");
+							input.click();
+							input.onchange = () => {
+								const file = input.files[0];
+								if (file) {
+									const range = this.quill.getSelection(true) || { index: 0 };
+									uploadImageToServer(file, this.quill, range);
+								}
+							};
+						}
 					}
-				});
+				},
+				clipboard: false // Quill 클립보드 모듈 비활성화
 			}
 		});
+		
+		// 수동으로 paste 이벤트 처리
+		const editableDiv = container.querySelector(".ql-editor");
+		editableDiv.addEventListener("paste", (e) => {
+			e.preventDefault();
+			console.log("Paste event triggered"); // 디버깅
+			const clipboardData = e.clipboardData || window.clipboardData;
+			if (!clipboardData || !clipboardData.items) {
+				console.log("No clipboard data available");
+				return;
+			}
+			
+			const items = clipboardData.items;
+			let imageHandled = false;
+			
+			// 이미지 처리 우선
+			for (let i = 0; i < items.length; i++) {
+				if (items[i].type.startsWith("image/")) {
+					const file = items[i].getAsFile();
+					if (file) {
+						console.log("Image file detected:", file); // 디버깅
+						const range = editor.getSelection(true) || { index: 0 };
+						uploadImageToServer(file, editor, range);
+						imageHandled = true;
+						break; // 이미지 처리 후 종료
+					}
+				}
+			}
+
+			// 이미지가 없는 경우 텍스트 처리
+			if (!imageHandled) {
+				const text = clipboardData.getData("text/plain");
+				if (text && !text.startsWith("data:image/")) { // Base64 텍스트 제외
+					console.log("Text detected in clipboard:", text); // 디버깅
+					const range = editor.getSelection(true) || { index: 0 };
+					editor.insertText(range.index, text, Quill.sources.USER);
+					editor.setSelection(range.index + text.length, Quill.sources.SILENT);
+				}
+			}
+		});
+		
 		return editor;
+	}
+	
+	function setupClipboardImageHandler(editor) {
+		const modal = document.getElementById("registrationModal");
+		modal.addEventListener("paste", function (e) {
+			const clipboardData = e.clipboardData || window.clipboardData;
+			if (!clipboardData || !clipboardData.items) return;
+			
+			const items = clipboardData.items;
+			for (let i = 0; i < items.length; i++) {
+				if (!items[i].type.startsWith("image/")) continue;
+				
+				e.preventDefault(); // 기본 붙여넣기 방지
+				
+				const file = items[i].getAsFile();
+				if (file) {
+					const range = editor.getSelection(true) || { index: 0 };
+					uploadImageToServer(file, editor, range);
+				}
+			}
+		});
 	}
 	
 	function initEventHandlers() {
@@ -262,16 +370,15 @@
 	function submitForm() {
 		console.log("Submit button clicked");
 		const formData = new FormData();
-		const reqUsrNm = document.getElementById("reqUsrNm").value; // 작성자 가져오기
+		const reqUsrNm = document.getElementById("reqUsrNm").value;
 		formData.append("reqUsrNm", reqUsrNm);
+		
 		let isValid = true;
 		const details = [];
 		const editors = window.getEditors();
-		let editorContentCombined = ''; // 모든 에디터의 텍스트를 누적
 		
 		document.querySelectorAll("#requestTable .inputRow").forEach((row, index) => {
 			if (index % 2 !== 0) return;
-			
 			const nextRow = row.nextElementSibling;
 			const newWord = row.querySelector(".newWord").value.trim();
 			const newTranslation = row.querySelector(".newTranslation").value.trim();
@@ -285,32 +392,24 @@
 				row.querySelector(".newTranslation").classList.remove("is-invalid");
 			}
 			
-			// 단일 에디터 콘텐츠 가져오기 (index 0만 사용)
 			const editor = editors.get(0);
 			let editorContent = editor ? editor.root.innerHTML : '';
-			
-			// 에디터에서 이미지 추출 및 FormData에 추가
-			if (editorContent) {
-				const parser = new DOMParser();
-				const doc = parser.parseFromString(editorContent, 'text/html');
-				const images = doc.getElementsByTagName('img');
-				
-				Array.from(images).forEach((img, imgIndex) => {
-					const src = img.getAttribute('src');
-					if (src && src.startsWith('data:image/')) {
-						const blob = base64ToBlob(src);
-						const contentType = src.match(/data:(image\/[^;]+);/)[1];
-						const now = new Date();
-						const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
-						const sanitizedReqUsrNm = reqUsrNm.replace(/[^a-zA-Z0-9]/g, '_');
-						const fileName = `image_${imgIndex}_${sanitizedReqUsrNm}_${dateStr}.${contentType.split('/')[1]}`;
-						formData.append("files", blob, fileName);
+			console.log("Original editorContent:", editorContent); // 디버깅
+
+			// 에디터 콘텐츠에 업로드된 이미지의 wrappedImage로 교체
+			if (Array.isArray(window.quillUploadedFiles)) {
+				window.quillUploadedFiles.forEach(item => {
+					if (item.url && item.wrappedImage) {
+						// <img src="URL"> 전체를 찾아 wrappedImage로 교체
+						const imgRegex = new RegExp(`<img\\s+src=["']${item.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>`, 'g');
+						editorContent = editorContent.replace(imgRegex, item.wrappedImage);
 					}
 				});
-				formData.append("editorContent", editorContent); // 단일 editorContent로 전송
 			}
 			
-			// 2. details 객체 구성 (editorContent 제외)
+			console.log("Transformed editorContent:", editorContent); // 디버깅
+			formData.append("editorContent", editorContent);
+			
 			const detail = {
 				existingWord: row.querySelector(".existingWord").value,
 				multlangCcd: row.querySelector(".langCode").value,
@@ -324,7 +423,7 @@
 			};
 			details.push(detail);
 			
-			// 3. 업로드된 파일 처리
+			// 파일 업로드 입력에서 추가된 파일
 			const fileInput = document.querySelector("#fileUpload");
 			if (fileInput && fileInput.files.length > 0) {
 				Array.from(fileInput.files).forEach(file => {
@@ -332,23 +431,27 @@
 				});
 			}
 		});
+
+		// 업로드된 이미지 파일 추가
+		if (Array.isArray(window.quillUploadedFiles)) {
+			window.quillUploadedFiles.forEach(item => {
+				if (item.file && item.url) {
+					const renamedFile = new File([item.file], item.url.split("/").pop(), { type: item.file.type });
+					formData.append("files", renamedFile);
+				}
+			});
+		}
 		
 		if (!isValid) {
 			alert("🚨 'To-Be (New Word)'와 'New Translation' 필드는 필수 입력 항목입니다.");
 			return;
 		}
 		
-		// FormData에 details와 editorContent 추가
 		formData.append("details", JSON.stringify(details));
-		if (editorContentCombined) {
-			formData.append("editorContent", editorContentCombined.trim()); // 이미지 제외한 텍스트만 전송
-		}
 		
-		if (console.debug) {
-			console.log("FormData contents before sending:");
-			for (let [key, value] of formData.entries()) {
-				console.log(key, value);
-			}
+		// formData 내용 확인
+		for (let [key, value] of formData.entries()) {
+			console.log(`${key}: ${value}`);
 		}
 		
 		$.ajax({
@@ -359,7 +462,7 @@
 			contentType: false,
 			success: function () {
 				alert("✅ Request submitted successfully!");
-				location.href = "/req/ALL/lists";
+				location.href = "/req/all/lists";
 			},
 			error: function (xhr) {
 				console.error("AJAX Error:", xhr.responseText);
@@ -367,104 +470,58 @@
 		});
 	}
 	
-	// Base64를 Blob으로 변환하는 유틸리티 함수 (기존 코드에서 재사용)
-	function base64ToBlob(base64) {
-		const base64Data = base64.split(',')[1];
-		const byteCharacters = atob(base64Data);
-		const byteNumbers = new Uint8Array(byteCharacters.length);
-		for (let i = 0; i < byteCharacters.length; i++) {
-			byteNumbers[i] = byteCharacters.charCodeAt(i);
-		}
-		const contentType = base64.match(/data:([^;]+);/)[1];
-		return new Blob([byteNumbers], { type: contentType });
-	}
-	
-	
-	// 검색 기능
-	window.searchExistingWord = function (input) {
-		const request = input.value.trim();
-		if (request.length < 2) {
-			closeDropdown(input);
-			return;
-		}
+	function uploadImageToServer(file, editor, range) {
+		console.log("Uploading image to server:", file); // 디버깅
+		const formData = new FormData();
+		formData.append("file", file);
+		
 		$.ajax({
-			url: "/api/multlang/search",
-			type: "GET",
-			data: { request: request },
-			dataType: "json",
-			success: function (data) {
-				showDropdown(input, data);
+			url: "/api/upload/temp-image",
+			type: "POST",
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function(result) {
+				console.log("Upload success, response:", result); // 디버깅
+				if (result && result.url) {
+					// 현재 에디터 콘텐츠 가져오기
+					let currentContent = editor.root.innerHTML;
+					console.log("Before cleanup:", currentContent); // 디버깅
+					
+					// Base64 이미지 제거
+					const base64Regex = /<img[^>]+src=["']data:image\/[^"']+["'][^>]*>/gi;
+					currentContent = currentContent.replace(base64Regex, "");
+					currentContent = currentContent.replace("Uploading image...", ""); // 임시 텍스트 제거
+					
+					// 에디터 콘텐츠 업데이트
+					editor.root.innerHTML = currentContent;
+					
+					// 경로 이미지 삽입
+					editor.insertEmbed(range.index, "image", result.url);
+					if (!window.quillUploadedFiles) {
+						window.quillUploadedFiles = [];
+					}
+					window.quillUploadedFiles.push({ file: file, url: result.url, wrappedImage: result.html });
+					console.log("Image inserted into editor, quillUploadedFiles:", window.quillUploadedFiles);
+					console.log("After cleanup:", editor.root.innerHTML); // 디버깅
+				} else {
+					console.error("Invalid response format:", result);
+				}
 			},
-			error: function (xhr) {
-				console.error("Error:", xhr.responseText);
+			error: function(err) {
+				console.error("Image upload failed:", err.responseText || err); // 디버깅
 			}
 		});
-	};
-	
-	function showDropdown(input, words) {
-		let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
-		if (!dropdown) {
-			dropdown = document.createElement("div");
-			dropdown.classList.add("dropdown-menu", "show", "existingWordsDropdown");
-			input.parentElement.appendChild(dropdown);
-		}
-		dropdown.innerHTML = "";
-		if (words.length === 0) {
-			dropdown.style.display = "none";
-			return;
-		}
-		words.forEach(word => {
-			const option = document.createElement("a");
-			option.classList.add("dropdown-item");
-			option.textContent = word;
-			option.onclick = () => {
-				input.value = word;
-				dropdown.style.display = "none";
-			};
-			dropdown.appendChild(option);
-		});
-		Object.assign(dropdown.style, {
-			position: "fixed",
-			width: `${input.offsetWidth}px`,
-			zIndex: "1000",
-			display: "block"
-		});
 	}
 	
-	function closeDropdown(input) {
-		const dropdown = input.parentElement.querySelector(".existingWordsDropdown");
-		if (dropdown) dropdown.style.display = "none";
-	}
-	
-	// // 초기 다운로드 버튼 이벤트
-	// document.querySelectorAll(".downloadFileBtn").forEach(btn => {
-	// 	btn.addEventListener("click", function () {
-	// 		console.log("Download button clicked");
-	// 		const fileInput = btn.closest("tr").querySelector(".fileUpload");
-	// 		if (!fileInput || fileInput.files.length === 0) {
-	// 			alert("먼저 파일을 업로드해주세요!");
-	// 			return;
-	// 		}
-	// 		const file = fileInput.files[0];
-	// 		const reader = new FileReader();
-	// 		reader.onload = (e) => base64ToFile(e.target.result, file.name, file.type);
-	// 		reader.readAsDataURL(file);
-	// 	});
-	// });
-	//
-	// function base64ToFile(base64, fileName, contentType) {
-	// 	const blob = base64ToBlob(base64);
-	// 	const url = URL.createObjectURL(blob);
-	// 	const link = document.createElement("a");
-	// 	link.href = url;
-	// 	link.download = fileName;
-	// 	document.body.appendChild(link);
-	// 	link.click();
-	// 	document.body.removeChild(link);
-	// 	URL.revokeObjectURL(url);
-	// }
-	
+	document.addEventListener("DOMContentLoaded", function () {
+		console.log("DOM 로드 완료, 초기화 시작...");
+		initQuillWhenReady();
+		initEventHandlers();
+		window.quillUploadedFiles = [];
+	});
 </script>
+
 
 </body>
 </html>

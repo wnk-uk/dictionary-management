@@ -3,6 +3,7 @@ package com.emro.dictionary.request.dto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -14,9 +15,5 @@ public class MultLangListDTO {
 	private String imagePath;
 	private String editorContent;
 	private String acptSts;
-
-	public String getImagePath() {
-		return imagePath != null ? "/uploads/" + imagePath : null;
-	}
 }
 

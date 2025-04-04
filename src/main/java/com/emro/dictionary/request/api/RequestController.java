@@ -1,19 +1,14 @@
 package com.emro.dictionary.request.api;
 
 import com.emro.dictionary.request.storage.FileStorageService;
+import com.emro.dictionary.request.storage.EditorContentService;
 import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
 import com.emro.dictionary.request.dto.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,9 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * request 관련 REST API 제공
- */
 @RestController
 @RequestMapping("/api/request")
 @RequiredArgsConstructor
@@ -32,35 +24,36 @@ public class RequestController {
 
 	private final RequestServiceResolver serviceResolver;
 	private final FileStorageService fileStorageService;
+	private final EditorContentService editorContentService;
 
-
-	/**
-	 * 유저의 등록 요청 API
-	 */
 	@PostMapping(value = "/multlang", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> submitRequest(
 			@RequestParam("reqUsrNm") String reqUsrNm,
 			@RequestParam("details") String detailsJson,
 			@RequestParam(value = "editorContent", required = false) String editorContent,
-			@RequestParam(value = "files", required = false) List<MultipartFile> files) throws IOException {
+			@RequestParam(value = "files", required = false) List<MultipartFile> files
+	) throws IOException {
+
 		ObjectMapper objectMapper = new ObjectMapper();
-		List<MultLangRequestDetailDTO> details = objectMapper.readValue(detailsJson, new TypeReference<List<MultLangRequestDetailDTO>>() {});
+		List<MultLangRequestDetailDTO> details = objectMapper.readValue(detailsJson, new TypeReference<>() {});
 
 		MultLangRequestDTO request = new MultLangRequestDTO();
 		request.setReqUsrNm(reqUsrNm);
 		request.setDetails(details);
 
-	// 파일 저장 및 경로 생성
+		// 파일 업로드
 		String imagePath = null;
 		Map<String, String> filePathMap = new HashMap<>();
 		if (files != null && !files.isEmpty()) {
 			imagePath = fileStorageService.storeFiles(files, filePathMap);
 		}
 
-		// 에디터 콘텐츠 처리
+		// 에디터 콘텐츠 처리 (임시 이미지 → 정식 이미지 URL 변환)
 		if (editorContent != null && !editorContent.trim().isEmpty()) {
-			String updatedContent = replaceBase64WithFilePath(editorContent, filePathMap);
-			request.setEditorContent(updatedContent); // 단일 String으로 설정
+			String updated = editorContentService.moveTempImagesToUpload(editorContent);
+			request.setEditorContent(updated);
+		} else {
+			request.setEditorContent(editorContent);
 		}
 
 		request.setFiles(files);
@@ -70,32 +63,12 @@ public class RequestController {
 		return ResponseEntity.ok("Request submitted successfully");
 	}
 
-	// Base64 이미지를 파일 경로로 대체하는 메서드
-	private String replaceBase64WithFilePath(String editorContent, Map<String, String> filePathMap) {
-		Document doc = Jsoup.parse(editorContent);
-		Elements images = doc.select("img[src^=data:image/]");
-
-		for (Element img : images) {
-			String base64Src = img.attr("src");
-			String fileName = filePathMap.keySet().stream()
-					.filter(key -> filePathMap.get(key).contains(base64Src))
-					.findFirst()
-					.orElse(null);
-			if (fileName != null) {
-				String relativePath = "/uploads/" + fileName;
-				img.attr("src", relativePath); // 경로로 대체
-			}
-		}
-		return doc.body().html();
-	}
-
 	/**
 	 * Request List 상태에 따른 조회 API (ROLE 참조)
 	 */
 	@GetMapping("/{acptSts}/list")
 	public ResponseEntity<List<MultLangListDTO>> getRequests(@PathVariable String acptSts) {
 		String username = serviceResolver.getUsername();
-
 		if ("all".equalsIgnoreCase(acptSts)) {
 			return ResponseEntity.ok(serviceResolver.getService().getAllRequestsExceptHOLDING(username));
 		}

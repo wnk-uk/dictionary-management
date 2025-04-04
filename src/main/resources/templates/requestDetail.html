@@ -69,7 +69,12 @@
 		
 		// Request Information
 		fetch(`/api/request/detail/${dicReqId}`)
-				.then(response => response.json())
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`HTTP error! Status: ${response.status}`);
+					}
+					return response.json();
+				})
 				.then(data => {
 					if (!data) {
 						alert("🚨 Request not found.");
@@ -77,26 +82,34 @@
 						return;
 					}
 					
-					// data.acptSts에 따라 버튼 숨기기
 					if (data.acptSts === 'COMPLETE') {
 						const buttonContainer = document.querySelector('#button');
-						buttonContainer.classList.remove('d-flex'); // d-flex 제거
-						buttonContainer.style.display = 'none'; // display: none 적용
+						buttonContainer.classList.remove('d-flex');
+						buttonContainer.style.display = 'none';
 					}
 					
-					
 					const requestInfo = document.getElementById("requestInfo");
-					let imageHtml = data.imagePath ? `
-                    <div class="col-md-4 text-center">
-                        <a href="${data.imagePath}" target="_blank">
-                            <img src="${data.imagePath}" alt="Request Image" class="img-fluid rounded"
-                                 style="max-height: 300px;">
-                        </a>
-                        <p class="mt-2" style="display: none; color: #dc3545;" id="imageError">Image Load Failed</p>
-                    </div>
-                ` : '';
+					let fileHtml = '';
+					
+					if (data.imagePath) {
+						const files = data.imagePath.split(';').filter(file => !/\.(png|jpg|jpeg|gif)$/i.test(file));
+						if (files.length > 0) {
+							fileHtml = `
+                            <div class="col-md-12">
+                                <dt class="col-sm-4">Attached Files</dt>
+                                <dd class="col-sm-8">
+                                    ${files.map(file => `
+                                        <a href="${getUploadUrl(file)}" target="_blank" class="d-block mb-2">${file}</a>
+                                    `).join('')}
+                                </dd>
+                            </div>
+                        `;
+						}
+					}
+					
+					// Explain을 먼저 표시하고 Attached Files를 아래에 배치
 					requestInfo.innerHTML = `
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <dl class="row mb-0">
                             <dt class="col-sm-4">Request ID</dt>
                             <dd class="col-sm-8">${data.dicReqId}</dd>
@@ -107,32 +120,40 @@
                             <dt class="col-sm-4">Status</dt>
                             <dd class="col-sm-8">${data.acptSts}</dd>
                             <dt class="col-sm-4">Explain</dt>
-                            <dd class="col-sm-8">${data.editorContent || "N/A"}</dd>
+                            <dd class="col-sm-8">
+                                <div id="quill-explain" style="min-height: 50px;"></div>
+                            </dd>
+                            ${fileHtml ? fileHtml : ''}
                         </dl>
                     </div>
-                    ${imageHtml}
                 `;
-					// 이미지 로드 오류 처리
-					if (data.imagePath) {
-						const img = requestInfo.querySelector("img");
-						const errorText = requestInfo.querySelector("#imageError");
-						img.onerror = function() {
-							this.src = '';
-							this.alt = 'Image Load Failed';
-							if (errorText) errorText.style.display = 'block';
-						};
-					}
+					
+					// Quill 읽기 전용 에디터 초기화
+					const quill = new Quill('#quill-explain', {
+						theme: 'snow',
+						readOnly: true,
+						modules: {
+							toolbar: false
+						}
+					});
+					quill.root.innerHTML = data.editorContent || "N/A";
 				})
 				.catch(error => {
 					console.error("Error fetching request info:", error);
-					alert("🚨 Failed to load request information.");
+					console.log("Error details:", {
+						message: error.message,
+						name: error.name,
+						stack: error.stack
+					});
+					alert("🚨 Failed to load request information: " + error.message);
 					window.location.href = `/req/${acptSts}/lists`;
 				});
 		
-		// Request Details
+		// Request Details (기존 코드 유지)
 		table = new Tabulator("#requestDetailTable", {
 			layout: "fitColumns",
 			selectable: true,
+			height: "auto",
 			ajaxURL: `/api/request/detail/${dicReqId}`,
 			ajaxConfig: "GET",
 			ajaxContentType: "json",
@@ -155,7 +176,7 @@
 			rowFormatter: function(row) {
 				const rowData = row.getData();
 				if(rowData.regSts === 'ACCEPTANCE') {
-					row.getElement().style.backgroundColor = "#d3d3d3"; // 회색 배경
+					row.getElement().style.backgroundColor = "#d3d3d3";
 				}
 			},
 			columns: [
@@ -243,24 +264,22 @@
 					details: selectedRows.map(row => ({
 						id: row.id,
 						regSts: status,
-						multlangTranslCont: row.suggestedTranslCont // 기존 값 유지
+						multlangTranslCont: row.suggestedTranslCont
 					}))
 				}];
-				
 				sendUpdateRequest(updateData, "✅ 다국어집에 저장되었습니다!");
 			} else {
 				// 아니오 선택 시 입력창 표시
 				const newContent = prompt("변경할 Translation Content를 입력하세요:", selectedRows[0].multlangTranslCont);
-				if (newContent !== null) { // 취소 버튼이 아닌 경우
+				if (newContent !== null) {
 					let updateData = [{
 						dicReqId: dicReqId,
 						details: selectedRows.map(row => ({
 							id: row.id,
 							regSts: status,
-							multlangTranslCont: newContent // 수정된 값 적용
+							multlangTranslCont: newContent
 						}))
 					}];
-					
 					sendUpdateRequest(updateData, "✅ 수정된 내용이 다국어집에 저장되었습니다!");
 				}
 			}
@@ -273,7 +292,6 @@
 					regSts: status
 				}))
 			}];
-			
 			sendUpdateRequest(updateData, "✅ Status updated successfully!");
 		}
 	}
@@ -297,6 +315,16 @@
 	}
 </script>
 
+<style>
+	#quill-explain .ql-toolbar {
+		display: none; /* 읽기 전용 Quill의 툴바 숨김 */
+	}
+	#quill-explain .ql-container {
+		border: 1px solid #ddd;
+		padding: 10px;
+		background-color: #f9f9f9;
+	}
+</style>
 <th:block th:replace="fragments.html :: common-scripts"></th:block>
 </body>
 </html>

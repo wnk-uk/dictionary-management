@@ -56,9 +56,9 @@
 	document.addEventListener("DOMContentLoaded", function () {
 		let acptSts = "[[${acptSts}]]";
 		
-		if (!acptSts || acptSts === "null") {
+		if (acptSts === "all") {
 			document.getElementById("requestListTitle").innerText = "Request List";
-		} else {
+		} else if (acptSts ==="holding"){
 			document.getElementById("requestListTitle").innerText = "Holding Request List";
 		}
 		

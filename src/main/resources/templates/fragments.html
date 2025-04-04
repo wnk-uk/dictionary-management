@@ -367,5 +367,14 @@
     <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
     <script th:src="@{/js/sb-admin-2.js}"></script>
+	<script th:inline="javascript">
+		// 업로드 경로 상수
+		const UPLOAD_PATH = '/uploads/';
+		
+		// 파일 경로를 생성하는 유틸리티 함수
+		function getUploadUrl(file) {
+			return `${UPLOAD_PATH}${file}`;
+		}
+	</script>
 </th:block>
 </html>
