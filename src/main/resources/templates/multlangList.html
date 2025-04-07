@@ -52,7 +52,9 @@
 		table = new Tabulator("#multlangTable", {
 			layout: "fitDataTable", // 데이터를 컬럼에 맞게 조정
 			columnMinWidth: 120,
-			ajaxURL: "/api/multlang/list", // API 호출
+			ajaxURL: "/api/multlang/list",
+			groupBy:"multlangKey",
+			movableColumns: true,
 			columns: [
 				{ title: "Code", field: "multlangCcd" },
 				{ title: "Type", field: "multlangTyp"  },

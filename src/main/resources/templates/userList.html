@@ -99,6 +99,7 @@
         table = new Tabulator("#userTable", {
 			layout: "fitColumns",
             ajaxURL: "/api/user/lists",
+			movableColumns: true,
             columns: [
                 { title: "UserID", field: "username", minWidth: 200},
                 { title: "UserName", field: "usrNm", minWidth: 200},
