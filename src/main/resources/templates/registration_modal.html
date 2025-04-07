@@ -399,21 +399,6 @@
 				row.querySelector(".newTranslation").classList.remove("is-invalid");
 			}
 			
-			const editor = editors.get(0);
-			let editorContent = editor ? editor.root.innerHTML : '';
-			
-			if (Array.isArray(window.quillUploadedFiles)) {
-				window.quillUploadedFiles.forEach(item => {
-					if (item.url && item.wrappedImage) {
-						// <img src="URL"> 전체를 찾아 wrappedImage로 교체
-						const imgRegex = new RegExp(`<img\\s+src=["']${item.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>`, 'g');
-						editorContent = editorContent.replace(imgRegex, item.wrappedImage);
-					}
-				});
-			}
-			
-			formData.append("editorContent", editorContent);
-			
 			const detail = {
 				existingWord: row.querySelector(".existingWord").value,
 				multlangCcd: row.querySelector(".langCode").value,
@@ -435,7 +420,22 @@
 				});
 			}
 		});
-
+		
+		const editor = editors.get(0);
+		let editorContent = editor ? editor.root.innerHTML : '';
+		
+		if (Array.isArray(window.quillUploadedFiles)) {
+			window.quillUploadedFiles.forEach(item => {
+				if (item.url && item.wrappedImage) {
+					// <img src="URL"> 전체를 찾아 wrappedImage로 교체
+					const imgRegex = new RegExp(`<img\\s+src=["']${item.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>`, 'g');
+					editorContent = editorContent.replace(imgRegex, item.wrappedImage);
+				}
+			});
+		}
+		
+		formData.append("editorContent", editorContent);
+		
 		// 업로드된 이미지 파일 추가
 		if (Array.isArray(window.quillUploadedFiles)) {
 			window.quillUploadedFiles.forEach(item => {
@@ -452,7 +452,6 @@
 		}
 		
 		formData.append("details", JSON.stringify(details));
-		
 		$.ajax({
 			type: "POST",
 			url: "/api/request/multlang",
@@ -461,7 +460,7 @@
 			contentType: false,
 			success: function () {
 				alert("✅ Request submitted successfully!");
-				location.href = "/req/all/lists";
+				// location.href = "/req/all/lists";
 			},
 			error: function (xhr) {
 				console.error("AJAX Error:", xhr.responseText);
