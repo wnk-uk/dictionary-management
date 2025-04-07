@@ -8,6 +8,7 @@
 			white-space: normal; /* 텍스트 줄바꿈 허용 */
 			max-width: 150px; /* 최대 너비 설정 */
 			word-break: break-word; /* 단어 단위로 줄바꿈 */
+			position: relative; /* 드롭다운 위치를 위한 상대 위치 */
 		}
 		/* thead와 tbody 간격 */
 		#requestTables thead {
@@ -22,6 +23,16 @@
 		}
 		#requestTables tbody tr:first-child td {
 			padding-top: 20px; /* 첫 번째 tbody 행 위에 추가 패딩 */
+		}
+		/* 드롭다운 스타일 */
+		.existingWordsDropdown {
+			position: absolute;
+			z-index: 1000;
+			width: 100%;
+			max-height: 300px;
+			overflow-y: auto;
+			top: 100%; /* 입력 필드 바로 아래 */
+			left: 0;
 		}
 	</style>
 </head>
@@ -43,68 +54,66 @@
 					</div>
 					<table id="requestTables" class="table table-bordered">
 						<thead>
-							<tr>
-								<th>As-Is<br/>(Existing Word)</th>
-								<th>Language</th>
-								<th>To-Be<br/>(New Word)</th>
-								<th>New Translation</th>
-								<th>Abbreviation</th>
-							</tr>
-							<tr>
-								<th>Type</th>
-								<th>Screen Path</th>
-								<th>Source Path</th>
-								<th>Comment</th>
-								<th>Del</th>
-							</tr>
+						<tr>
+							<th>As-Is<br/>(Existing Word)</th>
+							<th>Language</th>
+							<th>To-Be<br/>(New Word)</th>
+							<th>New Translation</th>
+							<th>Abbreviation</th>
+						</tr>
+						<tr>
+							<th>Type</th>
+							<th>Screen Path</th>
+							<th>Source Path</th>
+							<th>Comment</th>
+							<th>Del</th>
+						</tr>
 						</thead>
 						<tbody id="requestTable">
-							<tr class="inputRow">
+						<tr class="inputRow">
 								<td>
 									<input type="text" class="form-control existingWord" placeholder="Search...">
 									<div class="dropdown-menu existingWordsDropdown" style="top: initial !important; float: none !important; left: initial; height: 300px; overflow: auto;"></div>
 								</td>
-								<td>
-									<select class="form-control langCode">
-										<option value="ko_KR">Korean</option>
-										<option value="en_US">English</option>
-										<option value="ja_JP">Japanese</option>
-										<option value="zh_CN">Chinese</option>
-									</select>
-								</td>
-								<td><input type="text" class="form-control newWord"></td>
-								<td><input type="text" class="form-control newTranslation"></td>
-								<td><input type="text" class="form-control newAbbr"></td>
-							</tr>
-							<tr class="inputRow">
-								<td>
-									<select class="form-control wordType">
-										<option value="Label">Label</option>
-										<option value="Button">Button</option>
-									</select>
-								</td>
-								<td><input type="text" class="form-control screenPath"></td>
-								<td><input type="text" class="form-control sourcePath"></td>
-								<td><input type="text" class="form-control comment"></td>
-								<td style="vertical-align: middle;">
-									<i class="fas fa-trash fa-lg text-black-900 removeRow"></i>
-								</td>
-							</tr>
+							<td>
+								<select class="form-control langCode">
+									<option value="ko_KR">Korean</option>
+									<option value="en_US">English</option>
+									<option value="ja_JP">Japanese</option>
+									<option value="zh_CN">Chinese</option>
+								</select>
+							</td>
+							<td><input type="text" class="form-control newWord"></td>
+							<td><input type="text" class="form-control newTranslation"></td>
+							<td><input type="text" class="form-control newAbbr"></td>
+						</tr>
+						<tr class="inputRow">
+							<td>
+								<select class="form-control wordType">
+									<option value="Label">Label</option>
+									<option value="Button">Button</option>
+								</select>
+							</td>
+							<td><input type="text" class="form-control screenPath"></td>
+							<td><input type="text" class="form-control sourcePath"></td>
+							<td><input type="text" class="form-control comment"></td>
+							<td style="vertical-align: middle;">
+								<i class="fas fa-trash fa-lg text-black-900 removeRow"></i>
+							</td>
+						</tr>
 						</tbody>
 					</table>
 					<div>
 						<table class="table table-bordered">
 							<thead>
-						<tr>
-							<th colspan="5">Explain & File Upload</th>
-						</tr>
+							<tr>
+								<th colspan="5">Explain & File Upload</th>
+							</tr>
 							</thead>
 						</table>
 						<div class="editor-container" id="editor" style="height: 300px;"></div>
 						<input type="file" class="form-control-file fileUpload" name="fileUpload" id="fileUpload" multiple>
-<!--						<button type="button" class="btn btn-secondary downloadFileBtn">Download Uploaded File</button>-->
 					</div>
-
 				</form>
 			</div>
 			<div class="modal-footer d-flex justify-content-between">
@@ -116,70 +125,81 @@
 </div>
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
-<!--<script>-->
-<!--	const Clipboard = Quill.import("modules/clipboard");-->
-<!--	const Delta = Quill.import("delta");-->
-<!--	-->
-<!--	class CustomClipboard extends Clipboard {-->
-<!--		constructor(quill, options) {-->
-<!--			super(quill, options);-->
-<!--			this.quill = quill;-->
-<!--		}-->
-<!--		-->
-<!--		onPaste(e) {-->
-<!--			e.preventDefault();-->
-<!--			console.log("Paste event triggered"); // 디버깅: 붙여넣기 이벤트 감지 확인-->
-<!--			const clipboardData = e.clipboardData || window.clipboardData;-->
-<!--			if (!clipboardData || !clipboardData.items) {-->
-<!--				console.log("No clipboard data available");-->
-<!--				return;-->
-<!--			}-->
-<!--			-->
-<!--			const items = clipboardData.items;-->
-<!--			for (let i = 0; i < items.length; i++) {-->
-<!--				if (items[i].type.startsWith("image/")) {-->
-<!--					const file = items[i].getAsFile();-->
-<!--					if (file) {-->
-<!--						console.log("Image detected in clipboard:", file); // 디버깅: 이미지 파일 확인-->
-<!--						const range = this.quill.getSelection(true) || { index: 0 };-->
-<!--						uploadImageToServer(file, this.quill, range);-->
-<!--						handled = true;-->
-<!--						break; // 이미지 처리 후 루프 종료-->
-<!--					}-->
-<!--				}-->
-<!--			}-->
-<!--			-->
-<!--			const text = clipboardData.getData("text/plain");-->
-<!--			if (text) {-->
-<!--				console.log("Text detected in clipboard:", text); // 디버깅: 텍스트 확인-->
-<!--				const range = this.quill.getSelection(true) || { index: 0 };-->
-<!--				this.quill.updateContents(new Delta().retain(range.index).insert(text), Quill.sources.USER);-->
-<!--				this.quill.setSelection(range.index + text.length, Quill.sources.SILENT);-->
-<!--			}-->
-<!--		}-->
-<!--	}-->
-<!--	-->
-<!--	Quill.register("modules/clipboard", CustomClipboard, true);-->
-<!--</script>-->
 <script>
-	
-	function initQuillWhenReady() {
-		console.log("initQuillWhenReady called");
+	// 자동 완성 검색 함수
+	window.searchExistingWord = function(input) {
+		const request = input.value.trim();
+		if (request.length < 2) {
+			closeDropdown(input);
+			return;
+		}
 		
+		$.ajax({
+			url: "/api/multlang/search",
+			type: "GET",
+			data: { request: request },
+			dataType: "json",
+			success: function(data) {
+				showDropdown(input, data);
+			},
+			error: function(xhr, status, error) {
+				console.error("Error:", xhr.responseText);
+			}
+		});
+	};
+	
+	function showDropdown(input, words) {
+		let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
+		if (!dropdown) {
+			dropdown = document.createElement("div");
+			dropdown.classList.add("dropdown-menu", "show", "existingWordsDropdown");
+			input.parentElement.appendChild(dropdown);
+		}
+		
+		dropdown.innerHTML = "";
+		if (words.length === 0) {
+			dropdown.style.display = "none";
+			return;
+		}
+		
+		words.forEach(word => {
+			let option = document.createElement("a");
+			option.classList.add("dropdown-item");
+			option.textContent = word;
+			option.onclick = function() {
+				input.value = word;
+				dropdown.style.display = "none";
+			};
+			dropdown.appendChild(option);
+		});
+		
+		dropdown.style.position = "absolute";
+		dropdown.style.width = input.offsetWidth + "px";
+		dropdown.style.zIndex = "1000"; // 🛠️ 드롭다운이 다른 요소보다 위에 오도록 설정
+		dropdown.style.display = "block";
+	}
+	
+	function closeDropdown(input) {
+		if (!input || !input.parentElement) return;
+		
+		let dropdown = input.parentElement.querySelector(".existingWordsDropdown");
+		if (dropdown) {
+			dropdown.style.display = "none";
+		}
+	}
+	
+	// Quill 초기화 및 이벤트 핸들러 설정
+	function initQuillWhenReady() {
 		if (typeof Quill === "undefined") {
 			console.log("Quill이 아직 로드되지 않았습니다. 잠시 후 재시도합니다.");
 			setTimeout(initQuillWhenReady, 100);
 			return;
 		}
 		
-		console.log("Quill 로드 완료, 초기화 시작...");
 		const editors = new Map();
-		
 		const initialEditor = document.getElementById('editor');
 		if (initialEditor) {
 			editors.set(0, createQuillEditor(initialEditor));
-		} else {
-			console.error("초기 컨테이너 #editor을 찾을 수 없습니다.");
 		}
 		
 		document.querySelector("#requestTable").addEventListener("keyup", function (e) {
@@ -188,6 +208,23 @@
 			}
 		});
 		
+		// 모달 외부 클릭 시 드롭다운 닫기
+		document.addEventListener("click", function(e) {
+			// existingWord input 클릭이면 무시
+			if (e.target.classList.contains("existingWord")) return;
+			
+			// 열려 있는 드롭다운 찾기
+			const openDropdown = document.querySelector(".existingWordsDropdown[style*='display: block']");
+			
+			// 열려 있는 드롭다운이 있다면 닫기
+			if (openDropdown) {
+				const input = openDropdown.closest("td")?.querySelector(".existingWord");
+				if (input) {
+					closeDropdown(input);
+				}
+			}
+		});
+
 		let editorCount = 0;
 		window.getEditorCount = () => editorCount;
 		window.addEditor = (containerId) => {
@@ -199,7 +236,6 @@
 			return editorCount;
 		};
 		window.getEditors = () => editors;
-		
 	}
 	
 	function createQuillEditor(container) {
@@ -229,48 +265,33 @@
 							};
 						}
 					}
-				},
-				clipboard: false // Quill 클립보드 모듈 비활성화
+				}
 			}
 		});
 		
-		// 수동으로 paste 이벤트 처리
 		const editableDiv = container.querySelector(".ql-editor");
 		editableDiv.addEventListener("paste", (e) => {
 			e.preventDefault();
-			console.log("Paste event triggered"); // 디버깅
 			const clipboardData = e.clipboardData || window.clipboardData;
-			if (!clipboardData || !clipboardData.items) {
-				console.log("No clipboard data available");
-				return;
-			}
+			if (!clipboardData || !clipboardData.items) return;
 			
 			const items = clipboardData.items;
-			let imageHandled = false;
-			
-			// 이미지 처리 우선
 			for (let i = 0; i < items.length; i++) {
 				if (items[i].type.startsWith("image/")) {
 					const file = items[i].getAsFile();
 					if (file) {
-						console.log("Image file detected:", file); // 디버깅
 						const range = editor.getSelection(true) || { index: 0 };
 						uploadImageToServer(file, editor, range);
-						imageHandled = true;
-						break; // 이미지 처리 후 종료
+						return;
 					}
 				}
 			}
-
-			// 이미지가 없는 경우 텍스트 처리
-			if (!imageHandled) {
-				const text = clipboardData.getData("text/plain");
-				if (text && !text.startsWith("data:image/")) { // Base64 텍스트 제외
-					console.log("Text detected in clipboard:", text); // 디버깅
-					const range = editor.getSelection(true) || { index: 0 };
-					editor.insertText(range.index, text, Quill.sources.USER);
-					editor.setSelection(range.index + text.length, Quill.sources.SILENT);
-				}
+			
+			const text = clipboardData.getData("text/plain");
+			if (text && !text.startsWith("data:image/")) {
+				const range = editor.getSelection(true) || { index: 0 };
+				editor.insertText(range.index, text, Quill.sources.USER);
+				editor.setSelection(range.index + text.length, Quill.sources.SILENT);
 			}
 		});
 		
@@ -300,8 +321,6 @@
 	
 	function initEventHandlers() {
 		document.getElementById("addRow").addEventListener("click", function () {
-			console.log("Add Row button clicked");
-			
 			const tbody = document.querySelector("#requestTable");
 			const lastRows = tbody.querySelectorAll(".inputRow");
 			
@@ -312,8 +331,7 @@
 			
 			const lastRow1 = lastRows[lastRows.length - 2].cloneNode(true);
 			const lastRow2 = lastRows[lastRows.length - 1].cloneNode(true);
-
-			// 입력값 초기화 및 기본값 설정
+			
 			lastRow1.querySelectorAll("input, select").forEach(input => {
 				if (input.tagName === "INPUT") input.value = "";
 				if (input.classList.contains("langCode")) input.value = "ko_KR";
@@ -327,18 +345,8 @@
 				removeRow(this);
 			});
 			
-			// 동적 에디터 추가
-			const editorContainer = lastRow2.querySelector(".editor-container");
-			if (editorContainer) {
-				const newEditorId = `editor-${window.getEditorCount() + 1}`;
-				editorContainer.id = newEditorId;
-				tbody.appendChild(lastRow1);
-				tbody.appendChild(lastRow2);
-				window.addEditor(newEditorId);
-			} else {
-				tbody.appendChild(lastRow1);
-				tbody.appendChild(lastRow2);
-			}
+			tbody.appendChild(lastRow1);
+			tbody.appendChild(lastRow2);
 		});
 		
 		document.querySelectorAll(".removeRow").forEach(btn => {
@@ -368,7 +376,6 @@
 	}
 	
 	function submitForm() {
-		console.log("Submit button clicked");
 		const formData = new FormData();
 		const reqUsrNm = document.getElementById("reqUsrNm").value;
 		formData.append("reqUsrNm", reqUsrNm);
@@ -394,9 +401,7 @@
 			
 			const editor = editors.get(0);
 			let editorContent = editor ? editor.root.innerHTML : '';
-			console.log("Original editorContent:", editorContent); // 디버깅
-
-			// 에디터 콘텐츠에 업로드된 이미지의 wrappedImage로 교체
+			
 			if (Array.isArray(window.quillUploadedFiles)) {
 				window.quillUploadedFiles.forEach(item => {
 					if (item.url && item.wrappedImage) {
@@ -407,7 +412,6 @@
 				});
 			}
 			
-			console.log("Transformed editorContent:", editorContent); // 디버깅
 			formData.append("editorContent", editorContent);
 			
 			const detail = {
@@ -449,11 +453,6 @@
 		
 		formData.append("details", JSON.stringify(details));
 		
-		// formData 내용 확인
-		for (let [key, value] of formData.entries()) {
-			console.log(`${key}: ${value}`);
-		}
-		
 		$.ajax({
 			type: "POST",
 			url: "/api/request/multlang",
@@ -471,7 +470,6 @@
 	}
 	
 	function uploadImageToServer(file, editor, range) {
-		console.log("Uploading image to server:", file); // 디버깅
 		const formData = new FormData();
 		formData.append("file", file);
 		
@@ -482,18 +480,11 @@
 			processData: false,
 			contentType: false,
 			success: function(result) {
-				console.log("Upload success, response:", result); // 디버깅
 				if (result && result.url) {
 					// 현재 에디터 콘텐츠 가져오기
 					let currentContent = editor.root.innerHTML;
-					console.log("Before cleanup:", currentContent); // 디버깅
-					
-					// Base64 이미지 제거
 					const base64Regex = /<img[^>]+src=["']data:image\/[^"']+["'][^>]*>/gi;
 					currentContent = currentContent.replace(base64Regex, "");
-					currentContent = currentContent.replace("Uploading image...", ""); // 임시 텍스트 제거
-					
-					// 에디터 콘텐츠 업데이트
 					editor.root.innerHTML = currentContent;
 					
 					// 경로 이미지 삽입
@@ -502,26 +493,19 @@
 						window.quillUploadedFiles = [];
 					}
 					window.quillUploadedFiles.push({ file: file, url: result.url, wrappedImage: result.html });
-					console.log("Image inserted into editor, quillUploadedFiles:", window.quillUploadedFiles);
-					console.log("After cleanup:", editor.root.innerHTML); // 디버깅
-				} else {
-					console.error("Invalid response format:", result);
 				}
 			},
 			error: function(err) {
-				console.error("Image upload failed:", err.responseText || err); // 디버깅
+				console.error("Image upload failed:", err.responseText || err);
 			}
 		});
 	}
 	
 	document.addEventListener("DOMContentLoaded", function () {
-		console.log("DOM 로드 완료, 초기화 시작...");
 		initQuillWhenReady();
 		initEventHandlers();
 		window.quillUploadedFiles = [];
 	});
 </script>
-
-
 </body>
 </html>
