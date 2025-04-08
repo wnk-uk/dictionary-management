@@ -1,9 +1,6 @@
 package com.emro.dictionary.request.service;
 
-import com.emro.dictionary.request.dto.DashboardCountDTO;
-import com.emro.dictionary.request.dto.MultLangListDTO;
-import com.emro.dictionary.request.dto.MultLangRequestDTO;
-import com.emro.dictionary.request.dto.UpdateRequestStatusDTO;
+import com.emro.dictionary.request.dto.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -52,6 +49,12 @@ public interface RequestService {
 	 * @param updateList 업데이트할 요청 상태 리스트
 	 */
 	void updateRequestStatus(List<UpdateRequestStatusDTO> updateList, String requester);
+
+	/**
+	 * 선택된 요청들의 상태를 업데이트
+	 * @param updateList 업데이트할 요청 상태 리스트
+	 */
+	void updateRequestDetail(List<UpdateRequestDetailDTO> updateList, String requester);
 
 	/**
 	 * decReqId를 이용한 detail 정보 호출

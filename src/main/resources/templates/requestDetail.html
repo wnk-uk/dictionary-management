@@ -32,6 +32,9 @@
 					<div class="card-header py-3 d-flex justify-content-between align-items-center">
 						<h6 class="m-0 font-weight-bold text-primary">Request Details</h6>
 						<div class="d-flex align-items-center" sec:authorize="!hasRole('USER')" id="button">
+							<button class="btn btn-warning btn-sm mr-2" onclick="handleEditSubmission()">
+								<i class="fas fa-edit"></i> EDIT
+							</button>
 							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('ACCEPTANCE')">
 								<i class="fas fa-check"></i> ACCEPT
 							</button>
@@ -162,6 +165,7 @@
 				if (!response || !response.details) return [];
 				return response.details.map(detail => ({
 					id: detail.id,
+					multlangCcd: detail.multlangCcd,
 					existingWord: detail.existingWord || "[NULL]",
 					multlangKey: detail.multlangKey,
 					suggestedTranslCont: detail.multlangSuggestedTranslCont,
@@ -176,37 +180,57 @@
 			},
 			rowFormatter: function(row) {
 				const rowData = row.getData();
-				if(rowData.regSts === 'ACCEPTANCE') {
+				if (rowData.regSts === 'ACCEPTANCE') {
 					row.getElement().style.backgroundColor = "#d3d3d3";
+					return;
 				}
+				const editableFields = ["existingWord", "multlangCcd", "multlangKey", "suggestedTranslCont", "multlangTranslContAbbr", "multlangTyp"];
+				editableFields.forEach(field => {
+					const cell = row.getCell(field);
+					if(cell) {
+						cell.getElement().style.backgroundColor = "#f0f9ff";
+					}
+				})
 			},
 			columns: [
 				{
 					title: `<input type='checkbox' id='selectAll' onclick='toggleSelectAll(this)'>`,
 					field: "select",
 					hozAlign: "center",
-					width: 120,
+					minWidth: 120,
 					formatter: "rowSelection",
 					headerSort: false,
 					headerHozAlign: "center"
 				},
-				{ title: "Existing Word", field: "existingWord", minWidth: 200 },
-				{ title: "Multilingual Key", field: "multlangKey", minWidth: 200 },
+				{title: "id" ,field: "id", minWidth: 120},
+				{ title: "Existing Word", field: "existingWord", editable: editableEditorCheck, editor: "input" , minWidth: 150, cellEdited: highlightEditedCell},
+				{ title: "Code", field: "multlangCcd", minWidth: 120, cellEdited: highlightEditedCell,  editor: "list", editable: editableEditorCheck, editorParams: {
+						values: ["ko_KR", "en_US", "ja_JP", "zh_CN"]
+					}
+				},
+				{ title: "MultiLang Key", field: "multlangKey",  editor: "input", editable: editableEditorCheck, minWidth: 150, cellEdited: highlightEditedCell},
 				{
 					title: "Translation Content",
 					field: "suggestedTranslCont",
+					editor: "input",
+					editable: editableEditorCheck,
 					minWidth: 300,
+					cellEdited: highlightEditedCell,
 					formatter: function(cell) {
 						const rowData = cell.getRow().getData();
 						if (rowData.confirmedTranslCont) {
-							return `<span style="color: rebeccapurple;">Confirmed: ${rowData.confirmedTranslCont}</span>`;
+							if (rowData.regSts === "ACCEPTANCE") {
+								return `<span style="color: rebeccapurple;">확정: ${rowData.confirmedTranslCont}</span>`;
+							} else {
+								return `수정: ${rowData.suggestedTranslCont || "[N/A]"}`;
+							}
 						} else {
-							return `Suggested: ${rowData.suggestedTranslCont || "[N/A]"}</span>`;
+							return `제안: ${rowData.suggestedTranslCont || "[N/A]"}`;
 						}
 					}
 				},
-				{ title: "Abbr", field: "multlangTranslContAbbr", minWidth: 150 },
-				{ title: "Type", field: "multlangTyp", minWidth: 150 },
+				{ title: "Abbr", field: "multlangTranslContAbbr",  editor: "input", editable: editableEditorCheck, minWidth: 150, cellEdited: highlightEditedCell},
+				{ title: "Type", field: "multlangTyp",  editor: "input", editable: editableEditorCheck, minWidth: 150, cellEdited: highlightEditedCell },
 				{ title: "Screen Path", field: "screenPath", minWidth: 150 },
 				{ title: "Source Path", field: "sourcePath", minWidth: 150 },
 				{
@@ -228,6 +252,30 @@
 		});
 	});
 	
+	// 편집 가능 여부 확인 함수 (ACCEPTANCE 상태는 비활성화)
+	function editableEditorCheck(cell) {
+		const rowData = cell.getRow().getData();
+		return rowData.regSts !== 'ACCEPTANCE';
+	}
+	
+	// 셀 수정 시 백그라운드 색 변경 함수 정의
+	function highlightEditedCell(cell) {
+		const cellElement = cell.getElement();
+		const oldValue = cell.getInitialValue();
+		const newValue = cell.getValue();
+
+		if (oldValue !== newValue) {
+			cellElement.style.backgroundColor = "#ffe4b5";
+			
+			// 변경 전 값 표시 (툴팁처럼)
+			cellElement.setAttribute("title", `이전 값: ${oldValue}`);
+		} else {
+			cellElement.style.backgroundColor = "#f0f9ff";
+			cellElement.removeAttribute("title");
+		}
+	}
+	
+	// 토글 전체 선택 함수
 	function toggleSelectAll(headerCheckbox) {
 		let allRows = table.getRows("all");
 		if (headerCheckbox.checked) {
@@ -237,6 +285,7 @@
 		}
 	}
 	
+	// 요청 상태 업데이트 함수
 	function updateSelectedStatus(status) {
 		let selectedRows = table.getSelectedData();
 		if(selectedRows.length === 0) {
@@ -285,8 +334,8 @@
 						title: "Remark 입력",
 						html: `
 					<div style="margin-bottom: 8px; font-weight: bold;">
-						선택된 Content:<br>
-						<span style="color: rebeccapurple;">${row.suggestedTranslCont}</span>
+						선택된 Content (key : value):<br>
+						<span style="color: rebeccapurple;">${row.multlangKey} : ${row.suggestedTranslCont}</span>
 					</div>
 					<input id="swal-remark" class="swal2-input" placeholder="Remark를 입력해주세요">
 				`,
@@ -335,12 +384,111 @@
 			data: JSON.stringify(updateData),
 			success: function () {
 				Swal.fire(successMessage, "", "success").then(() => {
-					table.replaceData(); // 또는 필요 시 생략 가능
-					location.reload(); // 또는 특정 페이지로 이동
+					table.replaceData();
 				});
 			},
 			error: function (xhr) {
 				Swal.fire("🚨 상태 업데이트 실패", xhr.responseText, "error");
+			}
+		});
+	}
+	
+	// row 내용 수정 함수
+	async function handleEditSubmission() {
+		const selectedRows = table.getSelectedRows();
+		if(selectedRows.length === 0) {
+			Swal.fire("🚨 항목 선택 필요", "최소 하나의 행을 선택해주세요.", "warning");
+			return;
+		}
+		
+		const changedRows = [];
+		
+		for (let row of selectedRows) {
+			const changed = {};
+			const cells = row.getCells();
+			
+			cells.forEach(cell => {
+				const col = cell.getColumn().getField();
+				const initial = cell.getInitialValue?.();
+				const current = cell.getValue();
+				
+				if (["existingWord", "multlangCcd", "multlangKey", "suggestedTranslCont", "multlangTranslContAbbr", "multlangTyp"].includes(col)) {
+					if (initial !== undefined && initial !== current) {
+						changed[col] = { before: initial, after: current };
+					}
+				}
+			});
+			
+			if (Object.keys(changed).length > 0) {
+				row._row.changedFields = changed;
+				changedRows.push(row);
+			}
+		}
+		
+		if (changedRows.length === 0) {
+			Swal.fire("변경 없음", "선택된 항목 중 수정된 내용이 없습니다.", "info");
+			return;
+		}
+		
+		const updateRequestList = [];
+		const combinedCommentText = changedRows.map(row => {
+			const id = row.getData().id;
+			const changed = row._row.changedFields;
+			const changes = Object.entries(changed).map(([key, { before, after }]) => `${key} : 기존 값 {${before}} -> 변경 값 {${after}}`);
+			const commentText = changes.join("\n");
+			
+			const data = row.getData();
+			updateRequestList.push({
+				id: id,
+				existingWord: data.existingWord,
+				multlangCcd: data.multlangCcd,
+				multlangKey: data.multlangKey,
+				multlangTranslCont: data.confirmedTranslCont || data.suggestedTranslCont,
+				multlangSuggestedTranslCont: data.suggestedTranslCont,
+				multlangTranslContAbbr: data.multlangTranslContAbbr,
+				multlangTyp: data.multlangTyp,
+				commentText: commentText
+			});
+			
+			return `ID: ${id}\n${commentText}`;
+		}).join("\n\n");
+		
+		const confirmResult = await Swal.fire({
+			title: "다음과 같이 수정하시겠습니까?",
+			html: `
+				<pre style="
+				  white-space: pre-wrap;
+				  text-align: left;
+				  overflow-y: auto;
+				  max-height: 60vh;
+				  max-width: 80vw;
+				  word-break: break-word;
+				">
+				  ${combinedCommentText}
+				</pre>
+			  `,
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonText: "예",
+			cancelButtonText: "아니오",
+			width: "auto", // 기본 너비 제한 해제
+		});
+		
+		
+		if (!confirmResult.isConfirmed) return;
+		
+		$.ajax({
+			type: "POST",
+			url: "/api/request/updateDetail",
+			contentType: "application/json",
+			data: JSON.stringify(updateRequestList),
+			success: function() {
+				Swal.fire("✅ 수정 완료", "내용이 성공적으로 수정되었습니다.", "success").then(() => {
+					table.replaceData();
+				});
+			},
+			error: function(xhr) {
+				Swal.fire("🚨 오류", xhr.responseText, "error");
 			}
 		});
 	}

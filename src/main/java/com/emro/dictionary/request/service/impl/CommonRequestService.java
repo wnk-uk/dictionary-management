@@ -80,7 +80,7 @@ public class CommonRequestService implements RequestService {
 					multLangService.saveOrUpdateMultlang(
 							detailRecord.getMultlangCcd(),
 							detailRecord.getMultlangKey(),
-							detail.getMultlangTranslCont(),
+							detailRecord.getMultlangTranslCont(),
 							detailRecord.getMultlangTranslContAbbr(),
 							detailRecord.getMultlangTyp(),
 							detail.getRmk(),
@@ -116,6 +116,14 @@ public class CommonRequestService implements RequestService {
 			return "PROGRESS";
 		} else {
 			return "PENDING";
+		}
+	}
+
+	@Override
+	public void updateRequestDetail(List<UpdateRequestDetailDTO> updateList, String requester) {
+		for (UpdateRequestDetailDTO update : updateList) {
+			requestMapper.updateRequestDetail(update);
+			historyService.addHistory(update.getId(), update.getCommentText(), null, requester);
 		}
 	}
 

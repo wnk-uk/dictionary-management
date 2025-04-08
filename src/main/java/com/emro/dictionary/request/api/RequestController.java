@@ -104,6 +104,16 @@ public class RequestController {
 	}
 
 	/**
+	 * 선택된 요청들의 내용 업데이트 API
+	 */
+	@PostMapping("/updateDetail")
+	public ResponseEntity<?> updateRequestDetail(@RequestBody List<UpdateRequestDetailDTO> requestList) {
+		String username = serviceResolver.getUsername();
+		serviceResolver.getService().updateRequestDetail(requestList, username);
+		return ResponseEntity.ok("✅ Status Updated successfully");
+	}
+
+	/**
 	 * Request Id를 이용한 detail 조회
 	 */
 	@GetMapping("/detail/{dicReqId}")

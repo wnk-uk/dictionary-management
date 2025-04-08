@@ -1,9 +1,6 @@
 package com.emro.dictionary.request.repository;
 
-import com.emro.dictionary.request.dto.MultLangDetailListDTO;
-import com.emro.dictionary.request.dto.MultLangListDTO;
-import com.emro.dictionary.request.dto.MultLangRequestDTO;
-import com.emro.dictionary.request.dto.MultLangRequestDetailDTO;
+import com.emro.dictionary.request.dto.*;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -183,6 +180,7 @@ public interface RequestMapper {
 	@Results({
 			@Result(property = "id", column = "id"),
 			@Result(property = "existingWord", column = "existing_word"),
+			@Result(property = "multlangCcd", column = "multlang_ccd"),
 			@Result(property = "multlangKey", column = "multlang_key"),
 			@Result(property = "multlangTranslCont", column = "multlang_transl_cont"),
 			@Result(property = "multlangSuggestedTranslCont", column = "multlang_suggested_transl_cont"),
@@ -196,7 +194,7 @@ public interface RequestMapper {
 	List<MultLangRequestDetailDTO> findRequestDetailsByDicReqId(@Param("dicReqId") Long dicReqId);
 
 	/**
-	 * dicReqId 을 이용한 detail 조회(DIC_REQ_DTL)
+	 * id 을 이용한 detail 조회(DIC_REQ_DTL)
 	 */
 	@Select("""
 		SELECT * 
@@ -217,4 +215,22 @@ public interface RequestMapper {
 			@Result(property = "regSts", column = "reg_sts")
 	})
 	MultLangRequestDetailDTO  findRequestDetailByDicReqId(@Param("id") Long id);
+
+	/**
+	 * 선택된 요청(DIC_REQ) 내용 업데이트
+	 */
+	@Update("""
+		UPDATE 
+            DIC_REQ_DTL
+        SET 
+            existing_word = #{existingWord},
+            multlang_ccd = #{multlangCcd},
+            multlang_key = #{multlangKey},
+            multlang_transl_cont = #{multlangTranslCont},
+            multlang_suggested_transl_cont = #{multlangSuggestedTranslCont},
+            multlang_transl_cont_abbr = #{multlangTranslContAbbr},
+            multlang_typ = #{multlangTyp}
+        WHERE id = #{id}
+	""")
+	void updateRequestDetail(UpdateRequestDetailDTO dto);
 }
