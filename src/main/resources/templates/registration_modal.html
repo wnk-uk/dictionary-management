@@ -325,7 +325,7 @@
 			const lastRows = tbody.querySelectorAll(".inputRow");
 			
 			if (lastRows.length === 0) {
-				alert("⚠️ 추가할 수 있는 기본 행이 없습니다. 초기 행을 확인해주세요.");
+				Swal.fire("⚠️ 추가할 수 있는 기본 행이 없습니다.", "초기 행을 확인해주세요.", "warning");
 				return;
 			}
 			
@@ -365,7 +365,7 @@
 		const rows = tbody.querySelectorAll(".inputRow");
 		
 		if (rows.length <= 2) {
-			alert("⚠️ 최소 1개의 입력 필드는 유지해야 합니다.");
+			Swal.fire("⚠️ 최소 1개의 입력 필드는 유지해야 합니다.", "", "warning");
 			return;
 		}
 		
@@ -447,7 +447,7 @@
 		}
 		
 		if (!isValid) {
-			alert("🚨 'To-Be (New Word)'와 'New Translation' 필드는 필수 입력 항목입니다.");
+			Swal.fire("🚨 필수 입력 누락", "'To-Be (New Word)'와 'New Translation' 필드는 필수 입력 항목입니다.", "error");
 			return;
 		}
 		
@@ -459,8 +459,9 @@
 			processData: false,
 			contentType: false,
 			success: function () {
-				alert("✅ Request submitted successfully!");
-				// location.href = "/req/all/lists";
+				Swal.fire("✅ 요청이 성공적으로\n제출되었습니다!", "", "success").then(() => {
+					window.location.href = "/req/all/lists";
+				});
 			},
 			error: function (xhr) {
 				console.error("AJAX Error:", xhr.responseText);

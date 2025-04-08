@@ -7,4 +7,5 @@ public class UpdateRequestDetailStatusDTO {
 	private Long id;
 	private String regSts;
 	private String multlangTranslCont;
+	private String rmk;
 }

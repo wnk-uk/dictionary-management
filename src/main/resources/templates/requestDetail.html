@@ -62,7 +62,7 @@
 		let acptSts = "[[${acptSts}]]";
 		
 		if (!dicReqId) {
-			alert("🚨 No request ID provided.");
+			Swal.fire("🚨 Request ID가 제공되지 않았습니다.", "", "error");
 			window.location.href = `/req/${acptSts}/lists`;
 			return;
 		}
@@ -77,7 +77,7 @@
 				})
 				.then(data => {
 					if (!data) {
-						alert("🚨 Request not found.");
+						Swal.fire("🚨 요청 정보를 찾을 수 없습니다.", "", "error");
 						window.location.href = `/req/${acptSts}/lists`;
 						return;
 					}
@@ -145,7 +145,7 @@
 						name: error.name,
 						stack: error.stack
 					});
-					alert("🚨 Failed to load request information: " + error.message);
+					Swal.fire("🚨 요청 정보를 불러오지 못했습니다.", "Error: " + error.message, "error");
 					window.location.href = `/req/${acptSts}/lists`;
 				});
 		
@@ -239,8 +239,8 @@
 	
 	function updateSelectedStatus(status) {
 		let selectedRows = table.getSelectedData();
-		if (selectedRows.length === 0) {
-			alert("🚨 Please select at least one row.");
+		if(selectedRows.length === 0) {
+			Swal.fire("🚨 항목 선택 필요", "최소 하나의 행을 선택해주세요.", "warning");
 			return;
 		}
 		
@@ -250,50 +250,79 @@
 		const alreadyAcceptedRows = selectedRows
 				.filter(row => row.regSts === 'ACCEPTANCE')
 				.map(row => row.multlangKey);
-		if (alreadyAcceptedRows.length > 0) {
+		if(alreadyAcceptedRows.length > 0) {
 			const keys = alreadyAcceptedRows.join(", ");
-			alert(`🚨 이미 등록되어 수정할 수 없습니다. (Multlang Key: ${keys})`);
+			Swal.fire("🚨 이미 등록되어 수정할 수 없습니다.", `Multlang Key: ${keys}`, "error");
 			return;
 		}
 		
-		if (status === 'ACCEPTANCE') {
-			// ACCEPT 버튼 클릭 시 확인 알림
-			if (confirm("Translantion Content를 수정없이 등록하시겠습니까?")) {
-				// 예 선택 시
-				let updateData = [{
-					dicReqId: dicReqId,
-					details: selectedRows.map(row => ({
-						id: row.id,
-						regSts: status,
-						multlangTranslCont: row.suggestedTranslCont
-					}))
-				}];
-				sendUpdateRequest(updateData, "✅ 다국어집에 저장되었습니다!");
-			} else {
-				// 아니오 선택 시 입력창 표시
-				const newContent = prompt("변경할 Translation Content를 입력하세요:", selectedRows[0].multlangTranslCont);
-				if (newContent !== null) {
-					let updateData = [{
-						dicReqId: dicReqId,
-						details: selectedRows.map(row => ({
+		if(status === 'ACCEPTANCE') {
+			const dicReqId = "[[${dicReqId}]]";
+			
+			const updateData = [{
+				dicReqId: dicReqId,
+				details: []
+			}];
+			
+			const processRemarksSequentially = async(rows) => {
+				for(const row of rows) {
+					// Step 1: 확정 여부
+					const confirmResult = await Swal.fire({
+						title: "Translation 확정",
+						text: `"${row.suggestedTranslCont}"로 확정하시겠습니까?`,
+						icon: "question",
+						showCancelButton: true,
+						confirmButtonText: "예",
+						cancelButtonText: "아니오"
+					});
+					
+					if(!confirmResult.isConfirmed) {
+						continue; // 이 row는 스킵
+					}
+					
+					// Step 2: remark 입력
+					const remarkResult = await Swal.fire({
+						title: "Remark 입력",
+						html: `
+					<div style="margin-bottom: 8px; font-weight: bold;">
+						선택된 Content:<br>
+						<span style="color: rebeccapurple;">${row.suggestedTranslCont}</span>
+					</div>
+					<input id="swal-remark" class="swal2-input" placeholder="Remark를 입력해주세요">
+				`,
+						showCancelButton: true,
+						confirmButtonText: "저장",
+						cancelButtonText: "취소",
+						preConfirm: () => {
+							const remark = document.getElementById("swal-remark").value.trim();
+							// if(!remark) {
+							// 	Swal.showValidationMessage("Remark는 필수입니다.");
+							// }
+							return {remark};
+						}
+					});
+					
+					if(remarkResult.isConfirmed) {
+						const {remark} = remarkResult.value;
+						updateData[0].details.push({
 							id: row.id,
 							regSts: status,
-							multlangTranslCont: newContent
-						}))
-					}];
-					sendUpdateRequest(updateData, "✅ 수정된 내용이 다국어집에 저장되었습니다!");
+							multlangTranslCont: row.suggestedTranslCont,
+							rmk: remark
+						});
+					}
 				}
-			}
-		} else {
-			// ACCEPTANCE 외의 다른 상태 업데이트
-			let updateData = [{
-				dicReqId: dicReqId,
-				details: selectedRows.map(row => ({
-					id: row.id,
-					regSts: status
-				}))
-			}];
-			sendUpdateRequest(updateData, "✅ Status updated successfully!");
+				
+				// 모든 입력 완료 후 요청 보내기
+				if(updateData[0].details.length > 0) {
+					sendUpdateRequest(updateData, "✅ 다국어집에 저장되었습니다!");
+				} else {
+					Swal.fire("알림", "선택된 항목 중 처리된 것이 없습니다.", "info");
+				}
+			};
+			
+			// 시작
+			processRemarksSequentially(selectedRows);
 		}
 	}
 	
@@ -305,12 +334,13 @@
 			contentType: "application/json",
 			data: JSON.stringify(updateData),
 			success: function () {
-				alert(successMessage);
-				table.replaceData();
-				location.reload();
+				Swal.fire(successMessage, "", "success").then(() => {
+					table.replaceData(); // 또는 필요 시 생략 가능
+					location.reload(); // 또는 특정 페이지로 이동
+				});
 			},
 			error: function (xhr) {
-				alert("🚨 Failed to update status: " + xhr.responseText);
+				Swal.fire("🚨 상태 업데이트 실패", xhr.responseText, "error");
 			}
 		});
 	}

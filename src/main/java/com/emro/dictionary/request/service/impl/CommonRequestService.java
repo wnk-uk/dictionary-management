@@ -80,9 +80,10 @@ public class CommonRequestService implements RequestService {
 					multLangService.saveOrUpdateMultlang(
 							detailRecord.getMultlangCcd(),
 							detailRecord.getMultlangKey(),
-							detailRecord.getMultlangTranslCont(),
+							detail.getMultlangTranslCont(),
 							detailRecord.getMultlangTranslContAbbr(),
 							detailRecord.getMultlangTyp(),
+							detail.getRmk(),
 							requester
 					);
 				}

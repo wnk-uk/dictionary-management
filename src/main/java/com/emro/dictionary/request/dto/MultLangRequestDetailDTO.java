@@ -20,5 +20,6 @@ public class MultLangRequestDetailDTO {
 	private String sourcePath;
 	private String comment;
 	private String regSts;
+	private String rmk;
 
 }

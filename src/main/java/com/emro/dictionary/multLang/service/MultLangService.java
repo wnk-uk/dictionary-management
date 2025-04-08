@@ -32,7 +32,7 @@ public class MultLangService {
 
 
 	public void saveOrUpdateMultlang(String multlangCcd, String multlangKey, String multlangTranslCont,
-	                                 String multlangTranslContAbbr, String multlangTyp, String username) {
+	                                 String multlangTranslContAbbr, String multlangTyp, String rmk, String username) {
 		MultLangDTO existingMultlang = findByMultlangKey(multlangCcd, multlangKey);
 
 		if (existingMultlang != null) {
@@ -40,6 +40,7 @@ public class MultLangService {
 			existingMultlang.setMultlangTranslCont(multlangTranslCont);
 			existingMultlang.setMultlangTranslContAbbr(multlangTranslContAbbr);
 			existingMultlang.setMultlangTyp(multlangTyp);
+			existingMultlang.setRmk(rmk);
 			existingMultlang.setModrId(username);
 			existingMultlang.setModDttm(LocalDateTime.now());
 
@@ -52,6 +53,7 @@ public class MultLangService {
 			newMultlang.setMultlangTranslCont(multlangTranslCont);
 			newMultlang.setMultlangTranslContAbbr(multlangTranslContAbbr);
 			newMultlang.setMultlangTyp(multlangTyp);
+			newMultlang.setRmk(rmk);
 			newMultlang.setRegrId(username);
 			newMultlang.setRegDttm(LocalDateTime.now());
 			newMultlang.setMultlangModDttm(LocalDateTime.now());

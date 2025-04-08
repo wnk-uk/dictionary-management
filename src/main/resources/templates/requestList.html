@@ -131,7 +131,7 @@
 		let selectedRows = table.getSelectedData();
 		
 		if (selectedRows.length === 0) {
-			alert("🚨 Please select at least one row.");
+			Swal.fire("🚨 항목 선택 필요", "최소 하나의 행을 선택해주세요.", "warning");
 			return;
 		}
 		
@@ -155,11 +155,11 @@
 			contentType: "application/json",
 			data: JSON.stringify(updateData),
 			success: function () {
-				alert("✅ Status updated successfully!");
+				Swal.fire("✅ 상태가 성공적으로 업데이트되었습니다!", "", "success");
 				table.replaceData();
 			},
 			error: function () {
-				alert("🚨 Failed to update status.");
+				Swal.fire("🚨 상태 업데이트 실패", "", "error");
 			}
 		});
 	}

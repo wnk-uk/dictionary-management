@@ -42,7 +42,7 @@
             contentType: "application/json",
             data: JSON.stringify({ sheetData: data }),
             success: function(response) {
-                alert("저장 성공!");
+				Swal.fire("저장 성공!", "", "success");
             },
             error: function(error) {
 				UT.handleAjaxError(error);

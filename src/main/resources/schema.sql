@@ -39,6 +39,16 @@ CREATE TABLE IF NOT EXISTS DIC_REQ_DTL (
                                     FOREIGN KEY (dic_req_id) REFERENCES DIC_REQ(dic_req_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS DIC_REQ_DTL_HIS (
+                                    history_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                    dtl_id BIGINT NOT NULL,
+                                    comment_text TEXT,
+                                    image_path VARCHAR(MAX),
+									writer_nm VARCHAR(50) NOT NULL,
+									writed_dttm DATETIME DEFAULT CURRENT_TIMESTAMP,
+									FOREIGN KEY (dtl_id) REFERENCES DIC_REQ_DTL(id) ON DELETE CASCADE
+	);
+
 CREATE TABLE IF NOT EXISTS MULTLANG (
 	                                multlang_ccd VARCHAR2(50) NOT NULL, --언어 코드 ko_KR, en_US, ja_JP, zh_CN
 									multlang_key VARCHAR2(500) NOT NULL, -- 입력 단어, 내용
@@ -56,13 +66,5 @@ CREATE TABLE IF NOT EXISTS MULTLANG (
 									multlang_transl_fnl_cont VARCHAR2(500)
 );
 
-CREATE TABLE IF NOT EXISTS DIC_REQ_DTL_HIS (
-	                                history_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	                                dtl_id BIGINT NOT NULL,
-	                                comment_text TEXT,
-	                                image_path VARCHAR(MAX),
-									writer_nm VARCHAR(50) NOT NULL,
-									writed_dttm DATETIME DEFAULT CURRENT_TIMESTAMP,
-									FOREIGN KEY (dtl_id) REFERENCES DIC_REQ_DTL(id) ON DELETE CASCADE
-	);
+
 

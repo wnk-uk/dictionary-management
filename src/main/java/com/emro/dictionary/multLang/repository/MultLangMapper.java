@@ -26,6 +26,7 @@ public interface MultLangMapper {
         SET multlang_transl_cont = #{multlangTranslCont},
             multlang_transl_cont_abbr = #{multlangTranslContAbbr},
             multlang_typ = #{multlangTyp},
+            rmk = #{rmk},
             modr_id = #{modrId},
             mod_dttm = #{modDttm},
             multlang_mod_dttm = #{multlangModDttm}
@@ -37,10 +38,10 @@ public interface MultLangMapper {
 	@Insert("""
         INSERT INTO MULTLANG (
             multlang_ccd, multlang_key, multlang_transl_cont, multlang_transl_cont_abbr, 
-            multlang_typ, regr_id, reg_dttm, multlang_mod_dttm, sts, multlang_abbr_use_yn
+            multlang_typ, rmk, regr_id, reg_dttm, multlang_mod_dttm, sts, multlang_abbr_use_yn
         ) VALUES (
             #{multlangCcd}, #{multlangKey}, #{multlangTranslCont}, #{multlangTranslContAbbr},
-            #{multlangTyp}, #{regrId}, #{regDttm}, #{multlangModDttm}, #{sts}, #{multlangAbbrUseYn}
+            #{multlangTyp}, #{rmk}, #{regrId}, #{regDttm}, #{multlangModDttm}, #{sts}, #{multlangAbbrUseYn}
         )
     """)
 	void insertMultlang(MultLangDTO multLangDTO);

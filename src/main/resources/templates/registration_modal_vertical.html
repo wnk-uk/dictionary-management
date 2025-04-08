@@ -168,7 +168,7 @@
 				if (entries.length > 1) {
 					e.target.closest(".requestTable").remove();
 				} else {
-					alert("At least one entry must remain.");
+					Swal.fire("At least one entry must remain.", "적어도 하나의 행은 존재해야 합니다.", "warning");
 				}
 			}
 		});
@@ -218,7 +218,7 @@
 			
 			// 유효성 검사 실패 시 AJAX 요청 차단
 			if (!isValid) {
-				alert("🚨 'To-Be (New Word)'와 'New Translation' 필드는 필수 입력 항목입니다.");
+				Swal.fire("🚨 필수 입력 누락", "'To-Be (New Word)'와 'New Translation' 필드는 필수 입력 항목입니다.", "error");
 				return;
 			}
 			
@@ -229,7 +229,7 @@
 				contentType: "application/json",
 				data: JSON.stringify(requestData),
 				success: function (response) {
-					alert("✅ Request submitted successfully!");
+					Swal.fire("✅ 요청이 성공적으로\n 제출되었습니다!", "", "success");
 					location.reload();
 				},
 				error: UT.handleAjaxError
