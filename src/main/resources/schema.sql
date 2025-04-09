@@ -82,6 +82,6 @@ CREATE TABLE IF NOT EXISTS temp_table (
 			                       reviewer VARCHAR(100),
 								   requester VARCHAR(100),
 								   inspector VARCHAR(100),
-								   requester_aggregated VARCHAR(100),
+								   requester_aggregated VARCHAR(100)
 );
 
