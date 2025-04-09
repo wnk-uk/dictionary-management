@@ -29,9 +29,9 @@ public class CommonRequestService implements RequestService {
 	public void saveRequest(MultLangRequestDTO request, String requester) throws IOException {
 		requestMapper.insertRequest(request);
 		for (MultLangRequestDetailDTO detail : request.getDetails()) {
-			requestMapper.insertRequestDetail(request.getDicReqId(), detail);
+			requestMapper.insertRequestDetail(request.getReqId(), detail);
 			if (detail.getComment() != null && !detail.getComment().isEmpty()) {
-				Long dtlId = detail.getId();
+				Long dtlId = detail.getDtlId();
 				if (dtlId == null) {
 					throw new IllegalStateException("dtlId was not generated for detail: " + detail);
 				}
@@ -67,15 +67,15 @@ public class CommonRequestService implements RequestService {
 	@Override
 	public void updateRequestStatus(List<UpdateRequestStatusDTO> updateList, String requester) {
 		for (UpdateRequestStatusDTO update : updateList) {
-			Long dicReqId = update.getDicReqId();
+			Long reqId = update.getReqId();
 
-			// 1. DIC_REQ_DTL 상태 업데이트
+			// 1. REQ_DTL 상태 업데이트
 			for (UpdateRequestDetailStatusDTO detail : update.getDetails()) {
-				requestMapper.updateRequestDetailRegSts(detail.getId(), detail.getRegSts(), detail.getMultlangTranslCont());
+				requestMapper.updateRequestDetailRegSts(detail.getDtlId(), detail.getRegSts(), detail.getMultlangTranslCont());
 
 				// regSts가 ACCEPTANCE일 경우 MULTLANG 처리
 				if ("ACCEPTANCE".equals(detail.getRegSts())) {
-					MultLangRequestDetailDTO detailRecord = requestMapper.findRequestDetailByDicReqId(detail.getId());
+					MultLangRequestDetailDTO detailRecord = requestMapper.findRequestDetailByDtlId(detail.getDtlId());
 
 					multLangService.saveOrUpdateMultlang(
 							detailRecord.getMultlangCcd(),
@@ -89,12 +89,12 @@ public class CommonRequestService implements RequestService {
 				}
 			}
 
-			// 2. DIC_REQ_DTL 상태 조회
-			List<String> detailStatuses = requestMapper.getDetailStatusesByDicReqId(dicReqId);
+			// 2. REQ_DTL 상태 조회
+			List<String> detailStatuses = requestMapper.getDetailStatusesByReqId(reqId);
 
-			// 3. DIC_REQ 상태 결정 및 업데이트
+			// 3. REQ 상태 결정 및 업데이트
 			String newAcptSts = determineAcptSts(detailStatuses);
-			requestMapper.updateRequestAcptSts(dicReqId, newAcptSts);
+			requestMapper.updateRequestAcptSts(reqId, newAcptSts);
 		}
 	}
 
@@ -123,12 +123,12 @@ public class CommonRequestService implements RequestService {
 	public void updateRequestDetail(List<UpdateRequestDetailDTO> updateList, String requester) {
 		for (UpdateRequestDetailDTO update : updateList) {
 			requestMapper.updateRequestDetail(update);
-			historyService.addHistory(update.getId(), update.getCommentText(), null, requester);
+			historyService.addHistory(update.getDtlId(), update.getCommentText(), null, requester);
 		}
 	}
 
 	@Override
-	public MultLangListDTO getRequestById(Long dicReqId) {
-		return requestMapper.findByDicReqId(dicReqId);
+	public MultLangListDTO getRequestByReqId(Long reqId) {
+		return requestMapper.getRequestByReqId(reqId);
 	}
 }

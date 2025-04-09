@@ -57,9 +57,9 @@ public interface RequestService {
 	void updateRequestDetail(List<UpdateRequestDetailDTO> updateList, String requester);
 
 	/**
-	 * decReqId를 이용한 detail 정보 호출
-	 * @param dicReqId
-	 * @return decReqId에 해당 하는 request Detail
+	 * ReqId를 이용한 detail 정보 호출
+	 * @param reqId
+	 * @return ReqId에 해당 하는 request Detail
 	 */
-	MultLangListDTO getRequestById(Long dicReqId);
+	MultLangListDTO getRequestByReqId(Long reqId);
 }

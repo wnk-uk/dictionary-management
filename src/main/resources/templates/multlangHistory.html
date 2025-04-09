@@ -45,7 +45,7 @@
 				{ title: "Request Date", field: "reqDttm", formatter: function(cell) { return UT.formatDate(cell.getValue()); } },
 				{ title: "Status", field: "regSts" },
 				{ title: "ID", field: "id" },
-				{ title: "Request ID", field: "dicReqId" },
+				{ title: "Request ID", field: "reqId" },
 				{ title: "Existing Word", field: "existingWord" },
 				{ title: "Language Code", field: "multlangCcd" },
 				{ title: "Word (Key)", field: "multlangKey" },
@@ -63,7 +63,7 @@
 						return `<a href="#" style="color: #007bff; text-decoration: underline;">${value}</a>`;
 					},
 					cellClick: function(e, cell) {
-						return `<a href="/req/all/detail/${cell.getRow().getData().dicReqId}/history/${cell.getRow().getData().id}">${cell.getValue() || 'No Comment'}</a>`;
+						return `<a href="/req/all/detail/${cell.getRow().getData().reqId}/history/${cell.getRow().getData().id}">${cell.getValue() || 'No Comment'}</a>`;
 					}
 				}
 			],
@@ -71,8 +71,8 @@
 				console.log("click")
 				row.getElement().onclick = function(e) {
 					if (e.target.tagName !== "A") {
-						let dicReqId = row.getData().dicReqId;
-						window.location.href = `/req/all/detail/${dicReqId}`;
+						let reqId = row.getData().reqId;
+						window.location.href = `/req/all/detail/${reqId}`;
 					}
 				}
 			},

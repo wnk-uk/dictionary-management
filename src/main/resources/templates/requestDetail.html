@@ -61,17 +61,17 @@
 	let table;
 	
 	document.addEventListener("DOMContentLoaded", function () {
-		let dicReqId = "[[${dicReqId}]]";
+		let reqId = "[[${reqId}]]";
 		let acptSts = "[[${acptSts}]]";
 		
-		if (!dicReqId) {
+		if (!reqId) {
 			Swal.fire("🚨 Request ID가 제공되지 않았습니다.", "", "error");
 			window.location.href = `/req/${acptSts}/lists`;
 			return;
 		}
 		
 		// Request Information
-		fetch(`/api/request/detail/${dicReqId}`)
+		fetch(`/api/request/detail/${reqId}`)
 				.then(response => {
 					if (!response.ok) {
 						throw new Error(`HTTP error! Status: ${response.status}`);
@@ -115,7 +115,7 @@
                     <div class="col-md-12">
                         <dl class="row mb-0">
                             <dt class="col-sm-4">Request ID</dt>
-                            <dd class="col-sm-8">${data.dicReqId}</dd>
+                            <dd class="col-sm-8">${data.reqId}</dd>
                             <dt class="col-sm-4">Requester</dt>
                             <dd class="col-sm-8">${data.reqUsrNm}</dd>
                             <dt class="col-sm-4">Request Time</dt>
@@ -158,13 +158,13 @@
 			selectable: true,
 			height: "auto",
 			movableColumns: true,
-			ajaxURL: `/api/request/detail/${dicReqId}`,
+			ajaxURL: `/api/request/detail/${reqId}`,
 			ajaxConfig: "GET",
 			ajaxContentType: "json",
 			ajaxResponse: function (url, params, response) {
 				if (!response || !response.details) return [];
 				return response.details.map(detail => ({
-					id: detail.id,
+					dtlId: detail.dtlId,
 					multlangCcd: detail.multlangCcd,
 					existingWord: detail.existingWord || "[NULL]",
 					multlangKey: detail.multlangKey,
@@ -202,7 +202,7 @@
 					headerSort: false,
 					headerHozAlign: "center"
 				},
-				{title: "id" ,field: "id", minWidth: 120},
+				{title: "id" ,field: "dtlId", minWidth: 120},
 				{ title: "Existing Word", field: "existingWord", editable: editableEditorCheck, editor: "input" , minWidth: 150, cellEdited: highlightEditedCell},
 				{ title: "Code", field: "multlangCcd", minWidth: 120, cellEdited: highlightEditedCell,  editor: "list", editable: editableEditorCheck, editorParams: {
 						values: ["ko_KR", "en_US", "ja_JP", "zh_CN"]
@@ -243,8 +243,8 @@
 					},
 					cellClick: function(e, cell) {
 						const rowData = cell.getRow().getData();
-						let dtlId = rowData.id;
-						window.location.href = `/req/${acptSts}/detail/${dicReqId}/history/${dtlId}`;
+						let dtlId = rowData.dtlId;
+						window.location.href = `/req/${acptSts}/detail/${reqId}/history/${dtlId}`;
 					}
 				},
 				{ title: "Registration Status", field: "regSts", minWidth: 150 }
@@ -293,7 +293,7 @@
 			return;
 		}
 		
-		let dicReqId = "[[${dicReqId}]]";
+		let reqId = "[[${reqId}]]";
 		
 		// 이미 ACCEPTANCE 상태인 row 체크
 		const alreadyAcceptedRows = selectedRows
@@ -306,10 +306,10 @@
 		}
 		
 		if(status === 'ACCEPTANCE') {
-			const dicReqId = "[[${dicReqId}]]";
+			const reqId = "[[${reqId}]]";
 			
 			const updateData = [{
-				dicReqId: dicReqId,
+				reqId: reqId,
 				details: []
 			}];
 			
@@ -344,9 +344,6 @@
 						cancelButtonText: "취소",
 						preConfirm: () => {
 							const remark = document.getElementById("swal-remark").value.trim();
-							// if(!remark) {
-							// 	Swal.showValidationMessage("Remark는 필수입니다.");
-							// }
 							return {remark};
 						}
 					});
@@ -354,7 +351,7 @@
 					if(remarkResult.isConfirmed) {
 						const {remark} = remarkResult.value;
 						updateData[0].details.push({
-							id: row.id,
+							dtlId: row.dtlId,
 							regSts: status,
 							multlangTranslCont: row.suggestedTranslCont,
 							rmk: remark
@@ -372,6 +369,28 @@
 			
 			// 시작
 			processRemarksSequentially(selectedRows);
+		} else {
+			// ACCEPTANCE 외 상태 처리 (ex: REJECT, HOLDING 등)
+			Swal.fire({
+				title: "상태 변경 확인",
+				text: `선택한 항목의 상태를 '${status}'(으)로 변경하시겠습니까?`,
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "예",
+				cancelButtonText: "아니오"
+			}).then(result => {
+				if (result.isConfirmed) {
+					const updateData = [{
+						reqId: reqId,
+						details: selectedRows.map(row => ({
+							dtlId: row.dtlId,
+							regSts: status
+						}))
+					}];
+					
+					sendUpdateRequest(updateData, "✅ 상태가 성공적으로 변경되었습니다!");
+				}
+			});
 		}
 	}
 	
@@ -432,14 +451,14 @@
 		
 		const updateRequestList = [];
 		const combinedCommentText = changedRows.map(row => {
-			const id = row.getData().id;
+			const dtlId = row.getData().dtlId;
 			const changed = row._row.changedFields;
 			const changes = Object.entries(changed).map(([key, { before, after }]) => `${key} : 기존 값 {${before}} -> 변경 값 {${after}}`);
 			const commentText = changes.join("\n");
 			
 			const data = row.getData();
 			updateRequestList.push({
-				id: id,
+				dtlId: dtlId,
 				existingWord: data.existingWord,
 				multlangCcd: data.multlangCcd,
 				multlangKey: data.multlangKey,
@@ -450,7 +469,7 @@
 				commentText: commentText
 			});
 			
-			return `ID: ${id}\n${commentText}`;
+			return `ID: ${dtlId}\n${commentText}`;
 		}).join("\n\n");
 		
 		const confirmResult = await Swal.fire({

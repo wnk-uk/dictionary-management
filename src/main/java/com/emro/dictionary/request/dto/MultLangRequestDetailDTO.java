@@ -1,14 +1,10 @@
 package com.emro.dictionary.request.dto;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
-@Getter
-@Setter
 public class MultLangRequestDetailDTO {
-	private Long id;
+	private Long dtlId;
 	private String existingWord;
 	private String multlangCcd;
 	private String multlangKey;

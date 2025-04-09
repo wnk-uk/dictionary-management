@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class MultLangDetailListDTO {
-	private Long id;
-	private Long dicReqId;
+	private Long dtlId;
+	private Long reqId;
 	private String existingWord;
 	private String multlangCcd;
 	private String multlangKey;

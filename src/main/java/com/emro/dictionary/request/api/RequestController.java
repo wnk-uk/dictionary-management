@@ -116,9 +116,9 @@ public class RequestController {
 	/**
 	 * Request Id를 이용한 detail 조회
 	 */
-	@GetMapping("/detail/{dicReqId}")
-	public ResponseEntity<MultLangListDTO> getRequestDetail(@PathVariable Long dicReqId) {
-		MultLangListDTO request = serviceResolver.getService().getRequestById(dicReqId);
+	@GetMapping("/detail/{reqId}")
+	public ResponseEntity<MultLangListDTO> getRequestDetail(@PathVariable Long reqId) {
+		MultLangListDTO request = serviceResolver.getService().getRequestByReqId(reqId);
 		return request != null ? ResponseEntity.ok(request) : ResponseEntity.notFound().build();
 	}
 }

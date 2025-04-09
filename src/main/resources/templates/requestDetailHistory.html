@@ -11,7 +11,7 @@
 			<div class="container-fluid">
 				<div class="d-sm-flex align-items-center justify-content-between mb-4">
 					<h1 class="h3 mb-0 text-gray-800">Request Detail History</h1>
-					<a th:href="@{/req/{acptSts}/detail/{dicReqId}(acptSts=${acptSts}, dicReqId=${dicReqId})}" class="btn btn-secondary btn-sm">
+					<a th:href="@{/req/{acptSts}/detail/{reqId}(acptSts=${acptSts}, reqId=${reqId})}" class="btn btn-secondary btn-sm">
 						<i class="fas fa-arrow-left"></i> Back to Request Detail
 					</a>
 				</div>
@@ -47,12 +47,12 @@
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
 		let dtlId = "[[${dtlId}]]";
-		let dicReqId = "[[${dicReqId}]]";
+		let reqId = "[[${reqId}]]";
 		let acptSts = "[[${acptSts}]]";
 		
 		if (!dtlId) {
 			Swal.fire("🚨 Detail ID가 제공되지 않았습니다.", "", "error");
-			window.location.href = `/req/${acptSts}/detail/${dicReqId}`;
+			window.location.href = `/req/${acptSts}/detail/${reqId}`;
 			return;
 		}
 		
@@ -166,7 +166,7 @@
 					<div class="chat-bubble mb-3">
 						<div class="d-flex justify-content-between">
 							<strong>${history.writerNm}</strong>
-							<small>${UT.formatDate(history.writedDttm)}</small>
+							<small>${UT.formatDate(history.writtenDttm)}</small>
 						</div>
 						<div id="${quillId}" class="quill-history mt-1" style="min-height: 50px;"></div>
 						${fileHtml}

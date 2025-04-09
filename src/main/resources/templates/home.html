@@ -178,9 +178,9 @@
 			rowFormatter: function(row) {
 				row.getElement().onclick = function(e) {
 					if (e.target.tagName !== "INPUT") {
-						let dicReqId = row.getData().dicReqId;
+						let reqId = row.getData().reqId;
 						let acptSts = "all";
-						window.location.href = `/req/${acptSts}/detail/${dicReqId}`;
+						window.location.href = `/req/${acptSts}/detail/${reqId}`;
 					}
 				};
 			}
@@ -208,9 +208,9 @@
 			rowFormatter: function(row) {
 				row.getElement().onclick = function(e) {
 					if (e.target.tagName !== "INPUT") {
-						let dicReqId = row.getData().dicReqId;
+						let reqId = row.getData().reqId;
 						let acptSts = "holding";
-						window.location.href = `/req/${acptSts}/detail/${dicReqId}`;
+						window.location.href = `/req/${acptSts}/detail/${reqId}`;
 					}
 				};
 			}

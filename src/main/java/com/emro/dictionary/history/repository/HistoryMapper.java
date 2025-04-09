@@ -16,22 +16,22 @@ public interface HistoryMapper {
 
 	@Select("""
 		SELECT * 
-		FROM DIC_REQ_DTL_HIS 
+		FROM REQ_DTL_HIS 
 		WHERE dtl_id = #{dtlId} 
-		ORDER BY writed_dttm ASC
+		ORDER BY written_dttm ASC
 		""")
 	List<RequestDetailHistoryDTO> findHistoryByDtlId(Long dtlId);
 
 	@Insert("""
-		INSERT INTO DIC_REQ_DTL_HIS (dtl_id, comment_text, image_path, writer_nm, writed_dttm)
+		INSERT INTO REQ_DTL_HIS (dtl_id, comment_text, image_path, writer_nm, written_dttm)
 		VALUES (#{dtlId}, #{commentText}, #{imagePath}, #{writerNm}, CURRENT_TIMESTAMP)
 		""")
 	void insertHistory(RequestDetailHistoryDTO history);
 
 	@Select("""
 		SELECT d.*, r.req_usr_nm, r.req_dttm
-        FROM DIC_REQ_DTL d
-        INNER JOIN DIC_REQ r ON d.dic_req_id = r.dic_req_id
+        FROM REQ_DTL d
+        INNER JOIN REQ r ON d.req_id = r.req_id
         WHERE d.multlang_key = #{multlangKey}
         ORDER BY r.req_dttm ASC
         """)

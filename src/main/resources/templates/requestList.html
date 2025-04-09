@@ -62,7 +62,7 @@
 			document.getElementById("requestListTitle").innerText = "Holding Request List";
 		}
 		
-		// Tabulator 설정 (DIC_REQ 기준)
+		// Tabulator 설정 (REQ 기준)
 		table = new Tabulator("#requestTable", {
 			layout: "fitColumns",
 			columnMinWidth: 120,
@@ -73,7 +73,7 @@
 			ajaxContentType: "json",
 			ajaxResponse: function (url, params, response) {
 				let rows = response.map(item => ({
-					dicReqId: item.dicReqId,
+					reqId: item.reqId,
 					reqUsrNm: item.reqUsrNm,
 					requestTime: UT.formatDate(item.reqDttm),
 					status: item.acptSts,
@@ -106,9 +106,9 @@
 			rowFormatter: function(row) {
 				row.getElement().onclick = function(e) {
 					if (e.target.tagName !== "INPUT") {
-						let dicReqId = row.getData().dicReqId;
+						let reqId = row.getData().reqId;
 						let acptSts = "[[${acptSts}]]" === "null" ? "all" : "[[${acptSts}]]";
-						window.location.href = `/req/${acptSts}/detail/${dicReqId}`;
+						window.location.href = `/req/${acptSts}/detail/${reqId}`;
 					}
 				};
 			}
@@ -136,14 +136,14 @@
 		}
 		
 		let groupedData = selectedRows.reduce((acc, row) => {
-			if (!acc[row.dicReqId]) {
-				acc[row.dicReqId] = {
-					dicReqId: row.dicReqId,
+			if (!acc[row.reqId]) {
+				acc[row.reqId] = {
+					reqId: row.reqId,
 					acptSts: status,
 					details: []
 				};
 			}
-			acc[row.dicReqId].details.push({ id: row.id, regSts: status });
+			acc[row.reqId].details.push({ id: row.id, regSts: status });
 			return acc;
 		}, {});
 		

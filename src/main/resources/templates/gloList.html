@@ -34,21 +34,23 @@
 <script>
     // 데이터를 백엔드에 저장
     function saveData() {
-        const data = luckysheet.getAllSheets(); // Luckysheet에서 데이터 가져오기
-
-        $.ajax({
-            url:"/api/glo/save",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ sheetData: data }),
-            success: function(response) {
-				Swal.fire("저장 성공!", "", "success");
-            },
-            error: function(error) {
+		const data = luckysheet.getAllSheets(); // Luckysheet에서 데이터 가져오기
+		
+		$.ajax({
+			url: "/api/glo/save",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({sheetData: data}),
+			success: function(response) {
+				Swal.fire("저장 성공!", "", "success").then(() => {
+					location.reload(); // ✅ 페이지 새로고침
+				});
+			},
+			error: function() {
 				UT.handleAjaxError(error);
-            }
-        });
-    }
+			}
+		})
+	}
 
     // 백엔드에서 데이터를 불러와 Luckysheet에 로드
     function loadData() {

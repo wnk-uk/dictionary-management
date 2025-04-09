@@ -6,52 +6,52 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 /**
- * DIC_REQ 및 DIC_REQ_DTL 테이블과의 데이터 액세스를 담당하는 MyBatis Mapper
+ * REQ 및 REQ_DTL 테이블과의 데이터 액세스를 담당하는 MyBatis Mapper
  */
 @Mapper
 public interface RequestMapper {
 
 	/**
-	 * 요청 저장 (DIC_REQ 테이블에 데이터 삽입)
+	 * 요청 저장 (REQ 테이블에 데이터 삽입)
 	 */
 	@Insert("""
-        INSERT INTO DIC_REQ (req_usr_nm, req_dttm, sts, acpt_sts, image_path, editor_content)
+        INSERT INTO REQ (req_usr_nm, req_dttm, sts, acpt_sts, image_path, editor_content)
         VALUES (#{reqUsrNm}, NOW(), 'C', 'REQUEST', #{imagePath}, #{editorContent})
     """)
-	@Options(useGeneratedKeys = true, keyProperty = "dicReqId")
+	@Options(useGeneratedKeys = true, keyProperty = "reqId")
 	void insertRequest(MultLangRequestDTO request);
 
 	/**
-	 * 요청 상세 저장 (DIC_REQ_DTL 테이블에 데이터 삽입)
+	 * 요청 상세 저장 (REQ_DTL 테이블에 데이터 삽입)
 	 */
 	@Insert("""
-        INSERT INTO DIC_REQ_DTL (dic_req_id, existing_word, multlang_ccd, multlang_key, multlang_suggested_transl_cont, 
+        INSERT INTO REQ_DTL (req_id, existing_word, multlang_ccd, multlang_key, multlang_suggested_transl_cont, 
                                  multlang_transl_cont_abbr, multlang_typ, screen_path, 
                                  source_path, comment, reg_sts)
-        VALUES (#{dicReqId}, #{detail.existingWord}, #{detail.multlangCcd}, #{detail.multlangKey}, #{detail.multlangSuggestedTranslCont}, 
+        VALUES (#{reqId}, #{detail.existingWord}, #{detail.multlangCcd}, #{detail.multlangKey}, #{detail.multlangSuggestedTranslCont}, 
                 #{detail.multlangTranslContAbbr}, #{detail.multlangTyp}, #{detail.screenPath}, 
                 #{detail.sourcePath}, #{detail.comment}, 'PENDING')
     """)
-	@Options(useGeneratedKeys = true, keyProperty = "detail.id")
-	void insertRequestDetail(@Param("dicReqId") Long dicReqId, @Param("detail") MultLangRequestDetailDTO detail);
+	@Options(useGeneratedKeys = true, keyProperty = "detail.dtl_id")
+	void insertRequestDetail(@Param("reqId") Long reqId, @Param("detail") MultLangRequestDetailDTO detail);
 
 	/**
 	 * STS가 HOLDING이 아닌 데이터 조회 (requester 선택적)
 	 */
 	@Select("""
-        SELECT * FROM DIC_REQ 
+        SELECT * FROM REQ 
         WHERE acpt_sts <> 'HOLDING'
     	AND (#{requester} IS NULL OR req_usr_nm = #{requester}) 
         ORDER BY req_dttm DESC
     """)
 	@Results({
-			@Result(property = "dicReqId", column = "dic_req_id", id = true),
+			@Result(property = "reqId", column = "req_id", id = true),
 			@Result(property = "reqUsrNm", column = "req_usr_nm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
 			@Result(property = "reqDttm", column = "req_dttm"),
 			@Result(property = "imagePath", column = "image_path"),
 			@Result(property = "editorContent", column = "editor_content"),
-			@Result(property = "details", column = "dic_req_id",
+			@Result(property = "details", column = "req_id",
 					many = @Many(select = "findRequestDetails"))
 	})
 	List<MultLangListDTO> findAllRequestsExceptHOLDING(@Param("requester") String requester);
@@ -60,19 +60,19 @@ public interface RequestMapper {
 	 * 특정 ACPT_STS 값으로 데이터 조회 (requester 선택적)
 	 */
 	@Select("""
-        SELECT * FROM DIC_REQ 
+        SELECT * FROM REQ 
         WHERE acpt_sts = #{acptSts}
         AND (#{requester} IS NULL OR req_usr_nm = #{requester}) 
         ORDER BY req_dttm DESC
     """)
 	@Results({
-			@Result(property = "dicReqId", column = "dic_req_id", id = true),
+			@Result(property = "reqId", column = "req_id", id = true),
 			@Result(property = "reqUsrNm", column = "req_usr_nm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
 			@Result(property = "reqDttm", column = "req_dttm"),
 			@Result(property = "imagePath", column = "image_path"),
 			@Result(property = "editorContent", column = "editor_content"),
-			@Result(property = "details", column = "dic_req_id",
+			@Result(property = "details", column = "req_id",
 					many = @Many(select = "findRequestDetails"))
 	})
 	List<MultLangListDTO> findRequestsByAcptSts(@Param("acptSts") String acptSts, @Param("requester") String requester);
@@ -81,7 +81,7 @@ public interface RequestMapper {
 	 * 요청 상태에 따른 갯수 세기
 	 */
 	@Select("""
-        SELECT COALESCE(COUNT(*), 0) FROM DIC_REQ
+        SELECT COALESCE(COUNT(*), 0) FROM REQ
         WHERE acpt_sts = #{acptSts}
     """)
 	Integer findByAcptStatusCount(String acptSts);
@@ -90,95 +90,96 @@ public interface RequestMapper {
 	 * 요청시간 상위 Top10 특정 요청 가져오기 (특정 acptSts)
 	 */
 	@Select("""
-        SELECT req.dic_req_id, req.req_usr_nm, req.req_dttm, req.acpt_sts
-        FROM dic_req req
-        WHERE req.acpt_sts = #{acptSts}
-        AND (#{requester} IS NULL OR req_usr_nm = #{requester}) 
-        ORDER BY req.req_dttm DESC
-        LIMIT 10
+		SELECT req.req_id, req.req_usr_nm, req.req_dttm, req.acpt_sts
+	    FROM REQ req
+	    WHERE req.acpt_sts = #{acptSts}
+	      AND (req_usr_nm = #{requester} OR #{requester} IS NULL)
+	    ORDER BY req.req_dttm DESC
+	    LIMIT 10
     """)
 	@Results({
-			@Result(property = "dicReqId", column = "dic_req_id", id = true),
+			@Result(property = "reqId", column = "req_id", id = true),
 			@Result(property = "reqUsrNm", column = "req_usr_nm"),
 			@Result(property = "reqDttm", column = "req_dttm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
-			@Result(property = "details", column = "dic_req_id",
-					many = @Many(select = "findRequestDetailsByDicReqId"))
+			@Result(property = "details", column = "req_id",
+					many = @Many(select = "findRequestDetailsByReqId"))
 	})
 	List<MultLangListDTO> findTop10RecentHOLDINGingRequests(@Param("acptSts") String acptSts,  @Param("requester") String requester);
 
 	/**
-	 * 선택된 요청(DIC_REQ)의 상태를 업데이트
+	 * 선택된 요청(REQ)의 상태를 업데이트
 	 */
 	@Update("""
-        UPDATE DIC_REQ
+        UPDATE REQ
         SET acpt_sts = #{acptSts}
-        WHERE dic_req_id = #{dicReqId}
+        WHERE req_id = #{reqId}
     """)
-	void updateRequestAcptSts(@Param("dicReqId") Long dicReqId, @Param("acptSts") String acptSts);
+	void updateRequestAcptSts(@Param("reqId") Long reqId, @Param("acptSts") String acptSts);
 
 	/**
-	 * 선택된 요청들(DIC_REQ_DTL)의 상태를 업데이트
+	 * 선택된 요청들(REQ_DTL)의 상태를 업데이트
 	 */
 	@Update("""
         UPDATE 
-            DIC_REQ_DTL
+            REQ_DTL
         SET 
             reg_sts = #{regSts},
             multlang_transl_cont = #{multlangTranslCont}
-        WHERE id = #{id}
+        WHERE dtl_id = #{dtlId}
     """)
-	void updateRequestDetailRegSts(@Param("id") Long id, @Param("regSts") String regSts, @Param("multlangTranslCont") String multlangTranslCont);
+	void updateRequestDetailRegSts(@Param("dtlId") Long dtlId, @Param("regSts") String regSts, @Param("multlangTranslCont") String multlangTranslCont);
 
 	/**
 	 * 해당 Request Id에 대한 Detail 상태값 조회
 	 */
 	@Select("""
         SELECT reg_sts 
-        FROM DIC_REQ_DTL 
-        WHERE dic_req_id = #{dicReqId}
+        FROM REQ_DTL 
+        WHERE req_id = #{reqId}
     """)
-	List<String> getDetailStatusesByDicReqId(@Param("dicReqId") Long dicReqId);
+	List<String> getDetailStatusesByReqId(@Param("reqId") Long reqId);
 	
 	/**
-	 * RequestDetail 조회 (DIC_REQ_DTL 테이블)
+	 * RequestDetail 조회 (REQ_DTL 테이블)
 	 */
 	@Select("""
-        SELECT * FROM DIC_REQ_DTL 
-        WHERE dic_req_id = #{dicReqId}
+        SELECT * FROM REQ_DTL 
+        WHERE req_id = #{reqId}
     """)
-	List<MultLangDetailListDTO> findRequestDetails(@Param("dicReqId") Long dicReqId);
+	List<MultLangDetailListDTO> findRequestDetails(@Param("reqId") Long reqId);
 
 	/**
-	 * dicReqId 을 이용한 detail 조회(DIC_REQ)
+	 * reqId 을 이용한 detail 조회(REQ)
 	 */
 	@Select("""
 		SELECT * 
-		FROM DIC_REQ 
-		WHERE dic_req_id = #{dicReqId}
+		FROM REQ 
+		WHERE req_id = #{reqId}
 		""")
 	@Results({
-			@Result(property = "dicReqId", column = "dic_req_id", id = true),
+			@Result(property = "reqId", column = "req_id", id = true),
 			@Result(property = "reqUsrNm", column = "req_usr_nm"),
 			@Result(property = "reqDttm", column = "req_dttm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
 			@Result(property = "imagePath", column = "image_path"),
 			@Result(property = "editorContent", column = "editor_content"),
-			@Result(property = "details", column = "dic_req_id",
-					many = @Many(select = "findRequestDetailsByDicReqId"))
+			@Result(property = "details", column = "req_id",
+					many = @Many(select = "findRequestDetailsByReqId"))
 	})
-	MultLangListDTO findByDicReqId(@Param("dicReqId") Long dicReqId);
+	MultLangListDTO getRequestByReqId(@Param("reqId") Long reqId);
 
 	/**
-	 * dicReqId 을 이용한 detail List 조회(DIC_REQ_DTL)
+	 * reqId 을 이용한 detail List 조회(REQ_DTL)
+	 * findByDicReqId , findTop10RecentHOLDINGingRequests 내 사용
 	 */
 	@Select("""
 		SELECT * 
-		FROM DIC_REQ_DTL 
-		WHERE dic_req_id = #{dicReqId}
+		FROM REQ_DTL 
+		WHERE req_id = #{reqId}
 		""")
 	@Results({
-			@Result(property = "id", column = "id"),
+			@Result(property = "dtlId", column = "dtl_id"),
 			@Result(property = "existingWord", column = "existing_word"),
 			@Result(property = "multlangCcd", column = "multlang_ccd"),
 			@Result(property = "multlangKey", column = "multlang_key"),
@@ -191,18 +192,18 @@ public interface RequestMapper {
 			@Result(property = "comment", column = "comment"),
 			@Result(property = "regSts", column = "reg_sts")
 	})
-	List<MultLangRequestDetailDTO> findRequestDetailsByDicReqId(@Param("dicReqId") Long dicReqId);
+	List<MultLangRequestDetailDTO> findRequestDetailsByReqId(@Param("reqId") Long reqId);
 
 	/**
-	 * id 을 이용한 detail 조회(DIC_REQ_DTL)
+	 * dtl_id 을 이용한 detail 조회(REQ_DTL)
 	 */
 	@Select("""
 		SELECT * 
-		FROM DIC_REQ_DTL 
-		WHERE id = #{id}
+		FROM REQ_DTL 
+		WHERE dtl_id = #{dtlId}
 		""")
 	@Results({
-			@Result(property = "id", column = "id"),
+			@Result(property = "dtlId", column = "dtl_id"),
 			@Result(property = "existingWord", column = "existing_word"),
 			@Result(property = "multlangKey", column = "multlang_key"),
 			@Result(property = "multlangTranslCont", column = "multlang_transl_cont"),
@@ -214,14 +215,14 @@ public interface RequestMapper {
 			@Result(property = "comment", column = "comment"),
 			@Result(property = "regSts", column = "reg_sts")
 	})
-	MultLangRequestDetailDTO  findRequestDetailByDicReqId(@Param("id") Long id);
+	MultLangRequestDetailDTO  findRequestDetailByDtlId(@Param("dtlId") Long dtlId);
 
 	/**
-	 * 선택된 요청(DIC_REQ) 내용 업데이트
+	 * 선택된 요청(REQ) 내용 업데이트
 	 */
 	@Update("""
 		UPDATE 
-            DIC_REQ_DTL
+            REQ_DTL
         SET 
             existing_word = #{existingWord},
             multlang_ccd = #{multlangCcd},
@@ -230,7 +231,7 @@ public interface RequestMapper {
             multlang_suggested_transl_cont = #{multlangSuggestedTranslCont},
             multlang_transl_cont_abbr = #{multlangTranslContAbbr},
             multlang_typ = #{multlangTyp}
-        WHERE id = #{id}
+        WHERE dtl_id = #{dtlId}
 	""")
 	void updateRequestDetail(UpdateRequestDetailDTO dto);
 }

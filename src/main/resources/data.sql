@@ -18,8 +18,8 @@ VALUES
     ('KR', 'YES', '네', CURRENT_TIMESTAMP, 'ㅇㅇ', 'Y', 'button', '긍정적인 대답', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '네'),
     ('KR', 'NO', '아니요', CURRENT_TIMESTAMP, 'ㄴㄴ', 'Y', 'button', '부정적인 대답', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '아니요');
 
--- DIC_REQ 테이블에 더미 데이터 삽입
-INSERT INTO DIC_REQ (req_usr_nm, req_dttm, sts, acpt_sts)
+-- REQ 테이블에 더미 데이터 삽입
+INSERT INTO REQ (req_usr_nm, req_dttm, sts, acpt_sts)
 VALUES
 	('Alice', '2024-03-01 08:15:30', 'C', 'REQUEST'),
 	('Bob', '2024-03-01 09:25:45', 'C', 'HOLDING'),
@@ -53,8 +53,8 @@ VALUES
 	('홍길동', '2024-03-08 14:15:00', 'C', 'HOLDING');
 
 
--- DIC_REQ_DTL 테이블 더미 데이터 삽입
-INSERT INTO DIC_REQ_DTL (dic_req_id, existing_word, multlang_ccd, multlang_key, multlang_suggested_transl_cont, multlang_transl_cont_abbr, multlang_typ, screen_path, source_path, comment, reg_sts)
+-- REQ_DTL 테이블 더미 데이터 삽입
+INSERT INTO REQ_DTL (req_id, existing_word, multlang_ccd, multlang_key, multlang_suggested_transl_cont, multlang_transl_cont_abbr, multlang_typ, screen_path, source_path, comment, reg_sts)
 VALUES
 	(1, 'HI', 'en_US', 'HELLO', 'Hello', 'HI', 'button', '/home', '/src/components/button.js', 'Greeting update', 'ACCEPTANCE'),
 	(1, 'BYE', 'en_US', 'GOODBYE', 'Goodbye', 'BYE', 'label', '/exit', '/src/components/label.js', 'Farewell update', 'HOLDING'),

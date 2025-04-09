@@ -232,7 +232,9 @@
 					Swal.fire("✅ 요청이 성공적으로\n 제출되었습니다!", "", "success");
 					location.reload();
 				},
-				error: UT.handleAjaxError
+				error: function() {
+					UT.handleAjaxError(error)
+				}
 			});
 		});
 	});

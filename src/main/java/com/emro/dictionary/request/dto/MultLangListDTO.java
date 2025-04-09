@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class MultLangListDTO {
-	private Long dicReqId;
+	private Long reqId;
 	private String reqUsrNm;
 	private LocalDateTime reqDttm;
 	private List<MultLangDetailListDTO> details;
