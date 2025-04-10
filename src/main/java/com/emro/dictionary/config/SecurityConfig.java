@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/glo/**").hasAnyRole("ADMIN", "SYS_ADMIN")
                         .requestMatchers("/api/user/**").hasRole("SYS_ADMIN")
                         .requestMatchers("/api/lang/**").permitAll()
+                        .requestMatchers("/api/history/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )

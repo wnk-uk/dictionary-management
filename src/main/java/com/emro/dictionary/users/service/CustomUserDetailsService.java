@@ -1,5 +1,6 @@
 package com.emro.dictionary.users.service;
 
+import com.emro.dictionary.security.CustomUserDetails;
 import com.emro.dictionary.users.entity.User;
 import com.emro.dictionary.users.repository.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +17,12 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserMapper userMapper;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userMapper.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found: " + username);
-        }
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-        );
-    }
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user = userMapper.findByUsername(username);
+		if (user == null) {
+			throw new UsernameNotFoundException("User not found: " + username);
+		}
+		return new CustomUserDetails(user);
+	}
 }

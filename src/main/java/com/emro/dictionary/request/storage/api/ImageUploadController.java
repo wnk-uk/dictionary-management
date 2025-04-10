@@ -1,6 +1,7 @@
 package com.emro.dictionary.request.storage.api;
 
 import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
+import com.emro.dictionary.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ import java.util.Map;
 @RequestMapping("/api/upload")
 public class ImageUploadController {
 
-	private final RequestServiceResolver requestServiceResolver;
+	private final SecurityUtil securityUtil;
 
 	@Value("${file.upload-dir}")
 	private String uploadDir;
@@ -40,7 +41,7 @@ public class ImageUploadController {
 		Path tempPath = Paths.get(uploadDir).resolve("temp");
 		Files.createDirectories(tempPath);
 
-		String username = requestServiceResolver.getUsername();
+		String username = securityUtil.getUsername();
 		String sanitizedUser = username.replaceAll("[^a-zA-Z0-9]", "_");
 		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 

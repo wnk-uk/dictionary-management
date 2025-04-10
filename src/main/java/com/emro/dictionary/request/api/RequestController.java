@@ -4,6 +4,7 @@ import com.emro.dictionary.request.storage.service.FileStorageService;
 import com.emro.dictionary.request.storage.service.EditorContentService;
 import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
 import com.emro.dictionary.request.dto.*;
+import com.emro.dictionary.security.SecurityUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class RequestController {
 	private final RequestServiceResolver serviceResolver;
 	private final FileStorageService fileStorageService;
 	private final EditorContentService editorContentService;
+	private final SecurityUtil securityUtil;
 
 	@PostMapping(value = "/multlang", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> submitRequest(
@@ -58,7 +60,7 @@ public class RequestController {
 
 		request.setFiles(files);
 		request.setImagePath(imagePath);
-		String username = serviceResolver.getUsername();
+		String username = securityUtil.getUsername();
 		serviceResolver.getService().saveRequest(request, username);
 		return ResponseEntity.ok("Request submitted successfully");
 	}
@@ -68,7 +70,7 @@ public class RequestController {
 	 */
 	@GetMapping("/{acptSts}/list")
 	public ResponseEntity<List<MultLangListDTO>> getRequests(@PathVariable String acptSts) {
-		String username = serviceResolver.getUsername();
+		String username = securityUtil.getUsername();
 		if ("all".equalsIgnoreCase(acptSts)) {
 			return ResponseEntity.ok(serviceResolver.getService().getAllRequestsExceptHOLDING(username));
 		}
@@ -88,7 +90,7 @@ public class RequestController {
 	 */
 	@GetMapping("/{acptSts}/top10")
 	public ResponseEntity<List<MultLangListDTO>> getTop10RecentRequests(@PathVariable String acptSts) {
-		String username = serviceResolver.getUsername();
+		String username = securityUtil.getUsername();
 
 		return ResponseEntity.ok(serviceResolver.getService().getTop10RecentRequests(acptSts.toUpperCase(), username));
 	}
@@ -98,7 +100,7 @@ public class RequestController {
 	 */
 	@PostMapping("/updateStatus")
 	public ResponseEntity<?> updateRequestStatus(@RequestBody List<UpdateRequestStatusDTO> requestList) {
-		String username = serviceResolver.getUsername();
+		String username = securityUtil.getUsername();
 		serviceResolver.getService().updateRequestStatus(requestList, username);
 		return ResponseEntity.ok("✅ Status Updated successfully");
 	}
@@ -108,7 +110,7 @@ public class RequestController {
 	 */
 	@PostMapping("/updateDetail")
 	public ResponseEntity<?> updateRequestDetail(@RequestBody List<UpdateRequestDetailDTO> requestList) {
-		String username = serviceResolver.getUsername();
+		String username = securityUtil.getUsername();
 		serviceResolver.getService().updateRequestDetail(requestList, username);
 		return ResponseEntity.ok("✅ Status Updated successfully");
 	}
