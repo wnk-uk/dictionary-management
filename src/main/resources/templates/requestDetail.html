@@ -197,12 +197,12 @@
 					title: `<input type='checkbox' id='selectAll' onclick='toggleSelectAll(this)'>`,
 					field: "select",
 					hozAlign: "center",
-					minWidth: 120,
+					minWidth: 80,
 					formatter: "rowSelection",
 					headerSort: false,
 					headerHozAlign: "center"
 				},
-				{title: "id" ,field: "dtlId", minWidth: 120},
+				{title: "id" ,field: "dtlId", minWidth: 80},
 				{ title: "Existing Word", field: "existingWord", editable: editableEditorCheck, editor: "input" , minWidth: 150, cellEdited: highlightEditedCell},
 				{ title: "Code", field: "multlangCcd", minWidth: 120, cellEdited: highlightEditedCell,  editor: "list", editable: editableEditorCheck, editorParams: {
 						values: ["ko_KR", "en_US", "ja_JP", "zh_CN"]
