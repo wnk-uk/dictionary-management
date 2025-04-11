@@ -1,3 +1,7 @@
+body {
+    font-family: 'Pretendard',Segoe UI, Inter, '맑은 고딕', 'Malgun Gothic', Arial, sans-serif;
+}
+
 .custom-select {
     border-radius:10rem;
     height:50px;
@@ -73,4 +77,46 @@ body {
     font-size: 28px;
     color: #4b2aad;
     margin-bottom: 10px;
+}
+
+.statusWrapper {
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+.statusWrapper i {
+    margin-right: 5px;
+}
+
+.statusWrapper span {
+    float: right;
+    margin-right:5px;
+}
+
+.row {
+    margin-bottom:10px;
+}
+
+.listGroup {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.topList {
+    border: none !important;
+    margin: 0 !important;
+}
+
+.topWrapper {
+    padding: 0;
+}
+
+#wrapper #content-wrapper {
+    background: #fff;
+}
+
+.card-body:not(.cntWrapper) {
+    padding: 0;
 }

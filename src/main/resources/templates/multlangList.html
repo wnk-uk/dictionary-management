@@ -62,13 +62,13 @@
 				{ title: "Translation", field: "multlangTranslCont"  },
 				{ title: "Translation Abbr", field: "multlangTranslContAbbr"  },
 				{ title: "Abbr Use (Y/N)", field: "multlangAbbrUseYn"  },
-				{ title: "Modified Date", field: "multlangModDttm", formatter: function (cell) { return UT.formatDate(cell.getValue()); } },
+				{ title: "Modified Date", field: "multlangModDttm", formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } },
 				{ title: "Final Translation", field: "multlangTranslFnlCont"  },
 				{ title: "Remarks", field: "rmk"  },
 				{ title: "Registered By", field: "regrId"  },
-				{ title: "Registration Date", field: "regDttm", formatter: function (cell) { return UT.formatDate(cell.getValue()); } },
+				{ title: "Registration Date", field: "regDttm", formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } },
 				{ title: "Modified By", field: "modrId"  },
-				{ title: "Modification Date", field: "modDttm", formatter: function (cell) { return UT.formatDate(cell.getValue()); } }
+				{ title: "Modification Date", field: "modDttm", formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } }
 			],
 			rowFormatter: function(row) {
 				row.getElement().onclick = function(e) {

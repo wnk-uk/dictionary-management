@@ -4,6 +4,13 @@
     overflow-x: auto; /* 🔹 가로 스크롤 허용 */
 }
 
+.tabulator {
+    font-family: Pretendard-grid, "Segoe UI", Inter, "맑은 고딕", "Malgun Gothic", Arial, sans-serif, Tahoma !important;
+    margin:0;
+    padding:0;
+    border:none;
+}
+
 /* 테이블 컨테이너 - 가로 스크롤 허용 */
 .table-responsive {
     overflow-x: auto; /* 🔹 가로 스크롤 허용 */
@@ -39,4 +46,9 @@
     align-items: center !important;;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .tabulator-row.tabulator-selectable:hover {
+        background: #f3f0ff !important;
+    }
+}
 

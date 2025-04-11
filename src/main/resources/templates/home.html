@@ -10,9 +10,9 @@
 			<div th:replace="fragments.html :: main-nav"></div>
 			
 			<div class="container-fluid">
-				<div class="d-sm-flex align-items-center justify-content-between mb-4">
-					<h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-				</div>
+<!--				<div class="d-sm-flex align-items-center justify-content-between mb-4">-->
+<!--					<h1 class="h3 mb-0 text-gray-800">Dashboard</h1>-->
+<!--				</div>-->
 				<!-- Content Row -->
 				<div class="row">
 					<div class="col-xl-6 col-lg-6">
@@ -27,7 +27,7 @@
 						<div class="row">
 							<div class="col-xl-6 col-md-6 mb-1">
 								<div class="card border-left-primary shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('all')">
-									<div class="card-body">
+									<div class="card-body cntWrapper">
 										<div class="row no-gutters align-items-center">
 											<div class="col mr-2">
 												<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
@@ -45,7 +45,7 @@
 
 							<div class="col-xl-6 col-md-6 mb-1">
 								<div class="card border-left-success shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('holding')">
-									<div class="card-body">
+									<div class="card-body cntWrapper">
 										<div class="row no-gutters align-items-center">
 											<div class="col mr-2">
 												<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
@@ -64,7 +64,7 @@
 						<div class="row">
 							<div class="col-xl-6 col-md-6 mb-1">
 								<div class="card border-left-info shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('glo')">
-									<div class="card-body">
+									<div class="card-body cntWrapper">
 										<div class="row no-gutters align-items-center">
 											<div class="col mr-2">
 												<div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Glossary</div>
@@ -84,7 +84,7 @@
 
 							<div class="col-xl-6 col-md-6 mb-1">
 								<div class="card border-left-warning shadow h-100 py-2" style="cursor: pointer;" onclick="cardClick('lang')">
-									<div class="card-body">
+									<div class="card-body cntWrapper">
 										<div class="row no-gutters align-items-center">
 											<div class="col mr-2">
 												<div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
@@ -106,25 +106,36 @@
 				<!-- Content Row -->
 				<div class="row">
 					<!-- Top 10 Requests -->
-					<div class="col-xl-6 col-lg-6">
+					<div class="col-xl-4 col-lg-6">
 						<div class="card shadow mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
 								<h6 class="m-0 font-weight-bold text-primary">Top 10 Recent Requests</h6>
 							</div>
-							<div class="card-body">
-								<div id="requestTop"></div>
+							<div class="card-body topWrapper">
+								<div id="requestTop" class="topList"></div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xl-4 col-lg-6">
+						<div class="card shadow mb-4">
+							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+								<h6 class="m-0 font-weight-bold text-primary">Top 10 Holding Requests</h6>
+							</div>
+							<div class="card-body topWrapper">
+								<div id="holdingTop" class="topList"></div>
 							</div>
 						</div>
 					</div>
 					
 					<!-- Top 10 Holding Requests -->
-					<div class="col-xl-6 col-lg-6">
+					<div class="col-xl-4 col-lg-6">
 						<div class="card shadow mb-4">
 							<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary">Top 10 Recent Holding Requests</h6>
+								<h6 class="m-0 font-weight-bold text-primary">Statistics</h6>
 							</div>
 							<div class="card-body">
-								<div id="holdingTop"></div>
+
 							</div>
 						</div>
 					</div>
@@ -159,20 +170,25 @@
 		new Tabulator("#requestTop", {
 			layout: "fitColumns",
 			ajaxURL: "/api/request/request/top10",
-			minHeight: "450px",
+			minHeight: "200px",
+			headerVisible:false,
 			movableColumns: true,
 			columns: [
-				{ title: "Request UserName", field: "reqUserNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200},
-				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center" , minWidth:200, formatter: function(cell, formatterParams, onRendered) {
+				// { title: "Requester", field: "reqUserNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200, width:60},
+				{ title: "MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center" , minWidth:200, formatter: function(cell, formatterParams, onRendered) {
+					const data = cell.getRow().getData();
 					let joinTxt = "";
 					cell.getValue().forEach(row => {
 						joinTxt += row.multlangKey + ",";
 					});
-					return joinTxt.slice(0, -1);
+					return `<div class="listGroup">
+						<span>${data.reqUserNm}[${UT.formatDate(data.reqDttm)}]</span>
+						<span>${joinTxt.slice(0, -1)}</span>
+					</div>`;
 				}, headerSort: false},
-				{ title: "Request Date", field: "reqDttm", hozAlign: "center", headerHozAlign: "center" , minWidth:200, headerSort: false, formatter: function(cell) {
+				/*{ title: "Request Date", field: "reqDttm", hozAlign: "center", headerHozAlign: "center" , minWidth:200, headerSort: false, formatter: function(cell) {
 						return UT.formatDate(cell.getValue());
-				}},
+				}},*/
 			],
 			// ✅ 행 클릭 이벤트 추가
 			rowFormatter: function(row) {
@@ -189,20 +205,25 @@
 		new Tabulator("#holdingTop", {
 			layout: "fitColumns",
 			ajaxURL: "/api/request/holding/top10",
-			minHeight: "450px",
+			minHeight: "200px",
+			headerVisible:false,
 			movableColumns: true,
 			columns: [
-				{ title: "Request UserName", field: "reqUserNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200},
-				{ title: "Request MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center", minWidth:200, formatter: function(cell, formatterParams, onRendered) {
+				// { title: "Request UserName", field: "reqUserNm", headerSort: false, hozAlign: "center", headerHozAlign: "center", minWidth:200},
+				{ title: "MultilangKey", field: "details",hozAlign: "center", headerHozAlign: "center" , minWidth:200, formatter: function(cell, formatterParams, onRendered) {
+						const data = cell.getRow().getData();
 						let joinTxt = "";
 						cell.getValue().forEach(row => {
 							joinTxt += row.multlangKey + ",";
 						});
-						return joinTxt.slice(0, -1);  // 마지막 문자 제거
+						return `<div class="listGroup">
+						<span>${data.reqUserNm}[${UT.formatDate(data.reqDttm)}]</span>
+						<span>${joinTxt.slice(0, -1)}</span>
+					</div>`;
 					}, headerSort: false},
-				{ title: "Request Date", field: "reqDttm" , hozAlign: "center", headerHozAlign: "center", minWidth:200, headerSort: false, formatter: function(cell) {
+				/*{ title: "Request Date", field: "reqDttm" , hozAlign: "center", headerHozAlign: "center", minWidth:200, headerSort: false, formatter: function(cell) {
 						return UT.formatDate(cell.getValue());
-				}},
+				}},*/
 			],
 			// ✅ 행 클릭 이벤트 추가
 			rowFormatter: function(row) {

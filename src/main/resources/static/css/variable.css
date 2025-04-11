@@ -1,0 +1,64 @@
+
+@font-face {
+    font-family: 'Pretendard';
+    font-weight: 100 900;
+    font-display: swap;
+    src: local('Pretendard Variable'),
+    local('PretendardVariable'),
+    url('../font/PretendardVariable.woff2') format('woff2-variations'),
+    url('../font/PretendardVariable.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Pretendard-grid'; /* font-family를 그리드 전용으로 분리 */
+    font-weight: 400; /* regular */
+    font-style: normal;
+    font-display: swap;
+    src: local('Pretendard Variable'),
+    local('PretendardVariable'),
+    url('../font/PretendardVariable.woff2') format('woff2-variations'),
+    url('../font/PretendardVariable.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Pretendard-grid'; /* font-family를 그리드 전용으로 분리 */
+    font-weight: 700; /* bold */
+    font-style: normal;
+    font-display: swap;
+    src:  url('../font/Pretendard-SemiBold.otf') format('opentype');
+}
+
+/* Grid 전용(숫자) - Open Sans */
+@font-face {
+    font-family: 'Pretendard-grid';
+    font-weight: 700;
+    font-display: swap;
+    src: url('../font/open_sans/OpenSans-Bold.ttf') format('woff-variations');
+    unicode-range: U+0030-0039; /* 숫자만 적용 */
+}
+@font-face {
+    font-family: 'Pretendard-grid';
+    font-weight: 400;
+    font-display: swap;
+    src: url('../font/open_sans/OpenSans-Regular.ttf') format('woff-variations');
+    unicode-range: U+0030-0039; /* 숫자만 적용 */
+}
+
+/* chinese -  Microsoft YaHei UI / PingFang SC */
+@font-face {
+    font-family: 'Pretendard-grid';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: local('Microsoft YaHei UI'), local('MicrosoftYaHeiUI'),
+    local('PingFang SC'), local('PingFangSC');
+    unicode-range: U+4E00-9FAF; /* 중문(한자)만 적용 */
+}
+@font-face {
+    font-family: 'Pretendard-grid';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: local('Microsoft YaHei UI Negreta'), local('MicrosoftYaHeiUINegreta'),
+    local('PingFang SC'), local('PingFangSC');
+    unicode-range: U+4E00-9FAF; /* 중문(한자)만 적용 */
+}
