@@ -105,7 +105,7 @@
 						if (value === "PROGRESS") iconCls = `fa fa-spinner`, color = "#f39c12";
 						if (value === "COMPLETE") iconCls = `fa fa-check`, color = "#2ecc71";
 						if (value === "HOLDING") iconCls = `fa fa-hourglass`, color = "#95a5a6";
-						return `<div class="statusWrapper" style="color:${color}"><i class="${iconCls}"></i><span>${toPascalCase(value)}</span></div>`;
+						return `<div class="statusWrapper" style="color:${color}"><i class="${iconCls}"></i><span>${UT.toPascalCase(value)}</span></div>`;
 					}
 				},
 				{title: "Details <small>기존 용어 -> 변경 용어 : 번역 용어 (확정 여부)</small>", field: "details", minWidth: 400, formatter: "html" },
@@ -124,13 +124,6 @@
 			}
 		});
 	});
-	function toPascalCase(str) {
-		return str
-				.toLowerCase()
-				.split(/[\s_\-]+/) // 공백, 밑줄, 하이픈 등 구분자로 나누기
-				.map(word => word.charAt(0).toUpperCase() + word.slice(1))
-				.join('');
-	}
 	// ✅ 전체 선택 기능
 	function toggleSelectAll(headerCheckbox) {
 		let allRows = table.getRows("all"); // 🔹 모든 행 가져오기

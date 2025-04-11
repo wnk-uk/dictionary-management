@@ -3,7 +3,7 @@
 <head th:replace="fragments.html :: head"></head>
 <body id="page-top">
 <div id="wrapper">
-	<div th:replace="fragments.html :: main-sidebar(currentMenu='multilang', currentSubMenu='multilang')"></div>
+	<div th:replace="fragments.html :: main-sidebar(currentMenu='multilang', currentSubMenu=${acptSts})"></div>
 	
 	<div id="content-wrapper" class="d-flex flex-column">
 		<div id="content">
@@ -18,36 +18,56 @@
 				</div>
 				
 				<!-- Request Information -->
-				<div class="card shadow mb-4">
-					<div class="card-header py-3">
-						<h6 class="m-0 font-weight-bold text-primary">Request Information</h6>
-					</div>
-					<div class="card-body">
-						<div id="requestInfo" class="row"></div>
-					</div>
-				</div>
-				
-				<!-- Request Details -->
-				<div class="card shadow mb-4">
-					<div class="card-header py-3 d-flex justify-content-between align-items-center">
-						<h6 class="m-0 font-weight-bold text-primary">Request Details</h6>
-						<div class="d-flex align-items-center" sec:authorize="!hasRole('USER')" id="button">
-							<button class="btn btn-warning btn-sm mr-2" onclick="handleEditSubmission()">
-								<i class="fas fa-edit"></i> EDIT
-							</button>
-							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('ACCEPTANCE')">
-								<i class="fas fa-check"></i> ACCEPT
-							</button>
-							<button class="btn btn-danger btn-sm mr-2" onclick="updateSelectedStatus('REJECT')">
-								<i class="fas fa-times"></i> REJECT
-							</button>
-							<button class="btn btn-secondary btn-sm" onclick="updateSelectedStatus('HOLDING')">
-								<i class="fas fa-times"></i> HOLDING
-							</button>
+				<div class="col-xl-12 col-lg-12">
+					<div class="row">
+						<div class="col-xl-8" style="padding:0;">
+							<div class="card shadow mb-4">
+								<div class="card-header py-3">
+									<h6 class="m-0 font-weight-bold text-primary">Request Information</h6>
+								</div>
+								<div class="card-body pdWrapper" style="height:660px;">
+									<div id="requestInfo" class="mb-3"></div>
+									<!-- Request Details -->
+									<div class="card shadow mb-4">
+										<div class="card-header py-3 d-flex justify-content-between align-items-center">
+											<h6 class="m-0 font-weight-bold text-primary">Request Details</h6>
+											<div class="d-flex align-items-center" sec:authorize="!hasRole('USER')" id="button">
+												<button class="btn btn-warning btn-sm mr-2" onclick="handleEditSubmission()">
+													<i class="fas fa-edit"></i> Edit
+												</button>
+												<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('ACCEPTANCE')">
+													<i class="fas fa-check"></i> Accept
+												</button>
+												<button class="btn btn-danger btn-sm mr-2" onclick="updateSelectedStatus('REJECT')">
+													<i class="fas fa-times"></i> Reject
+												</button>
+												<button class="btn btn-secondary btn-sm" onclick="updateSelectedStatus('HOLDING')">
+													<i class="fas fa-times"></i> Holding
+												</button>
+											</div>
+										</div>
+										<div class="card-body">
+											<div id="requestDetailTable" class="tabulator-wrapper"></div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="card-body">
-						<div id="requestDetailTable" class="tabulator-wrapper"></div>
+						<div class="col-xl-4" style="padding-right:0;">
+							<div class="card shadow mb-4" >
+								<div class="card-header py-3">
+									<h6 class="m-0 font-weight-bold text-primary">Comment History<span id="rowDetail"></span></h6>
+								</div>
+								<div class="card-body pdWrapper" style="height:660px;">
+									<div id="historyChat" class="chat-container" style="height:340px; overflow:auto;"></div>
+									<div id="quill-editor" style="height: 200px;"></div>
+									<div style="display:flex; justify-content: space-between;">
+										<input style="width:50%;" type="file" class="form-control-file mt-2" id="fileUpload" name="fileUpload" multiple>
+										<button class="btn btn-primary btn-sm mt-2" onclick="submitComment()">Submit Comment</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -59,7 +79,8 @@
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
 	let table;
-	
+	let dtlId;
+
 	document.addEventListener("DOMContentLoaded", function () {
 		let reqId = "[[${reqId}]]";
 		let acptSts = "[[${acptSts}]]";
@@ -112,19 +133,18 @@
 					
 					// Explain을 먼저 표시하고 Attached Files를 아래에 배치
 					requestInfo.innerHTML = `
-                    <div class="col-md-12">
+                    <div class="col-xs-12">
                         <dl class="row mb-0">
-                            <dt class="col-sm-4">Request ID</dt>
-                            <dd class="col-sm-8">${data.reqId}</dd>
-                            <dt class="col-sm-4">Requester</dt>
-                            <dd class="col-sm-8">${data.reqUserNm}</dd>
-                            <dt class="col-sm-4">Request Time</dt>
-                            <dd class="col-sm-8">${UT.formatDateTime(data.reqDttm)}</dd>
-                            <dt class="col-sm-4">Status</dt>
-                            <dd class="col-sm-8">${data.acptSts}</dd>
-                            <dt class="col-sm-4">Explain</dt>
-                            <dd class="col-sm-8">
-                                <div id="quill-explain" style="min-height: 50px;"></div>
+                            <dt class="col-sm-2">Request ID</dt>
+                            <dd class="col-sm-4">${data.reqId}</dd>
+                            <dt class="col-sm-2">Requester</dt>
+                            <dd class="col-sm-4">${data.reqUserNm}</dd>
+                            <dt class="col-sm-2">Request Time</dt>
+                            <dd class="col-sm-4">${UT.formatDateTime(data.reqDttm)}</dd>
+                            <dt class="col-sm-2">Status</dt>
+                            <dd class="col-sm-4">${UT.toPascalCase(data.acptSts)}</dd>
+                            <dd class="col-sm-12 mt-2">
+                                <div id="quill-explain" style="width: 100%; height: 300px;"></div>
                             </dd>
                             ${fileHtml ? fileHtml : ''}
                         </dl>
@@ -139,7 +159,7 @@
 							toolbar: false
 						}
 					});
-					quill.root.innerHTML = data.editorContent || "N/A";
+					quill.root.innerHTML = data.editorContent || "";
 				})
 				.catch(error => {
 					console.error("Error fetching request info:", error);
@@ -244,13 +264,228 @@
 					cellClick: function(e, cell) {
 						const rowData = cell.getRow().getData();
 						let dtlId = rowData.dtlId;
-						window.location.href = `/req/${acptSts}/detail/${reqId}/history/${dtlId}`;
+						//window.location.href = `/req/${acptSts}/detail/${reqId}/history/${dtlId}`;
+						loadHistory(dtlId);
 					}
 				},
 				{ title: "Registration Status", field: "regSts", minWidth: 150 }
 			],
 		});
+
+		table.on("tableBuilt", function() {
+			loadHistory(table.getRows()[0]?.getData().dtlId);
+		});
+
+		// Quill 에디터 초기화
+		const quill = new Quill('#quill-editor', {
+			theme: 'snow',
+			placeholder: 'Write your comment here...',
+			modules: {
+				toolbar: {
+					container: [
+						[{ 'header': [1, 2, false] }],
+						['bold', 'italic', 'underline'],
+						[{ 'list': 'ordered' }, { 'list': 'bullet' }],
+						['link', 'image'],
+						['clean']
+					],
+					handlers: {
+						image: function() {
+							const input = document.createElement('input');
+							input.setAttribute('type', 'file');
+							input.setAttribute('accept', 'image/*');
+							input.click();
+							input.onchange = () => {
+								const file = input.files[0];
+								if (file) {
+									const range = this.quill.getSelection(true) || { index: 0 };
+									uploadImageToServer(file, this.quill, range);
+								}
+							};
+						}
+					}
+				}
+			}
+		});
+
+		// Paste 이벤트 처리
+		const editableDiv = document.querySelector('#quill-editor .ql-editor');
+		editableDiv.addEventListener('paste', (e) => {
+			e.preventDefault();
+			const clipboardData = e.clipboardData || window.clipboardData;
+			if (!clipboardData || !clipboardData.items) return;
+
+			const items = clipboardData.items;
+			let imageHandled = false;
+
+			for (let i = 0; i < items.length; i++) {
+				if (items[i].type.startsWith('image/')) {
+					const file = items[i].getAsFile();
+					if (file) {
+						const range = quill.getSelection(true) || { index: 0 };
+						uploadImageToServer(file, quill, range);
+						imageHandled = true;
+						break;
+					}
+				}
+			}
+
+			if (!imageHandled) {
+				const text = clipboardData.getData('text/plain');
+				if (text && !text.startsWith('data:image/')) {
+					const range = quill.getSelection(true) || { index: 0 };
+					quill.insertText(range.index, text, Quill.sources.USER);
+					quill.setSelection(range.index + text.length, Quill.sources.SILENT);
+				}
+			}
+		});
+
+		window.quill = quill;
+		window.quillUploadedFiles = [];
+
 	});
+	/** comment **/
+	function loadHistory(id) {
+		dtlId = id;
+		fetch(`/api/history/${dtlId}`)
+			.then(response => {
+				if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+				return response.json();
+			})
+			.then(data => {
+				const chatContainer = document.getElementById('historyChat');
+				console.log(data)
+				chatContainer.innerHTML = '';
+				if (!data || data.length === 0) {
+					chatContainer.innerHTML = '<p>No comments yet.</p>';
+					return;
+				}
+				data.forEach((history, index) => {
+					let fileHtml = '';
+					if (history.imagePath) {
+						const files = history.imagePath.split(';').filter(file => !/\.(jpg|jpeg|png|gif|bmp)$/i.test(file));
+						if (files.length > 0) {
+							fileHtml = `
+									<div class="attached-files text-right">
+										${files.map(file => `
+											<div class="d-block mb-2">
+												<a href="${getUploadUrl(file)}" target="_blank">${file.split('/').pop()}</a>
+											</div>
+										`).join('')}
+									</div>
+								`;
+						}
+					}
+
+					const quillId = `quill-history-${index}`;
+					const chatBubble = `
+							<div class="chat-bubble mb-3">
+								<div class="d-flex justify-content-between">
+									<strong>${history.writerNm}</strong>
+									<small>${UT.formatDateTime(history.writtenDttm)}</small>
+								</div>
+								<div id="${quillId}" class="quill-history mt-1" style="min-height: 50px;"></div>
+								${fileHtml}
+							</div>
+						`;
+					chatContainer.innerHTML += chatBubble;
+
+					const quillHistory = new Quill(`#${quillId}`, {
+						theme: 'snow',
+						readOnly: true,
+						modules: { toolbar: false }
+					});
+					quillHistory.root.innerHTML = history.commentText;
+				});
+			})
+			.catch(error => {
+				console.error('Error fetching history:', error);
+				Swal.fire("🚨 변경 이력 불러오기 실패", error.message, "error");
+			});
+	}
+
+	function uploadImageToServer(file, editor, range) {
+		const formData = new FormData();
+		formData.append('file', file);
+
+		$.ajax({
+			url: '/api/upload/temp-image',
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function(result) {
+				if (result && result.url) {
+					let currentContent = editor.root.innerHTML;
+					const base64Regex = /<img[^>]+src=["']data:image\/[^"']+["'][^>]*>/gi;
+					currentContent = currentContent.replace(base64Regex, '');
+					editor.root.innerHTML = currentContent;
+
+					editor.insertEmbed(range.index, 'image', result.url);
+					if (!window.quillUploadedFiles) window.quillUploadedFiles = [];
+					window.quillUploadedFiles.push({ file: file, url: result.url, wrappedImage: result.html });
+				}
+			},
+			error: function(err) {
+				console.error('Image upload failed:', err.responseText || err);
+			}
+		});
+	}
+
+	function submitComment() {
+		const commentText = window.quill.root.innerHTML;
+		const formData = new FormData();
+		formData.append('dtlId', dtlId);
+
+		// 에디터 콘텐츠에 업로드된 이미지 처리
+		let updatedCommentText = commentText;
+		if (Array.isArray(window.quillUploadedFiles)) {
+			window.quillUploadedFiles.forEach(item => {
+				if (item.url && item.wrappedImage) {
+					const imgRegex = new RegExp(`<img\\s+src=["']${item.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>`, 'g');
+					updatedCommentText = updatedCommentText.replace(imgRegex, item.wrappedImage);
+				}
+			});
+		}
+		formData.append('commentText', updatedCommentText);
+
+		// 업로드된 이미지 파일 추가
+		if (Array.isArray(window.quillUploadedFiles)) {
+			window.quillUploadedFiles.forEach(item => {
+				if (item.file && item.url) {
+					const renamedFile = new File([item.file], item.url.split('/').pop(), { type: item.file.type });
+					formData.append('files', renamedFile);
+				}
+			});
+		}
+
+		// 파일 업로드 처리
+		const fileInput = document.getElementById('fileUpload');
+		if (fileInput && fileInput.files.length > 0) {
+			Array.from(fileInput.files).forEach(file => {
+				formData.append('files', file);
+			});
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: '/api/history/add',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function() {
+				Swal.fire("✅ 댓글이 성공적으로 등록되었습니다!", "", "success");
+				window.quill.setContents([]); // 입력 Quill 초기화
+				window.quillUploadedFiles = []; // 업로드 파일 배열 초기화
+				document.getElementById('fileUpload').value = ''; // 파일 입력 초기화
+				loadHistory(dtlId);
+			},
+			error: function(xhr) {
+				Swal.fire("🚨 댓글 등록 실패", xhr.responseText, "error");
+			}
+		});
+	}
+
 	
 	// 편집 가능 여부 확인 함수 (ACCEPTANCE 상태는 비활성화)
 	function editableEditorCheck(cell) {
@@ -548,6 +783,28 @@
 		border: 1px solid #ddd;
 		padding: 10px;
 		background-color: #f9f9f9;
+	}
+	.chat-bubble {
+		border: 1px solid #e3e3e3;
+		padding: 10px;
+		border-radius: 5px;
+		background-color: #f9f9f9;
+	}
+	.attached-files {
+		margin-top: 10px;
+	}
+	.attached-files a {
+		color: #007bff;
+		text-decoration: none;
+	}
+	.attached-files a:hover {
+		text-decoration: underline;
+	}
+	.quill-history .ql-toolbar {
+		display: none;
+	}
+	.quill-history .ql-container {
+		border: none;
 	}
 </style>
 <th:block th:replace="fragments.html :: common-scripts"></th:block>

@@ -26,7 +26,13 @@ const UT = {
 			return "(Invalid Date)";
 		}
 		return date.toISOString().split("T")[0];
+	},
+
+	toPascalCase: function(str) {
+	return str
+		.toLowerCase()
+		.split(/[\s_\-]+/) // 공백, 밑줄, 하이픈 등 구분자로 나누기
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join('');
 	}
-
-
 }
