@@ -65,7 +65,6 @@
 		// Tabulator 설정 (REQ 기준)
 		table = new Tabulator("#requestTable", {
 			layout: "fitColumns",
-			columnMinWidth: 120,
 			selectable: true,
 			movableColumns: true,
 			ajaxURL: `/api/request/${acptSts}/list`,
@@ -92,15 +91,22 @@
 					title: `<input type='checkbox' id='selectAll' onclick='toggleSelectAll(this)'>`,
 					field: "select",
 					hozAlign: "center",
-					width: 120,
+					width: "40",
 					formatter: "rowSelection",
 					headerSort: false,
 					headerHozAlign: "center"
 				},
-				{ title: "Requester", field: "reqUserNm", minWidth: 200},
+				{ title: "Requester", field: "reqUserNm", minWidth: 80, width:"150", hozAlign: "center", headerHozAlign: "center"},
+				{ title: "Status", field: "status", minWidth: 100, width: "100", hozAlign: "center", headerHozAlign: "center", formatter: function(cell) {
+						let iconTag = cell.getValue();
+						if (cell.getValue() === "REQUEST") iconTag = `<span style="color:red; font-size: 20pt;">●</span>`;
+						if (cell.getValue() === "PROGRESS") iconTag = `<span style="color:yellow; font-size: 20pt;">●</span>`;
+						if (cell.getValue() === "COMPLETE") iconTag = `<span style="color:green; font-size: 20pt;">●</span>`;
+						return iconTag;
+				}},
 				{ title: "Details<br><small>기존 용어 -> 변경 용어 : 번역 용어 (확정 여부)</small>", field: "details", minWidth: 400, formatter: "html" },
-				{ title: "Request Time", field: "requestTime", minWidth: 200},
-				{ title: "Status", field: "status", minWidth: 200},
+				{ title: "Request Time", field: "requestTime", minWidth: 80, width: "200", hozAlign: "center", headerHozAlign: "center"},
+				
 			],
 			// ✅ 행 클릭 이벤트 추가
 			rowFormatter: function(row) {

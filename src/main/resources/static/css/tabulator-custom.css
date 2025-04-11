@@ -13,7 +13,6 @@
 /* 테이블 헤더와 셀 스타일 */
 .tabulator .tabulator-header .tabulator-col,
 .tabulator .tabulator-cell {
-    min-width: 120px; /* 🔹 최소 너비 설정 */
     white-space: nowrap; /* 🔹 텍스트 줄바꿈 방지 */
     overflow: hidden;
     text-overflow: ellipsis; /* 🔹 길면 ... 표시 */
@@ -23,3 +22,21 @@
 .tabulator .tabulator-header .tabulator-col {
     font-size: 15px;
 }
+
+.tabulator-row .tabulator-cell {
+    border-right: 1px solid #ddd !important;
+}
+
+.tabulator .tabulator-header .tabulator-col {
+    border-right: 1px solid #ddd !important;
+}
+
+.tabulator .tabulator-header .tabulator-col {
+    justify-content: center !important;
+}
+.tabulator-row .tabulator-cell {
+    display: inline-grid !important;
+    align-items: center !important;;
+}
+
+
