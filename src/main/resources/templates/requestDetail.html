@@ -217,18 +217,23 @@
 					title: `<input type='checkbox' id='selectAll' onclick='toggleSelectAll(this)'>`,
 					field: "select",
 					hozAlign: "center",
-					minWidth: 80,
+					minWidth: 40,
+					width:40,
 					formatter: "rowSelection",
 					headerSort: false,
-					headerHozAlign: "center"
+					headerHozAlign: "center",
+					frozen:true
 				},
-				{title: "id" ,field: "dtlId", minWidth: 80},
-				{ title: "Existing Word", field: "existingWord", editable: editableEditorCheck, editor: "input" , minWidth: 150, cellEdited: highlightEditedCell},
-				{ title: "Code", field: "multlangCcd", minWidth: 120, cellEdited: highlightEditedCell,  editor: "list", editable: editableEditorCheck, editorParams: {
+				{title: "id" ,field: "dtlId", minWidth: 40, width:40, headerSort: false, hozAlign: "center", frozen:true},
+				{ title: "Status", field: "regSts", minWidth: 100, width:120, frozen:true, hozAlign: "center", headerHozAlign: "center",},
+				{ title: "Code", field: "multlangCcd", minWidth: 80, width:80, hozAlign: "center",
+						headerHozAlign: "center", frozen:true, headerSort: false, cellEdited: highlightEditedCell,
+					    editor: "list", editable: editableEditorCheck, editorParams: {
 						values: ["ko_KR", "en_US", "ja_JP", "zh_CN"]
 					}
 				},
-				{ title: "MultiLang Key", field: "multlangKey",  editor: "input", editable: editableEditorCheck, minWidth: 150, cellEdited: highlightEditedCell},
+				{ title: "Existing Word", frozen:true, field: "existingWord", editable: editableEditorCheck, editor: "input" , minWidth: 150, cellEdited: highlightEditedCell},
+				{ title: "MultiLang Key", frozen:true, field: "multlangKey",  editor: "input", editable: editableEditorCheck, minWidth: 150, cellEdited: highlightEditedCell},
 				{
 					title: "Translation Content",
 					field: "suggestedTranslCont",
@@ -268,7 +273,6 @@
 						loadHistory(dtlId);
 					}
 				},
-				{ title: "Registration Status", field: "regSts", minWidth: 150 }
 			],
 		});
 
