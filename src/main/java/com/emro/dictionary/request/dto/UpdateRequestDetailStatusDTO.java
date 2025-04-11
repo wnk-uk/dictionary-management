@@ -8,4 +8,5 @@ public class UpdateRequestDetailStatusDTO {
 	private String regSts;
 	private String multlangTranslCont;
 	private String rmk;
+	private String comment;
 }

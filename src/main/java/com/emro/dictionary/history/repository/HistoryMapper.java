@@ -2,6 +2,7 @@ package com.emro.dictionary.history.repository;
 
 import com.emro.dictionary.history.dto.MultlLangHistoryDTO;
 import com.emro.dictionary.history.dto.RequestDetailHistoryDTO;
+import com.emro.dictionary.history.dto.RequestDetailHistoryResponseDTO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -16,12 +17,13 @@ import java.util.List;
 public interface HistoryMapper {
 
 	@Select("""
-		SELECT * 
-		FROM REQ_DTL_HIS 
-		WHERE dtl_id = #{dtlId} 
-		ORDER BY written_dttm ASC
-		""")
-	List<RequestDetailHistoryDTO> findHistoryByDtlId(Long dtlId);
+	    SELECT h.*, u.usr_nm AS writer_nm
+	    FROM REQ_DTL_HIS h
+	    LEFT JOIN users u ON h.writer_id = u.id
+	    WHERE h.dtl_id = #{dtlId}
+	    ORDER BY h.written_dttm ASC
+	""")
+	List<RequestDetailHistoryResponseDTO> findHistoryByDtlId(Long dtlId);
 
 	@Insert("""
 		INSERT INTO REQ_DTL_HIS (dtl_id, comment_text, image_path, writer_id, written_dttm)

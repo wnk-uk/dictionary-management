@@ -100,6 +100,10 @@ public class CommonRequestService implements RequestService {
 							userDTO.getUsername()
 					);
 				}
+
+				if (detail.getComment() != null & "REJECT".equals(detail.getRegSts())) {
+					historyService.addHistory(detail.getDtlId(), detail.getComment(), null, userDTO.getId());
+				}
 			}
 
 			// 2. REQ_DTL 상태 조회

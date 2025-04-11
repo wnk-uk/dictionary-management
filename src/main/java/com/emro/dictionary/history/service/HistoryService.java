@@ -2,6 +2,7 @@ package com.emro.dictionary.history.service;
 
 import com.emro.dictionary.history.dto.MultlLangHistoryDTO;
 import com.emro.dictionary.history.dto.RequestDetailHistoryDTO;
+import com.emro.dictionary.history.dto.RequestDetailHistoryResponseDTO;
 import com.emro.dictionary.history.repository.HistoryMapper;
 import com.emro.dictionary.notification.service.MessageService;
 import com.emro.dictionary.request.repository.RequestMapper;
@@ -22,7 +23,7 @@ public class HistoryService {
 	private final MessageService messageService;
 	private final RequestMapper requestMapper;
 
-	public List<RequestDetailHistoryDTO> getHistoryByDtlId(Long dtlId) {
+	public List<RequestDetailHistoryResponseDTO> getHistoryByDtlId(Long dtlId) {
 		return historyMapper.findHistoryByDtlId(dtlId);
 	}
 

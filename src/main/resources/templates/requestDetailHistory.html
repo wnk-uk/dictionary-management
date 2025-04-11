@@ -139,6 +139,7 @@
 				})
 				.then(data => {
 					const chatContainer = document.getElementById('historyChat');
+					console.log(data)
 					chatContainer.innerHTML = '';
 					if (!data || data.length === 0) {
 						chatContainer.innerHTML = '<p>No comments yet.</p>';

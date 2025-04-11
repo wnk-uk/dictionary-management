@@ -378,13 +378,40 @@
 				showCancelButton: true,
 				confirmButtonText: "예",
 				cancelButtonText: "아니오"
-			}).then(result => {
+			}).then(async (result) => {
 				if (result.isConfirmed) {
+					const isAllSelected = selectedRows.length === table.getDataCount();
+					
+					let comment = null;
+					
+					// ✅ 모든 row가 선택된 경우에만 comment 입력 받기
+					if (isAllSelected) {
+						const commentResult = await Swal.fire({
+							title: "전체 Rejct 사유 Comment 입력",
+							input: "text",
+							inputPlaceholder: "모든 항목에 적용할 Reject Comment를 입력하세요",
+							inputValidator: (value) => {
+								if (!value) return "❗ 전체 rejcet시 Comment는 필수입니다.";
+								return null;
+							},
+							showCancelButton: true,
+							confirmButtonText: "확인",
+							cancelButtonText: "취소"
+						});
+						
+						if (!commentResult.isConfirmed) {
+							return; // 취소 시 중단
+						}
+						
+						comment = "reject 사유 : " + commentResult.value;
+					}
+					
 					const updateData = [{
 						reqId: reqId,
 						details: selectedRows.map(row => ({
 							dtlId: row.dtlId,
-							regSts: status
+							regSts: status,
+							...(comment && { comment: comment }) // comment 있을 때만 포함
 						}))
 					}];
 					

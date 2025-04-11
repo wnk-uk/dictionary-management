@@ -2,6 +2,7 @@ package com.emro.dictionary.history.api;
 
 import com.emro.dictionary.history.dto.MultlLangHistoryDTO;
 import com.emro.dictionary.history.dto.RequestDetailHistoryDTO;
+import com.emro.dictionary.history.dto.RequestDetailHistoryResponseDTO;
 import com.emro.dictionary.history.service.HistoryService;
 import com.emro.dictionary.request.storage.service.EditorContentService;
 import com.emro.dictionary.request.storage.service.FileStorageService;
@@ -30,7 +31,7 @@ public class HistoryController {
 	private final EditorContentService editorContentService;
 
 	@GetMapping("/{dtlId}")
-	public ResponseEntity<List<RequestDetailHistoryDTO>> getHistory(@PathVariable Long dtlId) {
+	public ResponseEntity<List<RequestDetailHistoryResponseDTO>> getHistory(@PathVariable Long dtlId) {
 		return ResponseEntity.ok(historyService.getHistoryByDtlId(dtlId));
 	}
 
@@ -61,7 +62,6 @@ public class HistoryController {
 	}
 
 	@GetMapping("/multlang/{multlangKey}")
-	@ResponseBody
 	public ResponseEntity<List<MultlLangHistoryDTO>> getRequestHistory(@PathVariable("multlangKey") String multlangKey) {
 		return ResponseEntity.ok(historyService.getRequestHistoryByMultlangKey(multlangKey));
 	}
