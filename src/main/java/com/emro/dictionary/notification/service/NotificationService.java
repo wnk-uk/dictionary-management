@@ -22,7 +22,7 @@ public class NotificationService {
 	private final RequestMapper requestMapper;
 
 	// 요청 생성 시 어드민에게 알림
-	public void notifyAdminsOnRequestCreated(Long reqId, Long reqUserId) {
+	public void notifyAdminsOnRequestCreated(Long reqId, String reqUserName) {
 		List<Long> adminIds = userService.findAdminIds();
 		for (Long adminId : adminIds) {
 			NotificationDTO notification = new NotificationDTO();
@@ -30,7 +30,8 @@ public class NotificationService {
 			notification.setReqId(reqId);
 			notification.setReqId(reqId);
 			notification.setType("REQUEST_CREATED");
-			notification.setMessage("새로운 요청이 등록되었습니다. (요청 ID: " + reqId + ")");
+			String message = "새로운 요청이 등록되었습니다. (요청 ID: " + reqId + ")<br>요청자: " + reqUserName;
+			notification.setMessage(message);
 			notificationMapper.insertNotification(notification);
 		}
 	}
@@ -43,7 +44,7 @@ public class NotificationService {
 			notification.setUserId(reqUserId);
 			notification.setReqId(reqId);
 			notification.setType("STATUS_CHANGED");
-			notification.setMessage("요청 상태가 " + acptSts + "로 변경되었습니다. (요청 ID: " + reqId + ")");
+			notification.setMessage("요청 상태가 " + acptSts + "로 변경되었습니다.<br>(요청 ID: " + reqId + ")");
 			notificationMapper.insertNotification(notification);
 		}
 	}
@@ -57,9 +58,9 @@ public class NotificationService {
 			NotificationDTO notification = new NotificationDTO();
 			notification.setUserId(reqUserId);
 			notification.setReqId(reqDtl.getReqId());
-			notification.setReqDtlId(dtlId);
+			notification.setDtlId(dtlId);
 			notification.setType("REQ_DTL_STATUS_CHANGED");
-			notification.setMessage("요청 상세 상태가 " + regSts + "로 변경되었습니다. (요청 ID: " + reqDtl.getReqId() + ", 상세 ID: " + dtlId + ")");
+			notification.setMessage("요청 상세 상태가 " + regSts + "로 변경되었습니다.<br>(요청 ID: " + reqDtl.getReqId() + ", 상세 ID: " + dtlId + ")");
 			notificationMapper.insertNotification(notification);
 		}
 	}
@@ -68,5 +69,10 @@ public class NotificationService {
 	// 유저의 알림 조회
 	public List<NotificationDTO> getNotificationsByUserId(Long userId) {
 		return notificationMapper.findByUserId(userId);
+	}
+
+	// 알림 조회 처리
+	public void updateNotificationIsRead(Long id) {
+		notificationMapper.updateNotificationIsRead(id);
 	}
 }

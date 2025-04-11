@@ -61,7 +61,11 @@ public class RequestController {
 		request.setFiles(files);
 		request.setImagePath(imagePath);
 		Long userId = securityUtil.getUserId();
-		serviceResolver.getService().saveRequest(request, userId);
+		String userName = securityUtil.getUsername();
+		UserDTO userDTO = new UserDTO();
+		userDTO.setId(userId);
+		userDTO.setUsername(userName);
+		serviceResolver.getService().saveRequest(request, userDTO);
 		return ResponseEntity.ok("Request submitted successfully");
 	}
 

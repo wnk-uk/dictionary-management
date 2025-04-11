@@ -30,8 +30,8 @@ public class HistoryController {
 	private final EditorContentService editorContentService;
 
 	@GetMapping("/{dtlId}")
-	public List<RequestDetailHistoryDTO> getHistory(@PathVariable Long dtlId) {
-		return historyService.getHistoryByDtlId(dtlId);
+	public ResponseEntity<List<RequestDetailHistoryDTO>> getHistory(@PathVariable Long dtlId) {
+		return ResponseEntity.ok(historyService.getHistoryByDtlId(dtlId));
 	}
 
 	@PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -62,7 +62,7 @@ public class HistoryController {
 
 	@GetMapping("/multlang/{multlangKey}")
 	@ResponseBody
-	public List<MultlLangHistoryDTO> getRequestHistory(@PathVariable("multlangKey") String multlangKey) {
-		return historyService.getRequestHistoryByMultlangKey(multlangKey);
+	public ResponseEntity<List<MultlLangHistoryDTO>> getRequestHistory(@PathVariable("multlangKey") String multlangKey) {
+		return ResponseEntity.ok(historyService.getRequestHistoryByMultlangKey(multlangKey));
 	}
 }

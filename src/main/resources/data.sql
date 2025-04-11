@@ -126,3 +126,7 @@ VALUES
     (29, 'SEND', 'ko_KR', 'SEND', '보내기', '보내기', 'label', '/send', '/src/components/label.js', 'Korean send update', 'PENDING'),
     (30, 'RECEIVE', 'en_US', 'RECEIVE', 'Receive', 'RCV', 'button', '/receive', '/src/components/button.js', 'Receive button update', 'ACCEPTANCE'),
     (30, 'RECEIVE', 'ko_KR', 'RECEIVE', '받기', '받기', 'label', '/receive', '/src/components/label.js', 'Korean receive update', 'HOLDING');
+
+
+INSERT INTO notifications (user_id, req_id, dtl_id, type, message, is_read, created_at)
+VALUES (2, 1, NULL, 'REQUEST_CREATED', '새로운 요청이 등록되었습니다.<br>(요청 ID: 1)', false, NOW());

@@ -9,8 +9,8 @@ public class MessageDTO {
 	private Long id;
 	private Long userId;
 	private Long reqId;
-	private Long reqDtlId;
-	private Long reqDtlHisId;
+	private Long dtlId;
+	private Long dtlHisId;
 	private String message;
 	private boolean isRead;
 	private LocalDateTime createdAt;

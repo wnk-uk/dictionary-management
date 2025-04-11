@@ -89,14 +89,14 @@ CREATE TABLE IF NOT EXISTS notifications (
 									id BIGSERIAL PRIMARY KEY,
 									user_id BIGINT NOT NULL, -- 알림을 받는 유저/어드민 (users.id 참조)
 									req_id BIGINT NOT NULL, -- 관련된 요청 (req.req_id 참조)
-									req_dtl_id BIGINT, -- 관련된 요청 상세 (req_dtl.dtl_id 참조, req_dtl 상태 변경 시 사용)
+									dtl_id BIGINT, -- 관련된 요청 상세 (req_dtl.dtl_id 참조, req_dtl 상태 변경 시 사용)
 									type VARCHAR(50) NOT NULL CHECK (type IN ('REQUEST_CREATED', 'STATUS_CHANGED', 'REQ_DTL_STATUS_CHANGED')), -- 알림 유형
 									message TEXT NOT NULL, -- 알림 메시지 내용
 									is_read BOOLEAN DEFAULT FALSE, -- 읽음 여부
 									created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 생성 시간
 									FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 									FOREIGN KEY (req_id) REFERENCES req(req_id) ON DELETE CASCADE,
-									FOREIGN KEY (req_dtl_id) REFERENCES req_dtl(dtl_id) ON DELETE CASCADE
+									FOREIGN KEY (dtl_id) REFERENCES req_dtl(dtl_id) ON DELETE CASCADE
 	);
 
 
@@ -104,13 +104,13 @@ CREATE TABLE IF NOT EXISTS messages (
 									id BIGSERIAL PRIMARY KEY,
 									user_id BIGINT NOT NULL, -- 메시지를 받는 유저/어드민 (users.id 참조)
 									req_id BIGINT NOT NULL, -- 관련된 요청 (req.req_id 참조)
-									req_dtl_id BIGINT NOT NULL, -- 관련된 요청 상세 (req_dtl.dtl_id 참조)
-									req_dtl_his_id BIGINT NOT NULL, -- 관련된 댓글 (req_dtl_his.dtl_his_id 참조)
+									dtl_id BIGINT NOT NULL, -- 관련된 요청 상세 (req_dtl.dtl_id 참조)
+									dtl_his_id BIGINT NOT NULL, -- 관련된 댓글 (req_dtl_his.dtl_his_id 참조)
 									message TEXT NOT NULL, -- 메시지 내용
 									is_read BOOLEAN DEFAULT FALSE, -- 읽음 여부
 									created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 생성 시간
 									FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 									FOREIGN KEY (req_id) REFERENCES req(req_id) ON DELETE CASCADE,
-									FOREIGN KEY (req_dtl_id) REFERENCES req_dtl(dtl_id) ON DELETE CASCADE,
-									FOREIGN KEY (req_dtl_his_id) REFERENCES req_dtl_his(dtl_his_id) ON DELETE CASCADE
+									FOREIGN KEY (dtl_id) REFERENCES req_dtl(dtl_id) ON DELETE CASCADE,
+									FOREIGN KEY (dtl_his_id) REFERENCES req_dtl_his(dtl_his_id) ON DELETE CASCADE
 	);

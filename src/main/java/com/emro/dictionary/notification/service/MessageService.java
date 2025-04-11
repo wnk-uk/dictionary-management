@@ -24,7 +24,7 @@ public class MessageService {
 
 
 	// 댓글 작성 시 유저와 어드민에게 메시지
-	public void notifyOnCommentAdded(Long reqDtlHisId, Long dtlId, String commentText, Long reqUserId) {
+	public void notifyOnCommentAdded(Long dtlHisId, Long dtlId, String commentText, Long reqUserId) {
 		MultLangRequestDetailDTO reqDtl = requestMapper.findRequestDetailByDtlId(dtlId);
 		Long reqId = reqDtl.getReqId();
 
@@ -38,9 +38,9 @@ public class MessageService {
 			MessageDTO dto = new MessageDTO();
 			dto.setUserId(currentUserId);
 			dto.setReqId(reqId);
-			dto.setReqDtlId(dtlId);
-			dto.setReqDtlHisId(reqDtlHisId);
-			dto.setMessage("요청 상세에 새로운 댓글이 달렸습니다: " + " (요청 ID: " + reqId + ", 상세 ID: " + dtlId + ")");
+			dto.setDtlId(dtlId);
+			dto.setDtlHisId(dtlHisId);
+			dto.setMessage("요청 상세에 새로운 댓글이 달렸습니다: <br>" + " (요청 ID: " + reqId + ", 상세 ID: " + dtlId + ")");
 //			dto.setMessage("요청 상세에 새로운 댓글이 달렸습니다: " + commentText + " (요청 ID: " + reqId + ", 상세 ID: " + dtlId + ")");
 			messageMapper.insertMessage(dto);
 
@@ -53,9 +53,10 @@ public class MessageService {
 				MessageDTO dto = new MessageDTO();
 				dto.setUserId(adminId);
 				dto.setReqId(reqId);
-				dto.setReqDtlId(dtlId);
-				dto.setReqDtlHisId(reqDtlHisId);
-				dto.setMessage("요청 상세에 새로운 댓글이 달렸습니다: " + commentText + " (요청 ID: " + reqId + ", 상세 ID: " + dtlId + ")");
+				dto.setDtlId(dtlId);
+				dto.setDtlHisId(dtlHisId);
+				dto.setMessage("요청 상세에 새로운 댓글이 달렸습니다: <br>" + " (요청 ID: " + reqId + ", 상세 ID: " + dtlId + ")");
+//				dto.setMessage("요청 상세에 새로운 댓글이 달렸습니다: " + commentText + " (요청 ID: " + reqId + ", 상세 ID: " + dtlId + ")");
 				messageMapper.insertMessage(dto);
 			}
 		}
@@ -64,5 +65,9 @@ public class MessageService {
 	// 유저의 메시지 조회
 	public List<MessageDTO> getMessagesByUserId(Long userId) {
 		return messageMapper.findByUserId(userId);
+	}
+
+	public void updateMessageIsRead(Long id) {
+		messageMapper.updateMessageIsRead(id);
 	}
 }

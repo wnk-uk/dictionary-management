@@ -29,7 +29,7 @@ public class CommonRequestService implements RequestService {
 	protected final NotificationService notificationService;
 
 	@Override
-	public void saveRequest(MultLangRequestDTO request, Long userId) throws IOException {
+	public void saveRequest(MultLangRequestDTO request, UserDTO userDTO) throws IOException {
 		requestMapper.insertRequest(request);
 		for (MultLangRequestDetailDTO detail : request.getDetails()) {
 			requestMapper.insertRequestDetail(request.getReqId(), detail);
@@ -38,13 +38,13 @@ public class CommonRequestService implements RequestService {
 				if (dtlId == null) {
 					throw new IllegalStateException("dtlId was not generated for detail: " + detail);
 				}
-				historyService.addHistory(dtlId, request.getEditorContent(), request.getImagePath(), userId);
-				historyService.addHistory(dtlId, detail.getComment(), null, userId);
+				historyService.addHistory(dtlId, request.getEditorContent(), request.getImagePath(), userDTO.getId());
+				historyService.addHistory(dtlId, detail.getComment(), null, userDTO.getId());
 			}
 		}
 
 		// 요청 생성 후 어드민에게 알림
-		notificationService.notifyAdminsOnRequestCreated(request.getReqId(), userId);
+		notificationService.notifyAdminsOnRequestCreated(request.getReqId(), userDTO.getUsername());
 	}
 
 	@Override

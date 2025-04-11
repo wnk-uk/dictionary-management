@@ -15,7 +15,7 @@ public interface RequestService {
 	 * @param request 저장할 요청 데이터
 	 * @throws IOException 파일 처리 중 발생할 수 있는 예외
 	 */
-	void saveRequest(MultLangRequestDTO request, Long userId) throws IOException;
+	void saveRequest(MultLangRequestDTO request, UserDTO userDTO) throws IOException;
 
 	/**
 	 * HOLDING 상태가 아닌 모든 요청을 조회
