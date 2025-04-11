@@ -74,7 +74,7 @@
 			ajaxResponse: function (url, params, response) {
 				let rows = response.map(item => ({
 					reqId: item.reqId,
-					reqUsrNm: item.reqUsrNm,
+					reqUserNm: item.reqUserNm,
 					requestTime: UT.formatDate(item.reqDttm),
 					status: item.acptSts,
 					details: item.details.map(detail => {
@@ -97,7 +97,7 @@
 					headerSort: false,
 					headerHozAlign: "center"
 				},
-				{ title: "Requester", field: "reqUsrNm", minWidth: 200},
+				{ title: "Requester", field: "reqUserNm", minWidth: 200},
 				{ title: "Details<br><small>기존 용어 -> 변경 용어 : 번역 용어 (확정 여부)</small>", field: "details", minWidth: 400, formatter: "html" },
 				{ title: "Request Time", field: "requestTime", minWidth: 200},
 				{ title: "Status", field: "status", minWidth: 200},
@@ -126,43 +126,43 @@
 		}
 	}
 	
-	// ✅ 선택된 행의 상태 변경 기능
-	function updateSelectedStatus(status) {
-		let selectedRows = table.getSelectedData();
-		
-		if (selectedRows.length === 0) {
-			Swal.fire("🚨 항목 선택 필요", "최소 하나의 행을 선택해주세요.", "warning");
-			return;
-		}
-		
-		let groupedData = selectedRows.reduce((acc, row) => {
-			if (!acc[row.reqId]) {
-				acc[row.reqId] = {
-					reqId: row.reqId,
-					acptSts: status,
-					details: []
-				};
-			}
-			acc[row.reqId].details.push({ id: row.id, regSts: status });
-			return acc;
-		}, {});
-		
-		let updateData = Object.values(groupedData);
-		
-		$.ajax({
-			type: "POST",
-			url: "/api/request/updateStatus",
-			contentType: "application/json",
-			data: JSON.stringify(updateData),
-			success: function () {
-				Swal.fire("✅ 상태가 성공적으로 업데이트되었습니다!", "", "success");
-				table.replaceData();
-			},
-			error: function () {
-				Swal.fire("🚨 상태 업데이트 실패", "", "error");
-			}
-		});
-	}
+	// // ✅ 선택된 행의 상태 변경 기능
+	// function updateSelectedStatus(status) {
+	// 	let selectedRows = table.getSelectedData();
+	//
+	// 	if (selectedRows.length === 0) {
+	// 		Swal.fire("🚨 항목 선택 필요", "최소 하나의 행을 선택해주세요.", "warning");
+	// 		return;
+	// 	}
+	//
+	// 	let groupedData = selectedRows.reduce((acc, row) => {
+	// 		if (!acc[row.reqId]) {
+	// 			acc[row.reqId] = {
+	// 				reqId: row.reqId,
+	// 				acptSts: status,
+	// 				details: []
+	// 			};
+	// 		}
+	// 		acc[row.reqId].details.push({ id: row.id, regSts: status });
+	// 		return acc;
+	// 	}, {});
+	//
+	// 	let updateData = Object.values(groupedData);
+	//
+	// 	$.ajax({
+	// 		type: "POST",
+	// 		url: "/api/request/updateStatus",
+	// 		contentType: "application/json",
+	// 		data: JSON.stringify(updateData),
+	// 		success: function () {
+	// 			Swal.fire("✅ 상태가 성공적으로 업데이트되었습니다!", "", "success");
+	// 			location.reload();
+	// 		},
+	// 		error: function () {
+	// 			Swal.fire("🚨 상태 업데이트 실패", "", "error");
+	// 		}
+	// 	});
+	// }
 	
 	// ✅ 검색 기능 추가
 	function filterData() {
@@ -170,7 +170,7 @@
 			let searchValue = $("#searchText").val().toLowerCase();
 			let rowData = row;
 			
-			return rowData.reqUsrNm?.toLowerCase().includes(searchValue) ||
+			return rowData.reqUserNm?.toLowerCase().includes(searchValue) ||
 					rowData.details?.toLowerCase().includes(searchValue);
 		});
 	}

@@ -23,8 +23,8 @@
 			<div class="modal-body">
 				<form id="registrationForm">
 					<div class="form-group">
-						<label for="reqUsrNm">Requested By</label>
-						<input type="text" class="form-control" id="reqUsrNm" th:value="${username}" readonly>
+						<label for="reqUserNm">Requested By</label>
+						<input type="text" class="form-control" id="reqUserNm" th:value="${username}" readonly>
 					</div>
 					
 					<!-- 동적 입력 폼 -->
@@ -176,7 +176,7 @@
 		// 🔹 요청 제출 기능 (Submit Request)
 		document.getElementById("submitRequest").addEventListener("click", function () {
 			let requestData = {
-				reqUsrNm: document.getElementById("reqUsrNm").value,
+				reqUserNm: document.getElementById("reqUserNm").value,
 				details: []
 			};
 			

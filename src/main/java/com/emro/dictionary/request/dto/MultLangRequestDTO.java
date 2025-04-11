@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class MultLangRequestDTO {
     private Long reqId;
-    private String reqUsrNm;
+    private Long reqUserId;
     private List<MultLangRequestDetailDTO> details;
 	private String editorContent; // New field for editor content
 	private List<MultipartFile> files; // New field for uploaded files

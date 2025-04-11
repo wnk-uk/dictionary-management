@@ -1,5 +1,6 @@
 package com.emro.dictionary;
 
+import com.emro.dictionary.security.SecurityUtil;
 import com.emro.dictionary.users.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class PageController {
 
 	private final CustomUserDetailsService userDetailsService;
+	private final SecurityUtil securityUtil;
 
     @GetMapping("/login")
     public String loginPage() {
@@ -27,7 +29,7 @@ public class PageController {
     @GetMapping("/")
     public String home(Model model, Authentication authentication) {
         if (authentication != null) {
-            model.addAttribute("username", authentication.getName());
+            model.addAttribute("username", securityUtil.getUsername());
         }
         return "home";
 
@@ -36,7 +38,7 @@ public class PageController {
     @GetMapping("/glo/lists")
     public String gloHome(Model model, Authentication authentication) {
         if (authentication != null) {
-            model.addAttribute("username", authentication.getName());
+            model.addAttribute("username", securityUtil.getUsername());
         }
         return "gloList";
     }
@@ -44,7 +46,7 @@ public class PageController {
     @GetMapping("/multlang/lists")
     public String langHome(Model model, Authentication authentication) {
         if (authentication != null) {
-            model.addAttribute("username", authentication.getName());
+            model.addAttribute("username", securityUtil.getUsername());
         }
         return "multlangList";
     }
@@ -52,7 +54,7 @@ public class PageController {
     @GetMapping("/user/lists")
     public String userHome(Model model, Authentication authentication) {
         if (authentication != null) {
-            model.addAttribute("username", authentication.getName());
+            model.addAttribute("username", securityUtil.getUsername());
         }
         return "userList";
     }
@@ -60,7 +62,7 @@ public class PageController {
 	@GetMapping("/registration")
 	public String registration(Model model, Authentication authentication) {
 		if (authentication != null) {
-			model.addAttribute("username", authentication.getName());
+			model.addAttribute("username", securityUtil.getUsername());
 		}
 		return "registration_modal";
 	}
@@ -72,7 +74,7 @@ public class PageController {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		if (authentication != null) {
-			model.addAttribute("username", authentication.getName());
+			model.addAttribute("username", securityUtil.getUsername());
 		}
 
 		request.getSession().setAttribute(
@@ -91,7 +93,7 @@ public class PageController {
 			Authentication authentication) {
 
 		if (authentication != null) {
-			model.addAttribute("username", authentication.getName());
+			model.addAttribute("username", securityUtil.getUsername());
 		}
 		// acptSts 값을 모델에 추가 (없으면 null)
 		model.addAttribute("acptSts", acptSts);
@@ -102,7 +104,7 @@ public class PageController {
 	@GetMapping("/registrationVertical")
 	public String registrationVertical(Model model, Authentication authentication) {
 		if (authentication != null) {
-			model.addAttribute("username", authentication.getName());
+			model.addAttribute("username", securityUtil.getUsername());
 		}
 		return "registration_modal_vertical";
 	}
@@ -113,7 +115,7 @@ public class PageController {
 			@PathVariable(value = "acptSts") String acptSts,
 	                            Model model, Authentication authentication) {
 		if (authentication != null) {
-			model.addAttribute("username", authentication.getName());
+			model.addAttribute("username", securityUtil.getUsername());
 		}
 
 		model.addAttribute("reqId", reqId);
@@ -127,7 +129,7 @@ public class PageController {
 	                                   @PathVariable(value = "acptSts") String acptSts,
 	                                   Model model, Authentication authentication) {
 		if (authentication != null) {
-			model.addAttribute("username", authentication.getName());
+			model.addAttribute("username", securityUtil.getUsername());
 		}
 		model.addAttribute("dtlId", dtlId);
 		model.addAttribute("reqId", reqId);
@@ -141,7 +143,7 @@ public class PageController {
 			Model model, Authentication authentication) {
 
 		if (authentication != null) {
-			model.addAttribute("username", authentication.getName());
+			model.addAttribute("username", securityUtil.getUsername());
 		}
 
 		model.addAttribute("multlangKey", multlangKey);

@@ -8,9 +8,9 @@ import java.util.List;
 @Data
 public class MultLangListDTO {
 	private Long reqId;
-	private String reqUsrNm;
+	private String reqUserNm;
 	private LocalDateTime reqDttm;
-	private List<MultLangDetailListDTO> details;
+	private List<MultLangDetailDTO> details;
 	private String imagePath;
 	private String editorContent;
 	private String acptSts;

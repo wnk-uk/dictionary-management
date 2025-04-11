@@ -3,7 +3,7 @@ package com.emro.dictionary.request.dto;
 import lombok.Data;
 
 @Data
-public class MultLangDetailListDTO {
+public class MultLangDetailDTO {
 	private Long dtlId;
 	private Long reqId;
 	private String existingWord;

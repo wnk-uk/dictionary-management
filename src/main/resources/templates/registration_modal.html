@@ -49,8 +49,8 @@
 			<div class="modal-body" style="overflow-x: auto">
 				<form id="registrationForm" enctype="multipart/form-data">
 					<div class="form-group">
-						<label for="reqUsrNm">Requested By</label>
-						<input type="text" class="form-control" id="reqUsrNm" th:value="${username}" readonly>
+						<label for="reqUserNm">Requested By</label>
+						<input type="text" class="form-control" id="reqUserNm" th:value="${username}" readonly>
 					</div>
 					<table id="requestTables" class="table table-bordered">
 						<thead>
@@ -377,8 +377,6 @@
 	
 	function submitForm() {
 		const formData = new FormData();
-		const reqUsrNm = document.getElementById("reqUsrNm").value;
-		formData.append("reqUsrNm", reqUsrNm);
 		
 		let isValid = true;
 		const details = [];

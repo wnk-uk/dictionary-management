@@ -2,6 +2,7 @@ package com.emro.dictionary.request.service.impl;
 
 import com.emro.dictionary.history.service.HistoryService;
 import com.emro.dictionary.multLang.service.MultLangService;
+import com.emro.dictionary.notification.service.NotificationService;
 import com.emro.dictionary.request.dto.MultLangListDTO;
 import com.emro.dictionary.request.repository.RequestMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -19,23 +20,24 @@ public class SysAdminRequestServiceImpl extends CommonRequestService {
 	public SysAdminRequestServiceImpl(
 			RequestMapper requestMapper,
 			MultLangService multLangService,
-			HistoryService historyService
+			HistoryService historyService,
+			NotificationService notificationService
 	) {
-		super(requestMapper, multLangService, historyService);
+		super(requestMapper, multLangService, historyService, notificationService);
 	}
 
 	@Override
-	public List<MultLangListDTO> getAllRequestsExceptHOLDING(String requester) {
-		return requestMapper.findAllRequestsExceptHOLDING(null); // requester 무시
+	public List<MultLangListDTO> getAllRequestsExceptHOLDING(Long userId) {
+		return requestMapper.findAllRequestsExceptHOLDING(null); // userId 무시
 	}
 
 	@Override
-	public List<MultLangListDTO> getRequestsByAcptSts(String acptSts, String requester) {
-		return requestMapper.findRequestsByAcptSts(acptSts, null); // requester 무시
+	public List<MultLangListDTO> getRequestsByAcptSts(String acptSts, Long userId) {
+		return requestMapper.findRequestsByAcptSts(acptSts, null); // userId 무시
 	}
 
 	@Override
-	public List<MultLangListDTO> getTop10RecentRequests(String acptSts, String requester) {
+	public List<MultLangListDTO> getTop10RecentRequests(String acptSts, Long userId) {
 		return requestMapper.findTop10RecentHOLDINGingRequests(acptSts, null);
 	}
 }

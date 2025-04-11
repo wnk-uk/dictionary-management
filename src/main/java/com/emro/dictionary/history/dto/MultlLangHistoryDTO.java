@@ -19,6 +19,6 @@ public class MultlLangHistoryDTO {
 	private String sourcePath;
 	private String comment;
 	private String regSts;
-	private String reqUsrNm;
+	private String reqUserNm;
 	private LocalDateTime reqDttm;
 }

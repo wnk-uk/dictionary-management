@@ -19,4 +19,11 @@ public interface UserMapper {
 
     @Update("UPDATE users SET role = #{role}, usr_nm = #{usrNm}, dept_nm = #{deptNm} WHERE username = #{username}")
     void update(UserRequest user);
+
+	@Select("""
+	SELECT id 
+	FROM users
+	WHERE role <> 'USER'
+	""")
+	List<Long> findAdminIds();
 }

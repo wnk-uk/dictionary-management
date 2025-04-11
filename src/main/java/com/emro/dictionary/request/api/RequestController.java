@@ -5,6 +5,7 @@ import com.emro.dictionary.request.storage.service.EditorContentService;
 import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
 import com.emro.dictionary.request.dto.*;
 import com.emro.dictionary.security.SecurityUtil;
+import com.emro.dictionary.users.dto.UserDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,6 @@ public class RequestController {
 
 	@PostMapping(value = "/multlang", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> submitRequest(
-			@RequestParam("reqUsrNm") String reqUsrNm,
 			@RequestParam("details") String detailsJson,
 			@RequestParam(value = "editorContent", required = false) String editorContent,
 			@RequestParam(value = "files", required = false) List<MultipartFile> files
@@ -40,7 +40,7 @@ public class RequestController {
 		List<MultLangRequestDetailDTO> details = objectMapper.readValue(detailsJson, new TypeReference<>() {});
 
 		MultLangRequestDTO request = new MultLangRequestDTO();
-		request.setReqUsrNm(reqUsrNm);
+		request.setReqUserId(securityUtil.getUserId());
 		request.setDetails(details);
 
 		// 파일 업로드
@@ -60,8 +60,8 @@ public class RequestController {
 
 		request.setFiles(files);
 		request.setImagePath(imagePath);
-		String username = securityUtil.getUsername();
-		serviceResolver.getService().saveRequest(request, username);
+		Long userId = securityUtil.getUserId();
+		serviceResolver.getService().saveRequest(request, userId);
 		return ResponseEntity.ok("Request submitted successfully");
 	}
 
@@ -70,11 +70,11 @@ public class RequestController {
 	 */
 	@GetMapping("/{acptSts}/list")
 	public ResponseEntity<List<MultLangListDTO>> getRequests(@PathVariable String acptSts) {
-		String username = securityUtil.getUsername();
+		Long userId = securityUtil.getUserId();
 		if ("all".equalsIgnoreCase(acptSts)) {
-			return ResponseEntity.ok(serviceResolver.getService().getAllRequestsExceptHOLDING(username));
+			return ResponseEntity.ok(serviceResolver.getService().getAllRequestsExceptHOLDING(userId));
 		}
-		return ResponseEntity.ok(serviceResolver.getService().getRequestsByAcptSts(acptSts.toUpperCase(), username));
+		return ResponseEntity.ok(serviceResolver.getService().getRequestsByAcptSts(acptSts.toUpperCase(), userId));
 	}
 
 	/**
@@ -90,9 +90,9 @@ public class RequestController {
 	 */
 	@GetMapping("/{acptSts}/top10")
 	public ResponseEntity<List<MultLangListDTO>> getTop10RecentRequests(@PathVariable String acptSts) {
-		String username = securityUtil.getUsername();
+		Long userId = securityUtil.getUserId();
 
-		return ResponseEntity.ok(serviceResolver.getService().getTop10RecentRequests(acptSts.toUpperCase(), username));
+		return ResponseEntity.ok(serviceResolver.getService().getTop10RecentRequests(acptSts.toUpperCase(), userId));
 	}
 
 	/**
@@ -100,8 +100,12 @@ public class RequestController {
 	 */
 	@PostMapping("/updateStatus")
 	public ResponseEntity<?> updateRequestStatus(@RequestBody List<UpdateRequestStatusDTO> requestList) {
-		String username = securityUtil.getUsername();
-		serviceResolver.getService().updateRequestStatus(requestList, username);
+		String userName = securityUtil.getUsername();
+		Long userId = securityUtil.getUserId();
+		UserDTO userDTO = new UserDTO();
+		userDTO.setId(userId);
+		userDTO.setUsername(userName);
+		serviceResolver.getService().updateRequestStatus(requestList, userDTO);
 		return ResponseEntity.ok("✅ Status Updated successfully");
 	}
 
@@ -110,8 +114,8 @@ public class RequestController {
 	 */
 	@PostMapping("/updateDetail")
 	public ResponseEntity<?> updateRequestDetail(@RequestBody List<UpdateRequestDetailDTO> requestList) {
-		String username = securityUtil.getUsername();
-		serviceResolver.getService().updateRequestDetail(requestList, username);
+		Long userId = securityUtil.getUserId();
+		serviceResolver.getService().updateRequestDetail(requestList, userId);
 		return ResponseEntity.ok("✅ Status Updated successfully");
 	}
 

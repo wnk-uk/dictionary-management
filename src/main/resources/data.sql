@@ -1,7 +1,17 @@
 INSERT INTO USERS (USERNAME, PASSWORD, ROLE, DEPT_NM, USR_NM) VALUES
      ('admin', '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'ADMIN', 'D2S솔루션그룹', '다국어 관리자'),
      ('sys_admin', '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'SYS_ADMIN', 'D2S솔루션그룹', '시스템 관리자'),
-     ('user', '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER', 'P2P솔루션그룹', '사용자');
+     ('user', '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER', 'P2P솔루션그룹', '사용자'),
+	('alice',      '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER',      'AI기술그룹',         '앨리스'),
+	('bob',        '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER',      '플랫폼개발팀',       '밥'),
+	('charlie',    '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER',      '웹개발팀',           '찰리'),
+	('david',      '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER',      '모바일개발팀',       '데이비드'),
+	('eva',        '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER',      'QA팀',               '에바'),
+	('frank',      '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER',     '플랫폼기획팀',       '프랭크'),
+	('grace',      '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER',     'UX디자인팀',         '그레이스'),
+	('henry',      '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER', '보안팀',             '헨리'),
+	('irene',      '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER', '인프라팀',           '아이린'),
+	('jackson',    '$2a$10$l/B5WXGGuIwZmcWZjEeNuuKpIwkqv9wEOj.u8a66Uxna1SSgC3S9S', 'USER',      '데이터분석팀',       '잭슨');
 
 -- MULTLANG 테이블 더미 데이터 삽입
 INSERT INTO MULTLANG (multlang_ccd, multlang_key, multlang_transl_cont, multlang_mod_dttm, multlang_transl_cont_abbr,
@@ -19,38 +29,38 @@ VALUES
     ('KR', 'NO', '아니요', CURRENT_TIMESTAMP, 'ㄴㄴ', 'Y', 'button', '부정적인 대답', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '아니요');
 
 -- REQ 테이블에 더미 데이터 삽입
-INSERT INTO REQ (req_usr_nm, req_dttm, sts, acpt_sts)
+INSERT INTO REQ (req_user_id, req_dttm, sts, acpt_sts)
 VALUES
-	('Alice', '2024-03-01 08:15:30', 'C', 'REQUEST'),
-	('Bob', '2024-03-01 09:25:45', 'C', 'HOLDING'),
-	('Charlie', '2024-03-01 10:35:20', 'C', 'COMPLETE'),
-	('David', '2024-03-01 11:45:10', 'C', 'PROGRESS'),
-	('Eve', '2024-03-02 12:55:05', 'C', 'REQUEST'),
-	('Frank', '2024-03-02 14:05:30', 'C', 'HOLDING'),
-	('user', '2024-03-02 15:15:55', 'C', 'COMPLETE'),
-	('Hank', '2024-03-02 16:25:40', 'C', 'PROGRESS'),
-	('Ivy', '2024-03-03 17:35:20', 'C', 'REQUEST'),
-	('Jack', '2024-03-03 18:45:10', 'C', 'HOLDING'),
-	('user', '2024-03-03 19:55:05', 'C', 'REQUEST'),
-	('Leo', '2024-03-04 07:10:30', 'C', 'HOLDING'),
-	('Mia', '2024-03-04 08:20:45', 'C', 'COMPLETE'),
-	('Nathan', '2024-03-04 09:30:15', 'C', 'PROGRESS'),
-	('Olivia', '2024-03-04 10:40:50', 'C', 'REQUEST'),
-	('Peter', '2024-03-05 11:50:25', 'C', 'HOLDING'),
-	('user', '2024-03-05 13:00:30', 'C', 'COMPLETE'),
-	('Rachel', '2024-03-05 14:10:55', 'C', 'PROGRESS'),
-	('Steve', '2024-03-05 15:20:40', 'C', 'REQUEST'),
-	('Tina', '2024-03-06 16:30:25', 'C', 'HOLDING'),
-	('Uma', '2024-03-06 17:40:55', 'C', 'REQUEST'),
-	('Victor', '2024-03-06 18:50:10', 'C', 'HOLDING'),
-	('Wendy', '2024-03-07 06:05:30', 'C', 'COMPLETE'),
-	('user', '2024-03-07 07:15:45', 'C', 'PROGRESS'),
-	('Yara', '2024-03-07 08:25:55', 'C', 'REQUEST'),
-	('Zack', '2024-03-07 09:35:40', 'C', 'HOLDING'),
-	('Aaron', '2024-03-08 10:45:30', 'C', 'COMPLETE'),
-	('이수지', '2024-03-08 11:55:20', 'C', 'PROGRESS'),
-	('김철수', '2024-03-08 13:05:10', 'C', 'REQUEST'),
-	('홍길동', '2024-03-08 14:15:00', 'C', 'HOLDING');
+	('1', '2024-03-01 08:15:30', 'C', 'REQUEST'),
+	('2', '2024-03-01 09:25:45', 'C', 'HOLDING'),
+	('3', '2024-03-01 10:35:20', 'C', 'COMPLETE'),
+	('4', '2024-03-01 11:45:10', 'C', 'PROGRESS'),
+	('5', '2024-03-02 12:55:05', 'C', 'REQUEST'),
+	('6', '2024-03-02 14:05:30', 'C', 'HOLDING'),
+	('7', '2024-03-02 15:15:55', 'C', 'COMPLETE'),
+	('8', '2024-03-02 16:25:40', 'C', 'PROGRESS'),
+	('9', '2024-03-03 17:35:20', 'C', 'REQUEST'),
+	('3', '2024-03-03 18:45:10', 'C', 'HOLDING'),
+	('3', '2024-03-03 19:55:05', 'C', 'REQUEST'),
+	('3', '2024-03-04 07:10:30', 'C', 'HOLDING'),
+	('3', '2024-03-04 08:20:45', 'C', 'COMPLETE'),
+	('3', '2024-03-04 09:30:15', 'C', 'PROGRESS'),
+	('4', '2024-03-04 10:40:50', 'C', 'REQUEST'),
+	('5', '2024-03-05 11:50:25', 'C', 'HOLDING'),
+	('6', '2024-03-05 13:00:30', 'C', 'COMPLETE'),
+	('7', '2024-03-05 14:10:55', 'C', 'PROGRESS'),
+	('8', '2024-03-05 15:20:40', 'C', 'REQUEST'),
+	('9', '2024-03-06 16:30:25', 'C', 'HOLDING'),
+	('10', '2024-03-06 17:40:55', 'C', 'REQUEST'),
+	('11', '2024-03-06 18:50:10', 'C', 'HOLDING'),
+	('3', '2024-03-07 06:05:30', 'C', 'COMPLETE'),
+	('4', '2024-03-07 07:15:45', 'C', 'PROGRESS'),
+	('3', '2024-03-07 08:25:55', 'C', 'REQUEST'),
+	('5', '2024-03-07 09:35:40', 'C', 'HOLDING'),
+	('3', '2024-03-08 10:45:30', 'C', 'COMPLETE'),
+	('6', '2024-03-08 11:55:20', 'C', 'PROGRESS'),
+	('3', '2024-03-08 13:05:10', 'C', 'REQUEST'),
+	('7', '2024-03-08 14:15:00', 'C', 'HOLDING');
 
 
 -- REQ_DTL 테이블 더미 데이터 삽입

@@ -15,8 +15,8 @@ public interface RequestMapper {
 	 * 요청 저장 (REQ 테이블에 데이터 삽입)
 	 */
 	@Insert("""
-        INSERT INTO REQ (req_usr_nm, req_dttm, sts, acpt_sts, image_path, editor_content)
-        VALUES (#{reqUsrNm}, NOW(), 'C', 'REQUEST', #{imagePath}, #{editorContent})
+		INSERT INTO req (req_user_id, req_dttm, sts, acpt_sts, image_path, editor_content)
+		VALUES (#{reqUserId}, NOW(), 'C', 'REQUEST', #{imagePath}, #{editorContent})
     """)
 	@Options(useGeneratedKeys = true, keyProperty = "reqId")
 	void insertRequest(MultLangRequestDTO request);
@@ -25,28 +25,30 @@ public interface RequestMapper {
 	 * 요청 상세 저장 (REQ_DTL 테이블에 데이터 삽입)
 	 */
 	@Insert("""
-        INSERT INTO REQ_DTL (req_id, existing_word, multlang_ccd, multlang_key, multlang_suggested_transl_cont, 
+        INSERT INTO req_dtl (req_id, existing_word, multlang_ccd, multlang_key, multlang_suggested_transl_cont, 
                                  multlang_transl_cont_abbr, multlang_typ, screen_path, 
                                  source_path, comment, reg_sts)
         VALUES (#{reqId}, #{detail.existingWord}, #{detail.multlangCcd}, #{detail.multlangKey}, #{detail.multlangSuggestedTranslCont}, 
                 #{detail.multlangTranslContAbbr}, #{detail.multlangTyp}, #{detail.screenPath}, 
                 #{detail.sourcePath}, #{detail.comment}, 'PENDING')
     """)
-	@Options(useGeneratedKeys = true, keyProperty = "detail.dtl_id")
+	@Options(useGeneratedKeys = true, keyProperty = "detail.dtlId")
 	void insertRequestDetail(@Param("reqId") Long reqId, @Param("detail") MultLangRequestDetailDTO detail);
 
 	/**
-	 * STS가 HOLDING이 아닌 데이터 조회 (requester 선택적)
+	 * STS가 HOLDING이 아닌 데이터 조회 (해당 user의 것만)
 	 */
 	@Select("""
-        SELECT * FROM REQ 
-        WHERE acpt_sts <> 'HOLDING'
-    	AND (#{requester} IS NULL OR req_usr_nm = #{requester}) 
-        ORDER BY req_dttm DESC
+		SELECT r.*, u.usr_nm AS req_usr_nm
+		FROM req r
+		LEFT JOIN users u ON r.req_user_id = u.id
+		WHERE r.acpt_sts <> 'HOLDING'
+		AND (#{userId} IS NULL OR r.req_user_id = #{userId})
+		ORDER BY r.req_dttm DESC
     """)
 	@Results({
 			@Result(property = "reqId", column = "req_id", id = true),
-			@Result(property = "reqUsrNm", column = "req_usr_nm"),
+			@Result(property = "reqUserNm", column = "req_usr_nm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
 			@Result(property = "reqDttm", column = "req_dttm"),
 			@Result(property = "imagePath", column = "image_path"),
@@ -54,20 +56,22 @@ public interface RequestMapper {
 			@Result(property = "details", column = "req_id",
 					many = @Many(select = "findRequestDetails"))
 	})
-	List<MultLangListDTO> findAllRequestsExceptHOLDING(@Param("requester") String requester);
+	List<MultLangListDTO> findAllRequestsExceptHOLDING(@Param("userId") Long userId);
 
 	/**
-	 * 특정 ACPT_STS 값으로 데이터 조회 (requester 선택적)
+	 * 특정 ACPT_STS 값으로 데이터 조회 (해당 user의 것만)
 	 */
 	@Select("""
-        SELECT * FROM REQ 
-        WHERE acpt_sts = #{acptSts}
-        AND (#{requester} IS NULL OR req_usr_nm = #{requester}) 
-        ORDER BY req_dttm DESC
+		SELECT r.*, u.usr_nm AS req_usr_nm
+		FROM req r
+		LEFT JOIN users u ON r.req_user_id = u.id
+		WHERE r.acpt_sts = #{acptSts}
+		AND (#{userId} IS NULL OR r.req_user_id = #{userId})
+		ORDER BY r.req_dttm DESC
     """)
 	@Results({
 			@Result(property = "reqId", column = "req_id", id = true),
-			@Result(property = "reqUsrNm", column = "req_usr_nm"),
+			@Result(property = "reqUserNm", column = "req_usr_nm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
 			@Result(property = "reqDttm", column = "req_dttm"),
 			@Result(property = "imagePath", column = "image_path"),
@@ -75,7 +79,7 @@ public interface RequestMapper {
 			@Result(property = "details", column = "req_id",
 					many = @Many(select = "findRequestDetails"))
 	})
-	List<MultLangListDTO> findRequestsByAcptSts(@Param("acptSts") String acptSts, @Param("requester") String requester);
+	List<MultLangListDTO> findRequestsByAcptSts(@Param("acptSts") String acptSts, @Param("userId") Long userId);
 
 	/**
 	 * 요청 상태에 따른 갯수 세기
@@ -90,28 +94,29 @@ public interface RequestMapper {
 	 * 요청시간 상위 Top10 특정 요청 가져오기 (특정 acptSts)
 	 */
 	@Select("""
-		SELECT req.req_id, req.req_usr_nm, req.req_dttm, req.acpt_sts
-	    FROM REQ req
-	    WHERE req.acpt_sts = #{acptSts}
-	      AND (req_usr_nm = #{requester} OR #{requester} IS NULL)
-	    ORDER BY req.req_dttm DESC
-	    LIMIT 10
+		SELECT r.req_id, r.req_dttm, r.acpt_sts, u.usr_nm AS req_usr_nm
+		FROM req r
+		LEFT JOIN users u ON r.req_user_id = u.id
+		WHERE r.acpt_sts = #{acptSts}
+		 AND (r.req_user_id = #{userId} OR #{userId} IS NULL)
+		ORDER BY r.req_dttm DESC
+		LIMIT 10
     """)
 	@Results({
 			@Result(property = "reqId", column = "req_id", id = true),
-			@Result(property = "reqUsrNm", column = "req_usr_nm"),
+			@Result(property = "reqUserNm", column = "req_usr_nm"),
 			@Result(property = "reqDttm", column = "req_dttm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
 			@Result(property = "details", column = "req_id",
 					many = @Many(select = "findRequestDetailsByReqId"))
 	})
-	List<MultLangListDTO> findTop10RecentHOLDINGingRequests(@Param("acptSts") String acptSts,  @Param("requester") String requester);
+	List<MultLangListDTO> findTop10RecentHOLDINGingRequests(@Param("acptSts") String acptSts,  @Param("userId") Long userId);
 
 	/**
 	 * 선택된 요청(REQ)의 상태를 업데이트
 	 */
 	@Update("""
-        UPDATE REQ
+        UPDATE req
         SET acpt_sts = #{acptSts}
         WHERE req_id = #{reqId}
     """)
@@ -122,7 +127,7 @@ public interface RequestMapper {
 	 */
 	@Update("""
         UPDATE 
-            REQ_DTL
+            req_dtl
         SET 
             reg_sts = #{regSts},
             multlang_transl_cont = #{multlangTranslCont}
@@ -135,7 +140,7 @@ public interface RequestMapper {
 	 */
 	@Select("""
         SELECT reg_sts 
-        FROM REQ_DTL 
+        FROM req_dtl 
         WHERE req_id = #{reqId}
     """)
 	List<String> getDetailStatusesByReqId(@Param("reqId") Long reqId);
@@ -144,22 +149,23 @@ public interface RequestMapper {
 	 * RequestDetail 조회 (REQ_DTL 테이블)
 	 */
 	@Select("""
-        SELECT * FROM REQ_DTL 
+        SELECT * FROM req_dtl 
         WHERE req_id = #{reqId}
     """)
-	List<MultLangDetailListDTO> findRequestDetails(@Param("reqId") Long reqId);
+	List<MultLangDetailDTO> findRequestDetails(@Param("reqId") Long reqId);
 
 	/**
-	 * reqId 을 이용한 detail 조회(REQ)
+	 * reqId 을 이용한 req 및 detail 조회(REQ)
 	 */
 	@Select("""
-		SELECT * 
-		FROM REQ 
-		WHERE req_id = #{reqId}
+		SELECT r.*, u.usr_nm AS req_usr_nm
+		FROM req r
+		LEFT JOIN users u ON r.req_user_id = u.id
+		WHERE r.req_id = #{reqId}
 		""")
 	@Results({
 			@Result(property = "reqId", column = "req_id", id = true),
-			@Result(property = "reqUsrNm", column = "req_usr_nm"),
+			@Result(property = "reqUserNm", column = "req_usr_nm"),
 			@Result(property = "reqDttm", column = "req_dttm"),
 			@Result(property = "acptSts", column = "acpt_sts"),
 			@Result(property = "imagePath", column = "image_path"),
@@ -175,7 +181,7 @@ public interface RequestMapper {
 	 */
 	@Select("""
 		SELECT * 
-		FROM REQ_DTL 
+		FROM req_dtl 
 		WHERE req_id = #{reqId}
 		""")
 	@Results({
@@ -199,11 +205,12 @@ public interface RequestMapper {
 	 */
 	@Select("""
 		SELECT * 
-		FROM REQ_DTL 
+		FROM req_dtl 
 		WHERE dtl_id = #{dtlId}
 		""")
 	@Results({
 			@Result(property = "dtlId", column = "dtl_id"),
+			@Result(property = "reqId", column = "req_id"),
 			@Result(property = "existingWord", column = "existing_word"),
 			@Result(property = "multlangKey", column = "multlang_key"),
 			@Result(property = "multlangTranslCont", column = "multlang_transl_cont"),
@@ -222,7 +229,7 @@ public interface RequestMapper {
 	 */
 	@Update("""
 		UPDATE 
-            REQ_DTL
+            req_dtl
         SET 
             existing_word = #{existingWord},
             multlang_ccd = #{multlangCcd},
@@ -234,4 +241,14 @@ public interface RequestMapper {
         WHERE dtl_id = #{dtlId}
 	""")
 	void updateRequestDetail(UpdateRequestDetailDTO dto);
+
+	/**
+	 * reqId 에 따른 UserId 조회
+	 */
+	@Select("""
+	SELECT req_user_id
+	FROM req
+	WHERE req_id = #{reqId}
+	""")
+	Long findUserIdByReqId(Long reqId);
 }

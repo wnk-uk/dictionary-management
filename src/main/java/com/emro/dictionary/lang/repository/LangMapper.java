@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface LangMapper {
 
-    @Select("SELECT req_id AS reqId, req_usr_nm AS reqUsrNm, req_dttm AS reqDttm FROM REQ")
+    @Select("SELECT req_id AS reqId, req_usr_nm AS reqUserNm, req_dttm AS reqDttm FROM REQ")
     List<LangDTO> findByReqListAll(LangRequest request);
 
     @Select("SELECT * FROM REQ_DTL")

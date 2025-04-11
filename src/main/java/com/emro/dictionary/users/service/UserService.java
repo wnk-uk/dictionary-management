@@ -33,4 +33,8 @@ public class UserService {
             userMapper.save(user);
         }
     }
+
+	public List<Long> findAdminIds() {
+		return userMapper.findAdminIds();
+	}
 }

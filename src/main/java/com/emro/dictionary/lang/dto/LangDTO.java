@@ -7,6 +7,6 @@ import java.time.LocalDateTime;
 @Data
 public class LangDTO {
     private int dicReqId;
-    private String reqUsrNm;
+    private String reqUserNm;
     private LocalDateTime reqDttm;
 }

@@ -117,7 +117,7 @@
                             <dt class="col-sm-4">Request ID</dt>
                             <dd class="col-sm-8">${data.reqId}</dd>
                             <dt class="col-sm-4">Requester</dt>
-                            <dd class="col-sm-8">${data.reqUsrNm}</dd>
+                            <dd class="col-sm-8">${data.reqUserNm}</dd>
                             <dt class="col-sm-4">Request Time</dt>
                             <dd class="col-sm-8">${UT.formatDate(data.reqDttm)}</dd>
                             <dt class="col-sm-4">Status</dt>
@@ -403,7 +403,7 @@
 			data: JSON.stringify(updateData),
 			success: function () {
 				Swal.fire(successMessage, "", "success").then(() => {
-					table.replaceData();
+					location.reload();
 				});
 			},
 			error: function (xhr) {
@@ -503,7 +503,7 @@
 			data: JSON.stringify(updateRequestList),
 			success: function() {
 				Swal.fire("✅ 수정 완료", "내용이 성공적으로 수정되었습니다.", "success").then(() => {
-					table.replaceData();
+					location.reload();
 				});
 			},
 			error: function(xhr) {

@@ -2,9 +2,11 @@ package com.emro.dictionary.request.service.impl;
 
 import com.emro.dictionary.history.service.HistoryService;
 import com.emro.dictionary.multLang.service.MultLangService;
+import com.emro.dictionary.notification.service.NotificationService;
 import com.emro.dictionary.request.dto.*;
 import com.emro.dictionary.request.repository.RequestMapper;
 import com.emro.dictionary.request.service.RequestService;
+import com.emro.dictionary.users.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,9 +26,10 @@ public class CommonRequestService implements RequestService {
 	protected final RequestMapper requestMapper;
 	protected final MultLangService multLangService;
 	protected final HistoryService historyService;
+	protected final NotificationService notificationService;
 
 	@Override
-	public void saveRequest(MultLangRequestDTO request, String requester) throws IOException {
+	public void saveRequest(MultLangRequestDTO request, Long userId) throws IOException {
 		requestMapper.insertRequest(request);
 		for (MultLangRequestDetailDTO detail : request.getDetails()) {
 			requestMapper.insertRequestDetail(request.getReqId(), detail);
@@ -35,20 +38,23 @@ public class CommonRequestService implements RequestService {
 				if (dtlId == null) {
 					throw new IllegalStateException("dtlId was not generated for detail: " + detail);
 				}
-				historyService.addHistory(dtlId, request.getEditorContent(), request.getImagePath(), requester);
-				historyService.addHistory(dtlId, detail.getComment(), null, requester);
+				historyService.addHistory(dtlId, request.getEditorContent(), request.getImagePath(), userId);
+				historyService.addHistory(dtlId, detail.getComment(), null, userId);
 			}
 		}
+
+		// 요청 생성 후 어드민에게 알림
+		notificationService.notifyAdminsOnRequestCreated(request.getReqId(), userId);
 	}
 
 	@Override
-	public List<MultLangListDTO> getAllRequestsExceptHOLDING(String requester) {
-		return requestMapper.findAllRequestsExceptHOLDING(requester);
+	public List<MultLangListDTO> getAllRequestsExceptHOLDING(Long userId) {
+		return requestMapper.findAllRequestsExceptHOLDING(userId);
 	}
 
 	@Override
-	public List<MultLangListDTO> getRequestsByAcptSts(String acptSts, String requester) {
-		return requestMapper.findRequestsByAcptSts(acptSts, requester);
+	public List<MultLangListDTO> getRequestsByAcptSts(String acptSts, Long userId) {
+		return requestMapper.findRequestsByAcptSts(acptSts, userId);
 	}
 
 	@Override
@@ -60,18 +66,25 @@ public class CommonRequestService implements RequestService {
 	}
 
 	@Override
-	public List<MultLangListDTO> getTop10RecentRequests(String acptSts, String requester) {
-		return requestMapper.findTop10RecentHOLDINGingRequests(acptSts, requester);
+	public List<MultLangListDTO> getTop10RecentRequests(String acptSts, Long userId) {
+		return requestMapper.findTop10RecentHOLDINGingRequests(acptSts, userId);
 	}
 
 	@Override
-	public void updateRequestStatus(List<UpdateRequestStatusDTO> updateList, String requester) {
+	public void updateRequestStatus(List<UpdateRequestStatusDTO> updateList, UserDTO userDTO) {
 		for (UpdateRequestStatusDTO update : updateList) {
 			Long reqId = update.getReqId();
 
+			Long reqUserId = requestMapper.findUserIdByReqId(reqId);
+			if (reqUserId == null) {
+				throw new IllegalStateException("Request not found for reqId: " + reqId);
+			}
 			// 1. REQ_DTL 상태 업데이트
 			for (UpdateRequestDetailStatusDTO detail : update.getDetails()) {
 				requestMapper.updateRequestDetailRegSts(detail.getDtlId(), detail.getRegSts(), detail.getMultlangTranslCont());
+
+				// 상태 변경 알림
+				notificationService.notifyUserOnReqDtlStatusChange(detail.getDtlId(), detail.getRegSts(), reqUserId);
 
 				// regSts가 ACCEPTANCE일 경우 MULTLANG 처리
 				if ("ACCEPTANCE".equals(detail.getRegSts())) {
@@ -84,7 +97,7 @@ public class CommonRequestService implements RequestService {
 							detailRecord.getMultlangTranslContAbbr(),
 							detailRecord.getMultlangTyp(),
 							detail.getRmk(),
-							requester
+							userDTO.getUsername()
 					);
 				}
 			}
@@ -95,6 +108,9 @@ public class CommonRequestService implements RequestService {
 			// 3. REQ 상태 결정 및 업데이트
 			String newAcptSts = determineAcptSts(detailStatuses);
 			requestMapper.updateRequestAcptSts(reqId, newAcptSts);
+
+			// 상태 변경 알림
+			notificationService.notifyUserOnStatusChange(reqId, newAcptSts, reqUserId);
 		}
 	}
 
@@ -120,10 +136,10 @@ public class CommonRequestService implements RequestService {
 	}
 
 	@Override
-	public void updateRequestDetail(List<UpdateRequestDetailDTO> updateList, String requester) {
+	public void updateRequestDetail(List<UpdateRequestDetailDTO> updateList, Long userId) {
 		for (UpdateRequestDetailDTO update : updateList) {
 			requestMapper.updateRequestDetail(update);
-			historyService.addHistory(update.getDtlId(), update.getCommentText(), null, requester);
+			historyService.addHistory(update.getDtlId(), update.getCommentText(), null, userId);
 		}
 	}
 

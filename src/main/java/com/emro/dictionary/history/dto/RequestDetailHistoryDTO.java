@@ -10,6 +10,6 @@ public class RequestDetailHistoryDTO {
 	private Long dtlId;
 	private String commentText;
 	private String imagePath;
-	private String writerNm;
+	private Long writerId;
 	private LocalDateTime writtenDttm;
 }

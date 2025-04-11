@@ -5,12 +5,12 @@ import com.emro.dictionary.history.dto.RequestDetailHistoryDTO;
 import com.emro.dictionary.history.service.HistoryService;
 import com.emro.dictionary.request.storage.service.EditorContentService;
 import com.emro.dictionary.request.storage.service.FileStorageService;
+import com.emro.dictionary.security.SecurityUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class HistoryController {
 
+	private final SecurityUtil securityUtil;
 	private final HistoryService historyService;
 	private final FileStorageService fileStorageService;
 	private final EditorContentService editorContentService;
@@ -39,7 +40,7 @@ public class HistoryController {
 			@RequestParam String commentText,
 			@RequestParam(required = false) String imageMapJson,
 			@RequestParam(required = false) List<MultipartFile> files) throws IOException {
-		String writerNm = SecurityContextHolder.getContext().getAuthentication().getName();
+		Long writerId = securityUtil.getUserId();
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<String, String> imageMap = imageMapJson != null ? objectMapper.readValue(imageMapJson, new TypeReference<Map<String, String>>() {}) : new HashMap<>();
 
@@ -55,7 +56,7 @@ public class HistoryController {
 			updatedCommentText = editorContentService.moveTempImagesToUpload(commentText);
 		}
 
-		historyService.addHistory(dtlId, updatedCommentText, imagePath, writerNm);
+		historyService.addHistory(dtlId, updatedCommentText, imagePath, writerId);
 		return ResponseEntity.ok().build();
 	}
 
