@@ -53,7 +53,7 @@
 
 </head>
 
-<ul th:fragment="main-sidebar" class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<ul th:fragment="main-sidebar (currentMenu, currentSubMenu)" class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/}">
             <div class="sidebar-brand-icon rotate-n-15">
@@ -66,7 +66,7 @@
         <hr class="sidebar-divider my-0">
 
         <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
+        <li class="nav-item" th:classappend="${currentMenu == 'dashboard'} ? active">
             <a class="nav-link" th:href="@{/}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Dashboard</span></a>
@@ -82,35 +82,35 @@
         </div>
 
         <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
+        <li class="nav-item" th:classappend="${currentMenu == 'multilang'} ? active">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                aria-expanded="true" aria-controls="collapseTwo">
                 <i class="fas fa-fw fa-cog"></i>
                 <span>Multi Language</span>
             </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseTwo" class="collapse" th:classappend="${currentMenu == 'multilang'} ? show" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
 <!--                    <h6 class="collapse-header">Custom Components:</h6>-->
-					<a class="collapse-item" th:href="@{/req/all/lists}">Request List</a>
-					<a class="collapse-item" th:href="@{/req/holding/lists}">Holding List</a>
-					<a class="collapse-item" th:href="@{/multlang/lists}">List</a>
+					<a class="collapse-item" th:href="@{/req/all/lists}" th:classappend="${currentSubMenu == 'all'} ? active">Request List</a>
+					<a class="collapse-item" th:href="@{/req/holding/lists}" th:classappend="${currentSubMenu == 'holding'} ? active">Holding List</a>
+					<a class="collapse-item" th:href="@{/multlang/lists}" th:classappend="${currentSubMenu == 'multilang'} ? active">List</a>
 <!--                    <a class="collapse-item" href="cards.html">Cards</a>-->
                 </div>
             </div>
         </li>
 
         <!-- Nav Item - Utilities Collapse Menu -->
-        <li class="nav-item">
+        <li class="nav-item" th:classappend="${currentMenu == 'glossary'} ? active">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                aria-expanded="true" aria-controls="collapseUtilities">
                 <i class="fas fa-fw fa-wrench"></i>
                 <span>Glossary</span>
             </a>
-            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+            <div id="collapseUtilities" class="collapse" th:classappend="${currentMenu == 'glossary'} ? show" aria-labelledby="headingUtilities"
                  data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
 <!--                    <h6 class="collapse-header">Custom Utilities:</h6>-->
-                    <a class="collapse-item" th:href="@{/glo/lists}">Sheets</a>
+                    <a class="collapse-item" th:href="@{/glo/lists}" th:classappend="${currentSubMenu == 'glossary'} ? active">Sheets</a>
                 </div>
             </div>
         </li>
@@ -123,17 +123,17 @@
             Management
         </div>
 
-        <li class="nav-item" sec:authorize="hasRole('SYS_ADMIN')">
+        <li class="nav-item" sec:authorize="hasRole('SYS_ADMIN')" th:classappend="${currentMenu == 'user'} ? active">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUser"
                aria-expanded="true" aria-controls="collapseUser">
                 <i class="fas fa-fw fa-wrench"></i>
                 <span>User Management</span>
             </a>
-            <div id="collapseUser" class="collapse" aria-labelledby="headingUtilities"
+            <div id="collapseUser" class="collapse" th:classappend="${currentMenu == 'user'} ? show" aria-labelledby="headingUtilities"
                  data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <!--                    <h6 class="collapse-header">Custom Utilities:</h6>-->
-                    <a class="collapse-item" th:href="@{/user/lists}">List</a>
+                    <a class="collapse-item" th:href="@{/user/lists}" th:classappend="${currentSubMenu == 'user'} ? active">List</a>
                 </div>
             </div>
         </li>
