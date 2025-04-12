@@ -13,7 +13,7 @@ public class GlobalRestExceptionHandler {
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
 		ErrorResponse error = new ErrorResponse(
-				HttpStatus.BAD_REQUEST.value(),
+				HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				"Bad Request",
 				ex.getMessage(),
 				request.getRequestURI()

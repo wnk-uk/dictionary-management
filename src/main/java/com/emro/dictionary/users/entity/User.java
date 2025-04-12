@@ -1,6 +1,7 @@
 package com.emro.dictionary.users.entity;
 
 import com.emro.dictionary.users.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 @Getter
@@ -11,9 +12,11 @@ import lombok.*;
 public class User {
     private Long id;
     private String username;
+    @JsonIgnore
     private String password;
     private String deptNm;
     private String usrNm;
     private Role role;
+    private String token;
 }
 

@@ -268,6 +268,183 @@
             </div>
         </li>
     </ul>
+    <script>
+        // 알림 목록 가져오기
+        function loadNotifications() {
+            $.ajax({
+                url: '/api/notifications',
+                method: 'GET',
+                success: function(notifications) {
+                    const alertsList = $('#alertsList');
+                    const alertsCounter = $('#alertsCounter');
+                    alertsList.empty();
+
+                    if(notifications.length === 0) {
+                        alertsList.append('<div class="dropdown-item text-center small text-gray-500">No new alerts</div>');
+                        alertsCounter.text('0');
+                    } else {
+                        alertsCounter.text(notifications.length > 9 ? '9+' : notifications.length);
+                        notifications.forEach(function(notification) {
+                            const iconClass = notification.type === 'REQUEST_CREATED' ? 'bg-primary' :
+                                notification.type === 'STATUS_CHANGED' ? 'bg-success' : 'bg-warning';
+                            // reqId 기반으로 URL 생성
+                            const detailUrl = `/req/all/detail/${notification.reqId}`;
+                            const item = `
+                            <a class="dropdown-item d-flex align-items-center notification-item" href="${detailUrl}" data-id="${notification.id || ''}">
+                                <div class="mr-3">
+                                    <div class="icon-circle ${iconClass}">
+                                        <i class="fas fa-file-alt text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-gray-500">${new Date(notification.createdAt).toLocaleDateString()}</div>
+                                    <div class="font-weight-bold">${notification.message}</div>
+                                </div>
+                            </a>`;
+                            alertsList.append(item);
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to load notifications:', status, error);
+                    console.error('Response:', xhr.responseText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to load notifications!'
+                    });
+                }
+            });
+        }
+
+        // 메시지 목록 가져오기
+        function loadMessages() {
+            $.ajax({
+                url: '/api/messages',
+                method: 'GET',
+                success: function(messages) {
+                    const messagesList = $('#messagesList');
+                    const messagesCounter = $('#messagesCounter');
+                    messagesList.empty();
+
+                    if(messages.length === 0) {
+                        messagesList.append('<div class="dropdown-item text-center small text-gray-500">No new messages</div>');
+                        messagesCounter.text('0');
+                    } else {
+                        messagesCounter.text(messages.length > 9 ? '9+' : messages.length);
+                        messages.forEach(function(message) {
+                            // reqId와 dtlId를 기반으로 URL 생성
+                            const detailUrl = message.dtlId ?
+                                `/req/all/detail/${message.reqId}/history/${message.dtlId}` :
+                                `/req/detail/${message.reqId}`;
+                            const item = `
+                            <a class="dropdown-item d-flex align-items-center message-item" href="${detailUrl}" data-id="${message.id || ''}" >
+                                <div class="dropdown-list-image mr-3">
+                                    <img class="rounded-circle" src="/img/undraw_profile_1.svg" alt="...">
+                                    <div class="status-indicator bg-success"></div>
+                                </div>
+                                <div>
+                                    <div class="text-truncate">${message.message}</div>
+                                    <div class="small text-gray-500">${new Date(message.createdAt).toLocaleDateString()}</div>
+                                </div>
+                            </a>`;
+                            messagesList.append(item);
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to load messages:', status, error);
+                    console.error('Response:', xhr.responseText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to load messages!'
+                    });
+                }
+            });
+        }
+
+        // 알림 읽음 처리
+        function markNotificationAsRead(notificationId) {
+            console.log('Attempting to mark notification as read:', notificationId);
+            $.ajax({
+                url: `/api/notifications/${notificationId}/read`,
+                method: 'POST',
+                success: function() {
+                    console.log(`Notification ${notificationId} marked as read`);
+                    loadNotifications(); // 목록 갱신
+                },
+                error: function(xhr, status, error) {
+                    console.error(`Failed to mark notification ${notificationId} as read:`, status, error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to mark notification as read!'
+                    });
+                }
+            });
+        }
+
+        // 메시지 읽음 처리
+        function markMessageAsRead(messageId) {
+            console.log('Attempting to mark message as read:', messageId);
+            $.ajax({
+                url: `/api/messages/${messageId}/read`,
+                method: 'POST',
+                success: function() {
+                    console.log(`Message ${messageId} marked as read`);
+                    loadMessages(); // 목록 갱신
+                },
+                error: function(xhr, status, error) {
+                    console.error(`Failed to mark message ${messageId} as read:`, status, error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to mark message as read!'
+                    });
+                }
+            });
+        }
+
+        $(function() {
+            // 알림 클릭 이벤트
+            $(document).on('click', '.notification-item', function(e) {
+                e.preventDefault(); // 기본 링크 동작 방지
+                // e.stopPropagation();
+                const notificationId = $(this).attr('data-id');
+                const href = $(this).attr('href');
+                markNotificationAsRead(notificationId); // 읽음 처리
+                setTimeout(() => {
+                    window.location.href = href; // 페이지 이동
+                }, 500); // 읽음 처리 후 이동
+            });
+
+            // 메시지 클릭 이벤트
+            $(document).on('click', '.message-item', function(e) {
+                e.preventDefault(); // 기본 링크 동작 방지
+                // e.stopPropagation();
+                const messageId = $(this).attr('data-id');
+                console.log(this)
+                const href = $(this).attr('href');
+                markMessageAsRead(messageId); // 읽음 처리
+                setTimeout(() => {
+                    window.location.href = href; // 페이지 이동
+                }, 500); // 읽음 처리 후 이동
+            });
+
+            // 초기 로드
+            loadNotifications();
+            loadMessages();
+
+            // 1분마다 갱신
+            setInterval(function() {
+                console.log('Refreshing notifications and messages...');
+                loadNotifications();
+                loadMessages();
+            }, 60 * 1000); // 60초
+        });
+
+    </script>
 </nav>
 <!-- End of Topbar -->
 
@@ -286,180 +463,6 @@
 		$(document).ajaxSend(function (e, xhr, options) {
 			xhr.setRequestHeader(csrfHeader, csrfToken);
 		});
-		
-		// 알림 목록 가져오기
-		function loadNotifications() {
-			$.ajax({
-				url: '/api/notifications',
-				method: 'GET',
-				success: function(notifications) {
-					const alertsList = $('#alertsList');
-					const alertsCounter = $('#alertsCounter');
-					alertsList.empty();
-					
-					if(notifications.length === 0) {
-						alertsList.append('<div class="dropdown-item text-center small text-gray-500">No new alerts</div>');
-						alertsCounter.text('0');
-					} else {
-						alertsCounter.text(notifications.length > 9 ? '9+' : notifications.length);
-						notifications.forEach(function(notification) {
-							const iconClass = notification.type === 'REQUEST_CREATED' ? 'bg-primary' :
-									notification.type === 'STATUS_CHANGED' ? 'bg-success' : 'bg-warning';
-							// reqId 기반으로 URL 생성
-							const detailUrl = `/req/all/detail/${notification.reqId}`;
-							const item = `
-                            <a class="dropdown-item d-flex align-items-center notification-item" href="${detailUrl}" data-id="${notification.id || ''}">
-                                <div class="mr-3">
-                                    <div class="icon-circle ${iconClass}">
-                                        <i class="fas fa-file-alt text-white"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="small text-gray-500">${new Date(notification.createdAt).toLocaleDateString()}</div>
-                                    <div class="font-weight-bold">${notification.message}</div>
-                                </div>
-                            </a>`;
-							alertsList.append(item);
-						});
-					}
-				},
-				error: function(xhr, status, error) {
-					console.error('Failed to load notifications:', status, error);
-					console.error('Response:', xhr.responseText);
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: 'Failed to load notifications!'
-					});
-				}
-			});
-		}
-		
-		// 메시지 목록 가져오기
-		function loadMessages() {
-			$.ajax({
-				url: '/api/messages',
-				method: 'GET',
-				success: function(messages) {
-					const messagesList = $('#messagesList');
-					const messagesCounter = $('#messagesCounter');
-					messagesList.empty();
-					
-					if(messages.length === 0) {
-						messagesList.append('<div class="dropdown-item text-center small text-gray-500">No new messages</div>');
-						messagesCounter.text('0');
-					} else {
-						messagesCounter.text(messages.length > 9 ? '9+' : messages.length);
-						messages.forEach(function(message) {
-							// reqId와 dtlId를 기반으로 URL 생성
-							const detailUrl = message.dtlId ?
-									`/req/all/detail/${message.reqId}/history/${message.dtlId}` :
-									`/req/detail/${message.reqId}`;
-							const item = `
-                            <a class="dropdown-item d-flex align-items-center message-item" href="${detailUrl}" data-id="${message.id || ''}" >
-                                <div class="dropdown-list-image mr-3">
-                                    <img class="rounded-circle" src="/img/undraw_profile_1.svg" alt="...">
-                                    <div class="status-indicator bg-success"></div>
-                                </div>
-                                <div>
-                                    <div class="text-truncate">${message.message}</div>
-                                    <div class="small text-gray-500">${new Date(message.createdAt).toLocaleDateString()}</div>
-                                </div>
-                            </a>`;
-							messagesList.append(item);
-						});
-					}
-				},
-				error: function(xhr, status, error) {
-					console.error('Failed to load messages:', status, error);
-					console.error('Response:', xhr.responseText);
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: 'Failed to load messages!'
-					});
-				}
-			});
-		}
-		
-		// 알림 읽음 처리
-		function markNotificationAsRead(notificationId) {
-			console.log('Attempting to mark notification as read:', notificationId);
-			$.ajax({
-				url: `/api/notifications/${notificationId}/read`,
-				method: 'POST',
-				success: function() {
-					console.log(`Notification ${notificationId} marked as read`);
-					loadNotifications(); // 목록 갱신
-				},
-				error: function(xhr, status, error) {
-					console.error(`Failed to mark notification ${notificationId} as read:`, status, error);
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: 'Failed to mark notification as read!'
-					});
-				}
-			});
-		}
-		
-		// 메시지 읽음 처리
-		function markMessageAsRead(messageId) {
-			console.log('Attempting to mark message as read:', messageId);
-			$.ajax({
-				url: `/api/messages/${messageId}/read`,
-				method: 'POST',
-				success: function() {
-					console.log(`Message ${messageId} marked as read`);
-					loadMessages(); // 목록 갱신
-				},
-				error: function(xhr, status, error) {
-					console.error(`Failed to mark message ${messageId} as read:`, status, error);
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: 'Failed to mark message as read!'
-					});
-				}
-			});
-		}
-		
-		// 알림 클릭 이벤트
-		$(document).on('click', '.notification-item', function(e) {
-			e.preventDefault(); // 기본 링크 동작 방지
-			// e.stopPropagation();
-			const notificationId = $(this).attr('data-id');
-			const href = $(this).attr('href');
-			markNotificationAsRead(notificationId); // 읽음 처리
-			setTimeout(() => {
-				window.location.href = href; // 페이지 이동
-			}, 500); // 읽음 처리 후 이동
-		});
-		
-		// 메시지 클릭 이벤트
-		$(document).on('click', '.message-item', function(e) {
-			e.preventDefault(); // 기본 링크 동작 방지
-			// e.stopPropagation();
-			const messageId = $(this).attr('data-id');
-			console.log(this)
-			const href = $(this).attr('href');
-			markMessageAsRead(messageId); // 읽음 처리
-			setTimeout(() => {
-				window.location.href = href; // 페이지 이동
-			}, 500); // 읽음 처리 후 이동
-		});
-		
-		// 초기 로드
-		loadNotifications();
-		loadMessages();
-		
-		// 1분마다 갱신
-		setInterval(function() {
-			console.log('Refreshing notifications and messages...');
-			loadNotifications();
-			loadMessages();
-		}, 60 * 1000); // 60초
-		
 	});
 </script>
 
@@ -471,7 +474,7 @@
 	<script th:inline="javascript">
 		// 업로드 경로 상수
 		const UPLOAD_PATH = '/uploads/';
-		
+
 		// 파일 경로를 생성하는 유틸리티 함수
 		function getUploadUrl(file) {
 			return `${UPLOAD_PATH}${file}`;

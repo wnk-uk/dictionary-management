@@ -102,8 +102,8 @@
             e.preventDefault(); // 기본 form 제출 막기
 
             const data = {
-                userId: $('#signUserId').val(),
-                userName: $('#signUserName').val(),
+                usrId: $('#signUserId').val(),
+                usrNm: $('#signUserName').val(),
                 password: $('#signPassword').val(),
                 passwordCheck: $('#signPasswordCheck').val(),
                 deptCd: $('#dept').val(),
@@ -117,18 +117,18 @@
             }
 
             $.ajax({
-                url: '/signup',
+                url: '/api/user/signup',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function (response) {
                     alert('회원가입 요청이 완료되었습니다.');
                     // 성공 시 페이지 이동 또는 리셋 등 처리
-                    location.href = '/login';
+                    console.log(response);
+                    //location.href = '/login';
                 },
                 error: function (xhr, status, error) {
-                    console.error(error);
-                    alert('회원가입 중 오류가 발생했습니다.');
+                    UT.handleAjaxError(xhr);
                 }
             });
         });

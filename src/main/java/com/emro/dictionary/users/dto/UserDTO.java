@@ -10,4 +10,6 @@ public class UserDTO {
 	private String deptNm;
 	private String usrNm;
 	private Role role;
+	private String token;
+	private String useYn;
 }

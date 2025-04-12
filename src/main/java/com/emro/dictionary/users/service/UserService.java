@@ -1,5 +1,7 @@
 package com.emro.dictionary.users.service;
 
+import com.emro.dictionary.users.dto.UserDTO;
+import com.emro.dictionary.users.entity.SignUpForm;
 import com.emro.dictionary.users.entity.User;
 import com.emro.dictionary.users.entity.UserRequest;
 import com.emro.dictionary.users.repository.UserMapper;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -37,4 +40,15 @@ public class UserService {
 	public List<Long> findAdminIds() {
 		return userMapper.findAdminIds();
 	}
+
+    public User signUp(SignUpForm user) {
+        if (userMapper.isDuplicate(user) > 0) {
+            throw new IllegalArgumentException("유저아이디가 중복되었습니다.");
+        }
+        user.setToken(UUID.randomUUID().toString());
+        user.setPassword(encoder.encode(user.getPassword()));
+        userMapper.signUp(user);
+
+        return userMapper.findByUsername(user.getUsrId());
+    }
 }

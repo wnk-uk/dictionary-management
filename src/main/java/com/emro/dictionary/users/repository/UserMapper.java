@@ -1,5 +1,7 @@
 package com.emro.dictionary.users.repository;
 
+import com.emro.dictionary.users.dto.UserDTO;
+import com.emro.dictionary.users.entity.SignUpForm;
 import com.emro.dictionary.users.entity.User;
 import com.emro.dictionary.users.entity.UserRequest;
 import org.apache.ibatis.annotations.*;
@@ -26,4 +28,19 @@ public interface UserMapper {
 	WHERE role <> 'USER'
 	""")
 	List<Long> findAdminIds();
+
+    @Select("""
+	SELECT COUNT(*) 
+	FROM users
+	WHERE username = #{usrId}
+	""")
+    int isDuplicate(SignUpForm user);
+
+    @Insert("""
+        INSERT INTO users (username, password, role, usr_nm, dept_nm, dept_cd, token) 
+        VALUES (#{usrId}, #{password}, #{role}, #{usrNm}, #{deptNm}, #{deptCd}, #{token})
+    """)
+    void signUp(SignUpForm user);
+
+
 }

@@ -30,10 +30,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf ->
                         csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**"))
+                            .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/user/signup"))
+
                 )
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 ).authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/user/signup").permitAll()
 				        .requestMatchers("/ssoLogin").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/img/**").permitAll()
                         .requestMatchers("/api/glo/**").hasAnyRole("ADMIN", "SYS_ADMIN")
@@ -41,7 +44,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/lang/**").permitAll()
                         .requestMatchers("/api/history/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/signup").permitAll()
                         .anyRequest().authenticated()
                 )
 //                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
