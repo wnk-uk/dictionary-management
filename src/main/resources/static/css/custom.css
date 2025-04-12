@@ -161,6 +161,7 @@ body {
     justify-content: center;
     align-items: center;
     background:#F4F5FA !important;
+    border-radius:20px !important;
 }
 
 .login-wrapper {
