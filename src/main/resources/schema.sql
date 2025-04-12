@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
                                      password VARCHAR(255) NOT NULL,
 									 role VARCHAR(20) NOT NULL CHECK (role IN ('USER', 'ADMIN', 'SYS_ADMIN')),
                                      dept_nm VARCHAR(50),
-                                     usr_nm VARCHAR(50)
+                                     usr_nm VARCHAR(50),
+                                     dept_cd VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS sheet_data (

@@ -2,44 +2,93 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments.html :: head"></head>
 
-<body class="bg-gradient-primary">
-<div class="container">
+<body class="bg-gradient-primary login-container">
+<div class="login-wrapper">
     <!-- Outer Row -->
     <div class="row justify-content-center">
 
-        <div class="col-xl-10 col-lg-12 col-md-9">
-
-            <div class="card o-hidden border-0 shadow-lg my-5">
-                <div class="card-body p-0">
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="card o-hidden border-0 shadow-lg my-5" style="border-radius: 20px;">
+                <div class="card-body p-0" >
                     <!-- Nested Row within Card Body -->
-                    <div class="row">
-                        <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
-                        <div class="col-lg-6">
-                            <div class="p-5">
-                                <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4">MultiLanguage Management</h1>
-                                </div>
-                                <form class="user" method="post" th:action="@{/login}">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control form-control-user"
-                                               id="username" name="username" aria-describedby="emailHelp"
-                                               placeholder="Enter UserName..." />
+                    <div class="row" style="margin-bottom:0 !important;">
+                        <div class="col-lg-6 bg-login-image login-left-panel">
+<!--                            <div class="login-logo"></div>-->
+                            <!-- Wavy SVG shape -->
+                            <svg class="wave-shape" width="50" height="100%" viewBox="0 0 50 500" preserveAspectRatio="none">
+                                <path d="M0,0 C40,100 10,400 50,500 L50,0 Z" fill="white"/>
+                            </svg>
+                        </div>
+                        <div class="col-lg-6 login-right-panel">
+                            <div class="tabs">
+                                <span class="tab active" data-target="login">Login</span>
+                                <span class="tab" data-target="signup">Sign up</span>
+                            </div>
+                            <div class="p-5" style="padding-left:30px !important; padding-right:30px !important; padding-top: 20px !important;">
+                                <div id="login" class="form-section active">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gradient-900 mb-4">Multi Language Management</h1>
                                     </div>
-                                    <div class="form-group">
-                                        <input type="password" name="password" class="form-control form-control-user"
-                                               id="password" placeholder="Password">
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="custom-control custom-checkbox small">
-                                            <input type="checkbox" class="custom-control-input" id="customCheck">
-                                            <label class="custom-control-label" for="customCheck">Remember
-                                                Me</label>
+                                    <form class="user" method="post" th:action="@{/login}">
+                                        <div class="form-group">
+                                            <input type="text" class="login-form-control form-control form-control-user"
+                                                   id="username" name="username" aria-describedby="emailHelp"
+                                                   placeholder="Enter UserName..." />
                                         </div>
-                                    </div>
-                                    <button class="btn btn-primary btn-user btn-block">
-                                        Login
-                                    </button>
-                                </form>
+                                        <div class="form-group">
+                                            <input type="password" name="password" class="login-form-control form-control form-control-user"
+                                                   id="password" placeholder="Password">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck">
+                                                <label class="custom-control-label" for="customCheck">Remember
+                                                    Me</label>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary btn-user btn-block">
+                                            Login
+                                        </button>
+                                    </form>
+                                </div>
+                                <div id="signup" class="form-section">
+                                    <form class="user" method="post" th:action="@{/signup}">
+                                        <div class="text-center">
+                                            <h1 class="h4 text-gradient-900 mb-4">Registration Request</h1>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="login-form-control form-control form-control-user"
+                                                   id="signUserId" name="username" aria-describedby="emailHelp"
+                                                   placeholder="Enter UserID" />
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="login-form-control form-control form-control-user"
+                                                   id="signUserName" name="username" aria-describedby="emailHelp"
+                                                   placeholder="Enter UserName" />
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" name="password" class="login-form-control form-control form-control-user"
+                                                   id="signPassword" placeholder="Password">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" name="password" class="login-form-control form-control form-control-user"
+                                                   id="signPasswordCheck" placeholder="Password Check">
+                                        </div>
+                                        <div class="form-group">
+                                            <select class="form-control login-custom-select" id="role" name="role">
+                                                <option value="P2P">P2P Solution Group</option>
+                                                <option value="D2S">D2S Solution Group</option>
+                                                <option value="CONTRACT">Contract</option>
+                                                <option value="AI">AI</option>
+                                                <option value="RND">R&D</option>
+                                            </select>
+                                        </div>
+                                        <button class="btn btn-primary btn-user btn-block">
+                                            Sign Up
+                                        </button>
+                                    </form>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -48,6 +97,23 @@
         </div>
     </div>
 </div>
+<script>
+    // 탭 전환 기능
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            // 탭 상태 업데이트
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // 폼 전환
+            const target = tab.getAttribute('data-target');
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(target).classList.add('active');
+        });
+    });
+</script>
 <th:block th:replace="fragments.html :: common-scripts"></th:block>
 </body>
 </html>
