@@ -141,3 +141,17 @@
 .tabulator .tabulator-header .tabulator-col.tabulator-sortable .tabulator-col-title {
     padding-right: 10px;
 }
+
+.tabulator-row.fixed .tabulator-cell {
+    background: #2ecc71 !important;
+    color:white;
+}
+
+.tabulator-row.fixed.reject .tabulator-cell {
+    background: #F08080 !important;
+    color:white;
+}
+
+.tabulator-row.tabulator-selected {
+    background-color: #f3f0ff !important;
+}

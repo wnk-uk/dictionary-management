@@ -12,7 +12,7 @@
 			<div class="container-fluid">
 				<div class="d-sm-flex align-items-center justify-content-between mb-4">
 					<h1 class="h3 mb-0 text-gray-800 pageTitle">Request Detail</h1>
-					<a th:href="@{/req/{acptSts}/lists(acptSts=${acptSts})}" class="btn btn-secondary btn-sm">
+					<a onclick="history.back();" class="btn btn-secondary btn-sm">
 						<i class="fas fa-arrow-left"></i> Back to List
 					</a>
 				</div>
@@ -200,8 +200,9 @@
 			},
 			rowFormatter: function(row) {
 				const rowData = row.getData();
-				if (rowData.regSts === 'ACCEPTANCE') {
-					row.getElement().style.backgroundColor = "#d3d3d3";
+				if (rowData.regSts === 'ACCEPTANCE' || rowData.regSts === "REJECT") {
+					row.getElement().classList.add("fixed", rowData.regSts.toLowerCase());
+					row.getCell("select").getElement()?.querySelector("input").setAttribute("disabled", "disabled");
 					return;
 				}
 				const editableFields = ["existingWord", "multlangCcd", "multlangKey", "suggestedTranslCont", "multlangTranslContAbbr", "multlangTyp"];
@@ -222,7 +223,7 @@
 					formatter: "rowSelection",
 					headerSort: false,
 					headerHozAlign: "center",
-					frozen:true
+					frozen:true,
 				},
 				{title: "id" ,field: "dtlId", minWidth: 40, width:40, headerSort: false, hozAlign: "center", frozen:true},
 				{ title: "Status", field: "regSts", minWidth: 100, width:120, frozen:true, hozAlign: "center", headerHozAlign: "center"},
@@ -494,7 +495,7 @@
 	// 편집 가능 여부 확인 함수 (ACCEPTANCE 상태는 비활성화)
 	function editableEditorCheck(cell) {
 		const rowData = cell.getRow().getData();
-		return rowData.regSts !== 'ACCEPTANCE';
+		return rowData.regSts !== 'ACCEPTANCE' && rowData.regSts !== 'REJECT';
 	}
 	
 	// 셀 수정 시 백그라운드 색 변경 함수 정의

@@ -38,7 +38,7 @@ public interface HistoryMapper {
 		INNER JOIN REQ r ON d.req_id = r.req_id
 		LEFT JOIN users u ON r.req_user_id = u.id
 		WHERE d.multlang_key = #{multlangKey}
-		ORDER BY r.req_dttm ASC
+		ORDER BY r.req_dttm DESC
         """)
 	List<MultlLangHistoryDTO> findByMultlangKey(String multlangKey);
 
@@ -47,7 +47,7 @@ public interface HistoryMapper {
 		FROM REQ_DTL d
 		INNER JOIN REQ r ON d.req_id = r.req_id
 		LEFT JOIN users u ON r.req_user_id = u.id
-		ORDER BY r.req_dttm ASC
+		ORDER BY r.req_dttm DESC
         """)
 	List<MultlLangHistoryDTO> findAll();
 }
