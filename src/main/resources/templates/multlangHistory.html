@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+	  xmlns:th="http://www.thymeleaf.org"
+>
 <head th:replace="fragments.html :: head"></head>
 <body id="page-top">
 <div id="wrapper">
-	<div th:replace="fragments.html :: main-sidebar(currentMenu='multilang', currentSubMenu='multilang')"></div>
+	<div th:replace="fragments.html :: main-sidebar(currentMenu='multilang', currentSubMenu=${prevMenu})"></div>
 	
 	<div id="content-wrapper" class="d-flex flex-column">
 		<div id="content">
@@ -12,6 +14,9 @@
 			<div class="container-fluid">
 				<div class="d-sm-flex align-items-center justify-content-between mb-4">
 					<h1 class="h3 mb-0 text-gray-800 pageTitle" th:text="${multlangKey} + ' \'s history'"></h1>
+					<a class="btn btn-secondary btn-sm" onclick="history.back();" th:if="${prevMenu == 'multilang'}">
+						<i class="fas fa-arrow-left"></i> Back to List
+					</a>
 				</div>
 				
 				<div class="card shadow mb-4">

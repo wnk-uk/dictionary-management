@@ -145,8 +145,9 @@ public class PageController {
 		if (authentication != null) {
 			model.addAttribute("username", securityUtil.getUsername());
 		}
-
+		model.addAttribute("prevMenu", ("all".equalsIgnoreCase(multlangKey) ? "history" : "multilang"));
 		model.addAttribute("multlangKey", multlangKey);
+
 		return "multlangHistory";
 	}
 

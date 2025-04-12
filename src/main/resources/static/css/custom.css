@@ -144,3 +144,12 @@ body {
 .swiper-button-prev {
     margin-left:10px;
 }
+
+.history {
+    background-image: url('../img/iconmonstr-history-lined.svg'); /* 원하는 아이콘 */
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+    background-position:center;
+}

@@ -85,7 +85,7 @@
         <li class="nav-item" th:classappend="${currentMenu == 'multilang'} ? active">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fas fa-fw fa-globe"></i>
                 <span>Multi Language</span>
             </a>
             <div id="collapseTwo" class="collapse" th:classappend="${currentMenu == 'multilang'} ? show" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -93,6 +93,7 @@
 <!--                    <h6 class="collapse-header">Custom Components:</h6>-->
 					<a class="collapse-item" th:href="@{/req/all/lists}" th:classappend="${currentSubMenu == 'all'} ? active">Request List</a>
 					<a class="collapse-item" th:href="@{/req/holding/lists}" th:classappend="${currentSubMenu == 'holding'} ? active">Holding List</a>
+                    <a class="collapse-item" th:href="@{/multlang/history/all}" th:classappend="${currentSubMenu == 'history'} ? active">History List</a>
 					<a class="collapse-item" th:href="@{/multlang/lists}" th:classappend="${currentSubMenu == 'multilang'} ? active">Multi Language List</a>
 <!--                    <a class="collapse-item" href="cards.html">Cards</a>-->
                 </div>
@@ -103,7 +104,7 @@
         <li class="nav-item" th:classappend="${currentMenu == 'glossary'} ? active">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                aria-expanded="true" aria-controls="collapseUtilities">
-                <i class="fas fa-fw fa-wrench"></i>
+                <i class="fas fa-fw fa-book-open"></i>
                 <span>Glossary</span>
             </a>
             <div id="collapseUtilities" class="collapse" th:classappend="${currentMenu == 'glossary'} ? show" aria-labelledby="headingUtilities"
@@ -126,7 +127,7 @@
         <li class="nav-item" sec:authorize="hasRole('SYS_ADMIN')" th:classappend="${currentMenu == 'user'} ? active">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUser"
                aria-expanded="true" aria-controls="collapseUser">
-                <i class="fas fa-fw fa-wrench"></i>
+                <i class="fas fa-fw fa-gear"></i>
                 <span>User Management</span>
             </a>
             <div id="collapseUser" class="collapse" th:classappend="${currentMenu == 'user'} ? show" aria-labelledby="headingUtilities"

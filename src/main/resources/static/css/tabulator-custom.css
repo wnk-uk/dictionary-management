@@ -24,6 +24,9 @@
     white-space: nowrap; /* 🔹 텍스트 줄바꿈 방지 */
     overflow: hidden;
     text-overflow: ellipsis; /* 🔹 길면 ... 표시 */
+    /*background: #fff;*/
+}
+.tabulator .tabulator-header .tabulator-col {
     background: #fff;
 }
 
@@ -129,7 +132,7 @@
 /*}*/
 
 .tabulator-group {
-    background-color: #f3f0ff !important;
+    background-color: #e1dcf7 !important;
     border: none !important;
     font-weight: bold;
     padding: 8px;

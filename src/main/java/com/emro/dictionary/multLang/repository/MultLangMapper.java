@@ -8,7 +8,15 @@ import java.util.List;
 @Mapper
 public interface MultLangMapper {
 
-	@Select("SELECT * FROM Multlang")
+	@Select("""
+			SELECT 
+				m.*
+				,(SELECT COUNT(*) 
+					FROM REQ_DTL d
+					INNER JOIN REQ r ON d.req_id = r.req_id
+					WHERE d.multlang_key = m.multlang_key) AS historyCnt
+			FROM Multlang m
+	""")
 	List<MultLangDTO> findAll();
 
 	@Select("SELECT DISTINCT multlang_key FROM MULTLANG WHERE LOWER(multlang_key) LIKE LOWER(CONCAT('%', #{request}, '%'))")

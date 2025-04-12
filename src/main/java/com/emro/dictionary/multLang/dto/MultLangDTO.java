@@ -20,5 +20,6 @@ public class MultLangDTO {
     private String modrId;
     private LocalDateTime modDttm;
     private String multlangTranslFnlCont;
+    private Long historyCnt;
 
 }
