@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
 <head th:replace="fragments.html :: head"></head>
 <body id="page-top">
 <div id="wrapper">
@@ -15,7 +18,7 @@
 
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800 pageTitle">Glossary</h1>
-                    <button onclick="saveData()" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">save</button>
+                    <button onclick="saveData()" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" sec:authorize="hasRole('SYS_ADMIN')">save</button>
                 </div>
 
                 <!-- write -->

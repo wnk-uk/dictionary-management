@@ -45,6 +45,11 @@
     <link th:href="@{/css/tabulator-custom.css}" rel="stylesheet" >
     <!-- flag-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css">
+    <!-- swiper -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <!-- chart -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 </head>
 
@@ -105,7 +110,7 @@
                  data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
 <!--                    <h6 class="collapse-header">Custom Utilities:</h6>-->
-                    <a class="collapse-item" th:href="@{/glo/lists}" th:classappend="${currentSubMenu == 'glossary'} ? active">Sheets</a>
+                    <a class="collapse-item" th:href="@{/glo/lists}" th:classappend="${currentSubMenu == 'glossary'} ? active">Glossary Sheets</a>
                 </div>
             </div>
         </li>
@@ -113,7 +118,7 @@
         <!-- Divider -->
         <hr class="sidebar-divider">
 
-        <div class="sidebar-heading">
+        <div class="sidebar-heading" sec:authorize="hasRole('SYS_ADMIN')">
             System
             Management
         </div>

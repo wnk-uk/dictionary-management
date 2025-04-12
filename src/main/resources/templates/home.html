@@ -18,8 +18,16 @@
 					<div class="col-xl-6 col-lg-6">
 						<div class="welcome mb-1" style="height:98%;">
 							<div>
-								<h2>다국어 요청 가이드 이미지 Link</h2>
-								<p>Silde Show</p>
+								<div class="swiper">
+									<div class="swiper-wrapper">
+										<div class="swiper-slide">This is the Multi Language Service testing period.</div>
+										<div class="swiper-slide">다국어 등록 요청 가이드</div>
+										<div class="swiper-slide">용어집 등록 요청 가이드</div>
+									</div>
+									<!-- pagination / arrows 등은 선택 -->
+								</div>
+								<div class="swiper-button-prev"></div>
+								<div class="swiper-button-next"></div>
 							</div>
 						</div>
 					</div>
@@ -134,8 +142,8 @@
 							<div class="card-header d-flex flex-row align-items-center justify-content-between">
 								<h6 class="m-0 font-weight-bold text-primary">Statistics</h6>
 							</div>
-							<div class="card-body">
-
+							<div class="card-body" style="height:410px;">
+								<div id="chart" style="padding-top:30px;"></div>
 							</div>
 						</div>
 					</div>
@@ -149,7 +157,69 @@
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
+	const options = {
+		series: [{
+			name: 'D2S Solution Group',
+			data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+		}, {
+			name: 'P2P Solution Group',
+			data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+		}, {
+			name: 'Product Planning Group',
+			data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
+		}],
+		chart: {
+			type: 'bar',
+			height: 350
+		},
+		plotOptions: {
+			bar: {
+				horizontal: false,
+				columnWidth: '55%',
+				borderRadius: 5,
+				borderRadiusApplication: 'end'
+			},
+		},
+		dataLabels: {
+			enabled: false
+		},
+		stroke: {
+			show: true,
+			width: 2,
+			colors: ['transparent']
+		},
+		xaxis: {
+			categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+		},
+		yaxis: {
+			title: {
+				text: 'Number of requests'
+			}
+		},
+		fill: {
+			opacity: 1
+		},
+		tooltip: {
+			y: {
+				formatter: function (val) {
+					return val
+				}
+			}
+		}
+	};
+
 	document.addEventListener("DOMContentLoaded", function () {
+		const swiper = new Swiper('.swiper', {
+			loop: true,
+			autoplay: { delay: 4000 },
+			pagination: { el: '.swiper-pagination' },
+			navigation: {
+				nextEl: '.swiper-button-next',
+				prevEl: '.swiper-button-prev',
+			}
+		});
+		var chart = new ApexCharts(document.querySelector("#chart"), options);
+		chart.render();
 		loadRequestCounts();
 	});
 	

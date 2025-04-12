@@ -129,3 +129,18 @@ body {
 .pageTitle {
     font-size: 23px;
 }
+
+.swiper-button-next:after, .swiper-rtl .swiper-button-prev:after {
+    font-size: 20px !important;
+}
+
+.swiper-button-next:after, .swiper-button-prev:after {
+    font-size: 20px !important;
+}
+
+.swiper-button-next {
+    margin-right:10px;
+}
+.swiper-button-prev {
+    margin-left:10px;
+}
