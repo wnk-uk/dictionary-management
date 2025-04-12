@@ -120,3 +120,14 @@ body {
 .card-body:not(.pdWrapper) {
     padding: 0;
 }
+
+.tabulator-group {
+    background-color: #f0f0f5;
+    font-weight: bold;
+    padding: 8px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+.card-header {
+    border-bottom: none;
+}

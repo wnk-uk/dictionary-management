@@ -28,15 +28,11 @@
 
 /* 헤더 글자 크기 줄이기 */
 .tabulator .tabulator-header .tabulator-col {
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .tabulator-row .tabulator-cell {
-    border-right: 1px solid #ddd !important;
-}
-
-.tabulator .tabulator-header .tabulator-col {
-    border-right: 1px solid #ddd !important;
+    border-right: 1px solid rgba(140, 140, 140, .147) !important;
 }
 
 .tabulator .tabulator-header .tabulator-col {
@@ -53,3 +49,72 @@
     }
 }
 
+.tabulator .tabulator-col-content {
+    background:#fff;
+    color: #181d1f !important;
+}
+
+.tabulator .tabulator-header {
+    border: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .tabulator .tabulator-header .tabulator-col.tabulator-sortable.tabulator-col-sorter-element:hover {
+        background-color: #fff;
+    }
+}
+
+.tabulator .tabulator-table {
+    border-top: 1px solid rgba(140, 140, 140, .147) !important;
+}
+
+.tabulator .tabulator-headers .tabulator-col-resize-handle {
+    width: 2px;
+    margin-right:1px;
+    height: 40% !important;
+    /*border: 1px solid rgba(140, 140, 140, .147);*/
+    border-radius: 10px;
+    background:rgba(140, 140, 140, .147);
+    vertical-align:super;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort=none] .tabulator-col-content .tabulator-col-sorter {
+    color:#fff;
+    display: none;
+}
+
+/* 아래 */
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort=ascending] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow{
+    border: none;
+    width: 0;
+    height: 0;
+    display: inline-block;
+    background-image: url('../img/icon_up.svg'); /* 원하는 아이콘 */
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+    width: 12px;
+    height: 12px;
+}
+
+/* 위 */
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable[aria-sort=descending] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
+    border: none;
+    width: 0;
+    height: 0;
+    display: inline-block;
+    background-image: url('../img/icon_down.svg'); /* 원하는 아이콘 */
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+    width: 12px;
+    height: 12px;
+}
+
+.tabulator .tabulator-header .tabulator-frozen.tabulator-frozen-left {
+    border: none !important;
+}
