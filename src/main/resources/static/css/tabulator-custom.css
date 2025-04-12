@@ -46,7 +46,7 @@
 
 @media (hover: hover) and (pointer: fine) {
     .tabulator-row.tabulator-selectable:hover {
-        background: #f3f0ff !important;
+        background-color: #f3f0ff !important;
     }
 }
 
@@ -129,11 +129,11 @@
 /*}*/
 
 .tabulator-group {
-    background-color: #f0f0f5;
+    background-color: #f3f0ff !important;
+    border: none !important;
     font-weight: bold;
     padding: 8px;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #ddd !important;
 }
 .tabulator .tabulator-header .tabulator-col.tabulator-sortable .tabulator-col-title {
     padding-right: 10px;

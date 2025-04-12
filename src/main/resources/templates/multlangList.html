@@ -68,7 +68,7 @@
                                 `;
                 }, width: 80},
 				{ title: "Type", field: "multlangTyp", hozAlign:"center",headerHozAlign:"center", width: 80 },
-				{ title: "Word(Key)", field: "multlangKey", hozAlign:"center",headerHozAlign:"center", width: 200 },
+				// { title: "Word(Key)", field: "multlangKey", hozAlign:"center",headerHozAlign:"center", width: 200, visible:false },
                 { title: "Translation",
                   headerHozAlign:"center",
                   columns: [
@@ -84,7 +84,7 @@
                         { title: "Use (Y/N)", field: "multlangAbbrUseYn", headerHozAlign:"center", hozAlign:"center", width: 120  },
                     ]
                 },
-                { title: "Registered By", field: "regrId", headerHozAlign:"center", hozAlign:"center", width: 120  },
+                { title: "Registered By", field: "regrId", headerHozAlign:"center", hozAlign:"center", width: 140  },
                 { title: "Registration Date", hozAlign:"center", field: "regDttm", headerHozAlign:"center", width:180, formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } },
                 { title: "Modified By", field: "modrId", hozAlign:"center", headerHozAlign:"center", width: 120  },
                 { title: "Modification Date", field: "multlangModDttm", hozAlign:"center", headerHozAlign:"center", width:180, formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } },
