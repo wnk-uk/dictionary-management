@@ -51,4 +51,8 @@ public class HistoryService {
 	public List<MultlLangHistoryDTO> findAll() {
 		return historyMapper.findAll();
 	}
+
+	public List<MultlLangHistoryDTO> getMultlangHistoryByMultlangKey(String multlangKey) {
+		return historyMapper.findMultLangHistoryByKey(multlangKey);
+	}
 }

@@ -67,4 +67,10 @@ public class HistoryController {
 		else resultDto = historyService.getRequestHistoryByMultlangKey(multlangKey);
 		return ResponseEntity.ok(resultDto);
 	}
+
+	@GetMapping("/multlang/temp/{multlangKey}")
+	public ResponseEntity<List<MultlLangHistoryDTO>> getMultlangHistoryByMultlangKey(@PathVariable("multlangKey") String multlangKey) {
+		List<MultlLangHistoryDTO> resultDto = historyService.getMultlangHistoryByMultlangKey(multlangKey);
+		return ResponseEntity.ok(resultDto);
+	}
 }
