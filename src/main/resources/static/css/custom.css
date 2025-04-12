@@ -130,4 +130,9 @@ body {
 }
 .card-header {
     border-bottom: none;
+    padding: 10px 10px !important;
+}
+
+.pageTitle {
+    font-size: 23px;
 }

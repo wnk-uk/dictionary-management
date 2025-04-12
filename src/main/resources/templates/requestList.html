@@ -11,29 +11,19 @@
 			
 			<div class="container-fluid">
 				<div class="d-sm-flex align-items-center justify-content-between mb-4">
-					<h1 class="h3 mb-0 text-gray-800" id="requestListTitle">Request List</h1>
+					<h1 class="h3 mb-0 text-gray-800 pageTitle" id="requestListTitle">Request List</h1>
 				</div>
 				<div class="card shadow mb-4">
-					<div class="card-header py-3 d-flex justify-content-between align-items-center">
-						<!-- ✅ 상태 변경 버튼 -->
-						<div class="d-flex align-items-center">
-<!--							<button class="btn btn-primary btn-sm mr-2" onclick="updateSelectedStatus('PROGRESS')">-->
-<!--								<i class="fas fa-check"></i> ACCEPT-->
-<!--							</button>-->
-<!--							<button class="btn btn-danger btn-sm mr-3" onclick="updateSelectedStatus('HOLDING')">-->
-<!--								<i class="fas fa-times"></i> REJECT-->
-<!--							</button>-->
-						</div>
-						
-						<!-- ✅ 검색창 -->
-						<div class="input-group w-50">
-							<input id="searchText" type="text" class="form-control bg-light border-0 small"
-								   placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2"
-								   style="border:1px solid lightgray !important;">
-							<div class="input-group-append">
-								<button class="btn btn-primary btn-sm" type="button" onclick="filterData()">
-									<i class="fas fa-search fa-sm"></i>
-								</button>
+					<div class="card-header">
+						<div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" style="float:right;">
+							<div class="input-group">
+									<input id="searchText" type="text" class="form-control bg-light border-0 small"  placeholder="Search for..."
+										   aria-label="Search" aria-describedby="basic-addon2" style="border:1px solid lightgray !important;">
+									<div class="input-group-append">
+										<button class="btn btn-primary btn-sm" type="button" onclick="filterData()">
+											<i class="fas fa-search fa-sm"></i>
+										</button>
+									</div>
 							</div>
 						</div>
 					</div>
