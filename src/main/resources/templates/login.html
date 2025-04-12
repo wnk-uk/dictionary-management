@@ -33,7 +33,7 @@
                                         <div class="form-group">
                                             <input type="text" class="login-form-control form-control form-control-user"
                                                    id="username" name="username" aria-describedby="emailHelp"
-                                                   placeholder="Enter UserName..." />
+                                                   placeholder="Enter ID" />
                                         </div>
                                         <div class="form-group">
                                             <input type="password" name="password" class="login-form-control form-control form-control-user"
@@ -58,24 +58,24 @@
                                         </div>
                                         <div class="form-group">
                                             <input type="text" class="login-form-control form-control form-control-user"
-                                                   id="signUserId" name="username" aria-describedby="emailHelp"
-                                                   placeholder="Enter UserID" />
+                                                   id="signUserId" name="signUserId" aria-describedby="emailHelp"
+                                                   placeholder="Enter ID" />
                                         </div>
                                         <div class="form-group">
                                             <input type="text" class="login-form-control form-control form-control-user"
-                                                   id="signUserName" name="username" aria-describedby="emailHelp"
-                                                   placeholder="Enter UserName" />
+                                                   id="signUserName" name="signUserName" aria-describedby="emailHelp"
+                                                   placeholder="Enter Name" />
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" name="password" class="login-form-control form-control form-control-user"
+                                            <input type="password" name="signPassword" class="login-form-control form-control form-control-user"
                                                    id="signPassword" placeholder="Password">
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" name="password" class="login-form-control form-control form-control-user"
+                                            <input type="password" name="signPasswordCheck" class="login-form-control form-control form-control-user"
                                                    id="signPasswordCheck" placeholder="Password Check">
                                         </div>
                                         <div class="form-group">
-                                            <select class="form-control login-custom-select" id="role" name="role">
+                                            <select class="form-control login-custom-select" id="dept" name="dept">
                                                 <option value="P2P">P2P Solution Group</option>
                                                 <option value="D2S">D2S Solution Group</option>
                                                 <option value="CONTRACT">Contract</option>
@@ -88,7 +88,6 @@
                                         </button>
                                     </form>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -98,6 +97,43 @@
     </div>
 </div>
 <script>
+    $(document).ready(function () {
+        $('#signup form').on('submit', function (e) {
+            e.preventDefault(); // 기본 form 제출 막기
+
+            const data = {
+                userId: $('#signUserId').val(),
+                userName: $('#signUserName').val(),
+                password: $('#signPassword').val(),
+                passwordCheck: $('#signPasswordCheck').val(),
+                deptCd: $('#dept').val(),
+                deptNm: $('#dept option:selected').text()
+            };
+
+            // 비밀번호 확인
+            if (data.password !== data.passwordCheck) {
+                Swal.fire("비밀번호가 일치하지 않습니다.", "", "warning");
+                return;
+            }
+
+            $.ajax({
+                url: '/signup',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert('회원가입 요청이 완료되었습니다.');
+                    // 성공 시 페이지 이동 또는 리셋 등 처리
+                    location.href = '/login';
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    alert('회원가입 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+
     // 탭 전환 기능
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {

@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS users (
 									 role VARCHAR(20) NOT NULL CHECK (role IN ('USER', 'ADMIN', 'SYS_ADMIN')),
                                      dept_nm VARCHAR(50),
                                      usr_nm VARCHAR(50),
-                                     dept_cd VARCHAR(50)
+                                     dept_cd VARCHAR(50),
+                                     token VARCHAR(200),
+                                     use_yn CHAR(1) DEFAULT 'N'
 );
 
 CREATE TABLE IF NOT EXISTS sheet_data (

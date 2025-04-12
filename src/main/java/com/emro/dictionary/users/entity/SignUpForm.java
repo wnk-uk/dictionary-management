@@ -6,12 +6,11 @@ import lombok.ToString;
 
 @Data
 @ToString(exclude = "password")  // 🔹 password 필드 제외
-public class UserRequest {
-    private Long id;
-    private String username;
+public class SignUpForm {
+    private String userId;
+    private String userName;
     private String password;
     private String deptCd;
     private String deptNm;
-    private String usrNm;
-    private Role role;
+    private Role role = Role.USER;
 }

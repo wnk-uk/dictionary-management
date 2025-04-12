@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/lang/**").permitAll()
                         .requestMatchers("/api/history/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/signup").permitAll()
                         .anyRequest().authenticated()
                 )
 //                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

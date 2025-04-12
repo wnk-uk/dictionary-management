@@ -253,11 +253,11 @@ body {
     border-radius: 0;
     border:none !important;
     border-bottom: 1px solid lightgray !important;
+    margin-top:20px;
 }
 
 .login-custom-select:focus {
     box-shadow: none !important;
-
 }
 
 .login-logo {
