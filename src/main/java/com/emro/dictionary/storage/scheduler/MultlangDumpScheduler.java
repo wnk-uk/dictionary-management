@@ -23,7 +23,7 @@ public class MultlangDumpScheduler {
 
     private static final String DUMP_DIR = "D:/tmp/dump";
 
-    @Scheduled(cron = "0 * * * * *") // 매일 자정
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정
     public void dumpMultlangToJson() {
         try {
             List<MultLangDTO> DTOs = multlangMapper.findAll();
