@@ -88,7 +88,9 @@
 				row.getElement().onclick = function(e) {
 					if (e.target.tagName !== "A") {
 						let reqId = row.getData().reqId;
-						window.location.href = `/req/all/detail/${reqId}`;
+						if (reqId != null) {
+							window.location.href = `/req/all/detail/${reqId}`;
+						}
 					}
 				}
 			},
