@@ -13,7 +13,7 @@
 			
 			<div class="container-fluid">
 				<div class="d-sm-flex align-items-center justify-content-between mb-4">
-					<h1 class="h3 mb-0 text-gray-800 pageTitle" th:text="${multlangKey} + ' \'s history'"></h1>
+					<h1 class="h3 mb-0 text-gray-800 pageTitle" th:text="${multlangKey} != 'all' ? ${multlangKey} : 'Request History'"></h1>
 					<a class="btn btn-secondary btn-sm" onclick="history.back();" th:if="${prevMenu == 'multilang'}">
 						<i class="fas fa-arrow-left"></i> Back to List
 					</a>
@@ -21,7 +21,17 @@
 				
 				<div class="card shadow mb-4">
 					<div class="card-header">
-						<h6 class="m-0 font-weight-bold text-primary">Request History</h6>
+						<div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" style="float:right;">
+							<div class="input-group">
+								<input id="searchText" type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+									   aria-label="Search" aria-describedby="basic-addon2" style="border:1px solid lightgray !important;">
+								<div class="input-group-append">
+									<button class="btn btn-primary" type="button" onclick="filterData()">
+										<i class="fas fa-search fa-sm"></i>
+									</button>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div class="card-body">
 						<div class="table-responsive">
@@ -37,10 +47,11 @@
 
 <script th:replace="fragments.html :: ajax-csrf-header"></script>
 <script>
+	let table;
 	document.addEventListener("DOMContentLoaded", function () {
 		const multlangKey = "[[${multlangKey}]]";
 		
-		const table = new Tabulator("#requestHistoryTable", {
+		table = new Tabulator("#requestHistoryTable", {
 			layout: "fitDataTable",
 			columnMinWidth: 120,
 			ajaxURL: `/api/history/multlang/${encodeURIComponent(multlangKey)}`, // API 호출
@@ -93,6 +104,20 @@
 			}
 		});
 	});
+	// 검색 기능 추가
+	function filterData() {
+		table.setFilter(function(row) {
+			let searchValue = $("#searchText").val().toLowerCase(); // 검색어 가져오기
+			let rowData = row; // 현재 행 데이터
+
+			return rowData.multlangKey?.toLowerCase().includes(searchValue) ||
+					rowData.multlangTranslCont?.toLowerCase().includes(searchValue) ||
+					rowData.multlangTranslContAbbr?.toLowerCase().includes(searchValue);
+		});
+	}
+
+
+
 </script>
 <th:block th:replace="fragments.html :: common-scripts"></th:block>
 </body>
