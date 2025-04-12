@@ -33,7 +33,7 @@ public interface HistoryMapper {
 	void insertHistory(RequestDetailHistoryDTO history);
 
 	@Select("""
-		SELECT d.*, u.usr_nm AS req_usr_nm, r.req_dttm
+		SELECT d.*, u.usr_nm AS req_user_nm, r.req_dttm
 		FROM REQ_DTL d
 		INNER JOIN REQ r ON d.req_id = r.req_id
 		LEFT JOIN users u ON r.req_user_id = u.id
@@ -43,7 +43,7 @@ public interface HistoryMapper {
 	List<MultlLangHistoryDTO> findByMultlangKey(String multlangKey);
 
 	@Select("""
-		SELECT d.*, u.usr_nm AS req_usr_nm, r.req_dttm
+		SELECT d.*, u.usr_nm AS req_user_nm, r.req_dttm
 		FROM REQ_DTL d
 		INNER JOIN REQ r ON d.req_id = r.req_id
 		LEFT JOIN users u ON r.req_user_id = u.id
