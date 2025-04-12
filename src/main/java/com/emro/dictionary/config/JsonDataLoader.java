@@ -19,7 +19,7 @@ public class JsonDataLoader implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		String json = Files.readString(Paths.get("D:/dic/sample.json")); // 외부 JSON 파일 로드
-		jdbcTemplate.update("INSERT INTO SHEET_DATA (json_data) VALUES (?)", json);
+//		String json = Files.readString(Paths.get("D:/dic/sample.json")); // 외부 JSON 파일 로드
+//		jdbcTemplate.update("INSERT INTO SHEET_DATA (json_data) VALUES (?)", json);
 	}
 }

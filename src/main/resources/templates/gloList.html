@@ -58,7 +58,7 @@
             .then(response => response.json())
             .then(data => {
                 let sheetData = data.sheetData;
-                if (data.sheetData) {
+                if (sheetData != null && sheetData.length > 0) {
                     sheetData = data.sheetData;
                 } else {
                     sheetData = [

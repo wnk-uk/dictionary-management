@@ -77,15 +77,15 @@
 				return rows;
 			},
 			columns: [
-				{
-					title: `<input type='checkbox' id='selectAll' onclick='toggleSelectAll(this)'>`,
-					field: "select",
-					hozAlign: "center",
-					width: "40",
-					formatter: "rowSelection",
-					headerSort: false,
-					headerHozAlign: "center"
-				},
+				// {
+				// 	title: `<input type='checkbox' id='selectAll' onclick='toggleSelectAll(this)'>`,
+				// 	field: "select",
+				// 	hozAlign: "center",
+				// 	width: "40",
+				// 	formatter: "rowSelection",
+				// 	headerSort: false,
+				// 	headerHozAlign: "center"
+				// },
 				{ title: "Requester", field: "reqUserNm", minWidth: 80, width:"150", hozAlign: "center", headerHozAlign: "center"},
 				{ title: "Status", field: "status", minWidth: 120, width: "120", hozAlign: "center", headerHozAlign: "center", formatter: function(cell) {
 						const value = cell.getValue();
