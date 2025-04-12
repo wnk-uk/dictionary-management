@@ -50,25 +50,46 @@
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
 		table = new Tabulator("#multlangTable", {
-			layout: "fitDataTable", // 데이터를 컬럼에 맞게 조정
+			layout: "fitColumns", // 데이터를 컬럼에 맞게 조정
 			columnMinWidth: 120,
 			ajaxURL: "/api/multlang/list",
 			groupBy:"multlangKey",
 			movableColumns: true,
 			columns: [
-				{ title: "Code", field: "multlangCcd" },
-				{ title: "Type", field: "multlangTyp"  },
-				{ title: "Word(Key)", field: "multlangKey" },
-				{ title: "Translation", field: "multlangTranslCont"  },
-				{ title: "Translation Abbr", field: "multlangTranslContAbbr"  },
-				{ title: "Abbr Use (Y/N)", field: "multlangAbbrUseYn"  },
-				{ title: "Modified Date", field: "multlangModDttm", formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } },
-				{ title: "Final Translation", field: "multlangTranslFnlCont"  },
-				{ title: "Remarks", field: "rmk"  },
-				{ title: "Registered By", field: "regrId"  },
-				{ title: "Registration Date", field: "regDttm", formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } },
-				{ title: "Modified By", field: "modrId"  },
-				{ title: "Modification Date", field: "modDttm", formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } }
+				{ title: "Code", field: "multlangCcd", hozAlign:"center", headerHozAlign:"center", formatter: function(cell) {
+                        let flagCls = "";
+                        if (cell.getValue() === "en_US") flagCls = "fi fi-us"
+                        else if (cell.getValue() === "ko_KR") flagCls ="fi fi-kr"
+                        return `
+                                <div>
+                                    <span class="${flagCls}"></span>
+                                    <span>${cell.getValue()}</span>
+                                </div>
+                                `;
+                }, width: 80},
+				{ title: "Type", field: "multlangTyp", hozAlign:"center",headerHozAlign:"center", width: 80 },
+				{ title: "Word(Key)", field: "multlangKey", hozAlign:"center",headerHozAlign:"center", width: 200 },
+                { title: "Translation",
+                  headerHozAlign:"center",
+                  columns: [
+                      { title: "Origin", field: "multlangTranslCont", headerHozAlign:"center", width: 200  },
+                      { title: "Final", field: "multlangTranslFnlCont", headerHozAlign:"center", width: 200  },
+                  ]
+                },
+                {
+                    title: "Abbr",
+                    headerHozAlign:"center",
+                    columns: [
+                        { title: "Translation", field: "multlangTranslContAbbr",headerHozAlign:"center", width: 120  },
+                        { title: "Use (Y/N)", field: "multlangAbbrUseYn", headerHozAlign:"center", hozAlign:"center", width: 120  },
+                    ]
+                },
+                { title: "Registered By", field: "regrId", headerHozAlign:"center", hozAlign:"center", width: 120  },
+                { title: "Registration Date", hozAlign:"center", field: "regDttm", headerHozAlign:"center", width:180, formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } },
+                { title: "Modified By", field: "modrId", hozAlign:"center", headerHozAlign:"center", width: 120  },
+                { title: "Modification Date", field: "multlangModDttm", hozAlign:"center", headerHozAlign:"center", width:180, formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } },
+				{ title: "Remarks", field: "rmk", width: 300, headerHozAlign:"center"  },
+				// { title: "Modification Date", hozAlign:"center", field: "modDttm", formatter: function (cell) { return UT.formatDateTime(cell.getValue()); } }
 			],
 			rowFormatter: function(row) {
 				row.getElement().onclick = function(e) {

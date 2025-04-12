@@ -24,6 +24,7 @@
     white-space: nowrap; /* 🔹 텍스트 줄바꿈 방지 */
     overflow: hidden;
     text-overflow: ellipsis; /* 🔹 길면 ... 표시 */
+    background: #fff;
 }
 
 /* 헤더 글자 크기 줄이기 */
@@ -117,4 +118,23 @@
 
 .tabulator .tabulator-header .tabulator-frozen.tabulator-frozen-left {
     border: none !important;
+}
+
+.tabulator .tabulator-header .tabulator-col.tabulator-col-group .tabulator-col-group-cols {
+    border-top:none;
+}
+
+/*.tabulator .tabulator-header .tabulator-col .tabulator-col-content {*/
+/*    padding:10px 10px;*/
+/*}*/
+
+.tabulator-group {
+    background-color: #f0f0f5;
+    font-weight: bold;
+    padding: 8px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable .tabulator-col-title {
+    padding-right: 10px;
 }

@@ -17,16 +17,16 @@ INSERT INTO USERS (USERNAME, PASSWORD, ROLE, DEPT_NM, USR_NM) VALUES
 INSERT INTO MULTLANG (multlang_ccd, multlang_key, multlang_transl_cont, multlang_mod_dttm, multlang_transl_cont_abbr,
                       multlang_abbr_use_yn, multlang_typ, rmk, sts, regr_id, reg_dttm, modr_id, mod_dttm, multlang_transl_fnl_cont)
 VALUES
-    ('EN', 'HELLO', 'Hello', CURRENT_TIMESTAMP, 'Hi', 'Y', 'label', 'Standard greeting', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'Hello'),
-    ('EN', 'GOODBYE', 'Goodbye', CURRENT_TIMESTAMP, 'Bye', 'Y', 'label', 'Farewell message', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'Goodbye'),
-    ('EN', 'THANKS', 'Thank you', CURRENT_TIMESTAMP, 'Thx', 'Y', 'label', 'Expression of gratitude', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'Thank you'),
-    ('EN', 'YES', 'Yes', CURRENT_TIMESTAMP, 'Y', 'Y', 'label', 'Affirmative response', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'Yes'),
-    ('EN', 'NO', 'No', CURRENT_TIMESTAMP, 'N', 'Y', 'label', 'Negative response', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'No'),
-    ('KR', 'HELLO', '안녕하세요', CURRENT_TIMESTAMP, '안녕', 'Y', 'label', '한국어 인사', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '안녕하세요'),
-    ('KR', 'GOODBYE', '안녕히 가세요', CURRENT_TIMESTAMP, '잘가', 'Y', 'label', '이별 인사', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '안녕히 가세요'),
-    ('KR', 'THANKS', '감사합니다', CURRENT_TIMESTAMP, '고맙', 'Y', 'label', '감사의 표현', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '감사합니다'),
-    ('KR', 'YES', '네', CURRENT_TIMESTAMP, 'ㅇㅇ', 'Y', 'button', '긍정적인 대답', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '네'),
-    ('KR', 'NO', '아니요', CURRENT_TIMESTAMP, 'ㄴㄴ', 'Y', 'button', '부정적인 대답', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '아니요');
+    ('en_US', 'HELLO', 'Hello', CURRENT_TIMESTAMP, 'Hi', 'Y', 'label', 'Standard greeting', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'Hello'),
+    ('en_US', 'GOODBYE', 'Goodbye', CURRENT_TIMESTAMP, 'Bye', 'Y', 'label', 'Farewell message', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'Goodbye'),
+    ('en_US', 'THANKS', 'Thank you', CURRENT_TIMESTAMP, 'Thx', 'Y', 'label', 'Expression of gratitude', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'Thank you'),
+    ('en_US', 'YES', 'Yes', CURRENT_TIMESTAMP, 'Y', 'Y', 'label', 'Affirmative response', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'Yes'),
+    ('en_US', 'NO', 'No', CURRENT_TIMESTAMP, 'N', 'Y', 'label', 'Negative response', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, 'No'),
+    ('ko_KR', 'HELLO', '안녕하세요', CURRENT_TIMESTAMP, '안녕', 'Y', 'label', '한국어 인사', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '안녕하세요'),
+    ('ko_KR', 'GOODBYE', '안녕히 가세요', CURRENT_TIMESTAMP, '잘가', 'Y', 'label', '이별 인사', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '안녕히 가세요'),
+    ('ko_KR', 'THANKS', '감사합니다', CURRENT_TIMESTAMP, '고맙', 'Y', 'label', '감사의 표현', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '감사합니다'),
+    ('ko_KR', 'YES', '네', CURRENT_TIMESTAMP, 'ㅇㅇ', 'Y', 'button', '긍정적인 대답', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '네'),
+    ('ko_KR', 'NO', '아니요', CURRENT_TIMESTAMP, 'ㄴㄴ', 'Y', 'button', '부정적인 대답', 'C', 'admin', CURRENT_TIMESTAMP, NULL, NULL, '아니요');
 
 -- REQ 테이블에 더미 데이터 삽입
 INSERT INTO REQ (req_user_id, req_dttm, sts, acpt_sts)
