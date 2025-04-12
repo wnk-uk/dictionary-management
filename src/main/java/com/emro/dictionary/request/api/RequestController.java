@@ -1,7 +1,7 @@
 package com.emro.dictionary.request.api;
 
-import com.emro.dictionary.request.storage.service.FileStorageService;
-import com.emro.dictionary.request.storage.service.EditorContentService;
+import com.emro.dictionary.storage.service.FileStorageService;
+import com.emro.dictionary.storage.service.EditorContentService;
 import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
 import com.emro.dictionary.request.dto.*;
 import com.emro.dictionary.security.SecurityUtil;

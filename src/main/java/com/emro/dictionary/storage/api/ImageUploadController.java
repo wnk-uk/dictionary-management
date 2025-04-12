@@ -1,4 +1,4 @@
-package com.emro.dictionary.request.storage.api;
+package com.emro.dictionary.storage.api;
 
 import com.emro.dictionary.request.service.resolver.RequestServiceResolver;
 import com.emro.dictionary.security.SecurityUtil;

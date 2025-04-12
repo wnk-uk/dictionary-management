@@ -1,11 +1,10 @@
 package com.emro.dictionary.history.api;
 
 import com.emro.dictionary.history.dto.MultlLangHistoryDTO;
-import com.emro.dictionary.history.dto.RequestDetailHistoryDTO;
 import com.emro.dictionary.history.dto.RequestDetailHistoryResponseDTO;
 import com.emro.dictionary.history.service.HistoryService;
-import com.emro.dictionary.request.storage.service.EditorContentService;
-import com.emro.dictionary.request.storage.service.FileStorageService;
+import com.emro.dictionary.storage.service.EditorContentService;
+import com.emro.dictionary.storage.service.FileStorageService;
 import com.emro.dictionary.security.SecurityUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

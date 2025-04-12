@@ -1,4 +1,4 @@
-package com.emro.dictionary.request.storage.service;
+package com.emro.dictionary.storage.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

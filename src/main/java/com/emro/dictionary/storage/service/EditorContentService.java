@@ -1,4 +1,4 @@
-package com.emro.dictionary.request.storage.service;
+package com.emro.dictionary.storage.service;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
