@@ -14,9 +14,11 @@ public class User {
     private String username;
     @JsonIgnore
     private String password;
+    private String deptCd;
     private String deptNm;
     private String usrNm;
     private Role role;
     private String token;
+    private String useYn;
 }
 

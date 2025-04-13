@@ -14,4 +14,5 @@ public class UserRequest {
     private String deptNm;
     private String usrNm;
     private Role role;
+    private String useYn;
 }

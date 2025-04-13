@@ -13,13 +13,13 @@ public interface UserMapper {
     @Select("SELECT * FROM users WHERE username = #{username}")
     User findByUsername(@Param("username") String username);
 
-    @Insert("INSERT INTO users (username, password, role, usr_nm, dept_nm) VALUES (#{username}, #{password}, #{role}, #{usrNm}, #{deptNm})")
+    @Insert("INSERT INTO users (username, password, role, usr_nm, dept_nm, dept_cd) VALUES (#{username}, #{password}, #{role}, #{usrNm}, #{deptNm}, #{deptCd})")
     void save(UserRequest user);
 
     @Select("SELECT * FROM users")
     List<User> findAll(UserRequest request);
 
-    @Update("UPDATE users SET role = #{role}, usr_nm = #{usrNm}, dept_nm = #{deptNm} WHERE username = #{username}")
+    @Update("UPDATE users SET role = #{role}, usr_nm = #{usrNm}, dept_nm = #{deptNm}, use_yn = #{useYn} WHERE username = #{username}")
     void update(UserRequest user);
 
 	@Select("""

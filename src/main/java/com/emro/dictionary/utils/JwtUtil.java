@@ -1,5 +1,6 @@
 package com.emro.dictionary.utils;
 
+import com.emro.dictionary.users.entity.SignUpForm;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -39,5 +40,15 @@ public class JwtUtil {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         return userDetails.getUsername().equals(extractUsername(token));
+    }
+
+    public String generateSSOToken(SignUpForm sign) {
+        return Jwts.builder()
+                .setSubject(sign.getUsrId())
+                .claim("role", sign.getRole())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1시간
+                .signWith(key)
+                .compact();
     }
 }

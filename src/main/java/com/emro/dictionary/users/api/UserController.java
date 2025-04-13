@@ -29,6 +29,12 @@ public class UserController {
         return ResponseEntity.ok("User added");
     }
 
+    @PostMapping("/modify")
+    public ResponseEntity<String> modifyUser(@RequestBody List<UserRequest> users) {
+        userService.modifyUser(users);
+        return ResponseEntity.ok("User modify");
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<User> signUp(@RequestBody SignUpForm user) {
         return ResponseEntity.ok(userService.signUp(user));

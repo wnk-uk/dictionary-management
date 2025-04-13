@@ -5,6 +5,7 @@ import com.emro.dictionary.users.entity.SignUpForm;
 import com.emro.dictionary.users.entity.User;
 import com.emro.dictionary.users.entity.UserRequest;
 import com.emro.dictionary.users.repository.UserMapper;
+import com.emro.dictionary.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class UserService {
         if (findUser != null) {
             userMapper.update(user);
         } else {
-            String rawPassword = "admin123";
+            String rawPassword = "1111";
             String encodedPassword = encoder.encode(rawPassword);
             user.setPassword(encodedPassword);
             userMapper.save(user);
@@ -45,10 +46,17 @@ public class UserService {
         if (userMapper.isDuplicate(user) > 0) {
             throw new IllegalArgumentException("유저아이디가 중복되었습니다.");
         }
-        user.setToken(UUID.randomUUID().toString());
+        JwtUtil jwtUtil = new JwtUtil();
+        user.setToken(jwtUtil.generateSSOToken(user));
         user.setPassword(encoder.encode(user.getPassword()));
         userMapper.signUp(user);
 
         return userMapper.findByUsername(user.getUsrId());
+    }
+
+    public void modifyUser(List<UserRequest> users) {
+        for (UserRequest user : users) {
+            userMapper.update(user);
+        }
     }
 }

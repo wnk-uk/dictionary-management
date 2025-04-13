@@ -122,10 +122,40 @@
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function (response) {
-                    alert('회원가입 요청이 완료되었습니다.');
-                    // 성공 시 페이지 이동 또는 리셋 등 처리
-                    console.log(response);
-                    //location.href = '/login';
+                    Swal.fire({
+                        html: `<br/>
+                                IntelliJ Plugin Token
+                                <br/>
+                                <span id="copyTarget" style="color:green">${response.token}</span>
+                                <button id="copyBtn" class="swal2-confirm swal2-styled" style="
+                                  background: none;
+                                  border: none;
+                                  cursor: pointer;
+                                  font-size: 1.2em;
+                                  color: #3085d6;
+                                ">
+                                <i class="fa fa-copy"></i>
+                                </button>
+                                <br/>
+                                해당 토큰을 복사하여 Plugin 설정에 입력하세요.
+                                <br/>
+                                관리자 승인 시 연동됩니다.`,
+                        title: "요청이 제출되었습니다.",
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            const btn = document.getElementById('copyBtn');
+                            btn.addEventListener('click', () => {
+                                const text = document.getElementById('copyTarget').innerText;
+                                navigator.clipboard.writeText(text).then(() => {
+                                    btn.innerHTML = '<i class="fa fa-check"></i>';
+                                }).catch(() => {
+                                    btn.innerHTML = '<i class="fa fa-xmark"></i>';
+                                });
+                            });
+                        }
+                        }).then(() => {
+                        window.location.href = "/login";
+                    });
                 },
                 error: function (xhr, status, error) {
                     UT.handleAjaxError(xhr);
