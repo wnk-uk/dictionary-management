@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +22,10 @@ public class MultlangDumpScheduler {
 
     private final MultLangMapper multlangMapper;
 
-    private static final String DUMP_DIR = "D:/tmp/dump";
+    @Value("${file.upload-dir}")
+    private String DUMP_DIR;
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정
+    @Scheduled(cron = "0 */15 * * * *") // 15분단위
     public void dumpMultlangToJson() {
         try {
             List<MultLangDTO> DTOs = multlangMapper.findAll();
