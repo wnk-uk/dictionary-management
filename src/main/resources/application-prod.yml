@@ -37,7 +37,7 @@ mybatis:
     map-underscore-to-camel-case: true
 
 file:
-  upload-dir: D:/uploads/final
+  upload-dir: /data/upload
 
 
 logging:
