@@ -3,6 +3,8 @@ package com.emro.dictionary.lang.api;
 import com.emro.dictionary.lang.dto.LangDTO;
 import com.emro.dictionary.lang.LangRequest;
 import com.emro.dictionary.lang.service.LangService;
+import com.emro.dictionary.multLang.repository.MultLangMapper;
+import com.emro.dictionary.storage.scheduler.MultlangDumpScheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import java.util.List;
 public class LangController {
 
     private final LangService langService;
+    private final MultlangDumpScheduler multlangDumpScheduler;
 
     @PostMapping("/save")
     public ResponseEntity<String> save(@RequestBody LangDTO langDTO) {
@@ -29,6 +32,11 @@ public class LangController {
     @GetMapping("/lists")
     public ResponseEntity<LangDTO> findByDetailList(@RequestParam LangRequest langRequest) {
         return ResponseEntity.ok(langService.findByReqDetailListAll(langRequest));
+    }
+
+    @GetMapping("/dump")
+    public void dump() {
+        multlangDumpScheduler.dumpMultlangToJson();
     }
 
 }
