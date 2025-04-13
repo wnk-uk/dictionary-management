@@ -2,6 +2,7 @@ package com.emro.dictionary;
 
 import com.emro.dictionary.security.SecurityUtil;
 import com.emro.dictionary.users.service.CustomUserDetailsService;
+import com.emro.dictionary.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -68,8 +70,8 @@ public class PageController {
 	}
 
 	@GetMapping("/ssoLogin")
-	public String ssoLogin(Model model, HttpServletRequest request) {
-		UserDetails user = userDetailsService.loadUserByUsername("sys_admin");
+	public String ssoLogin(Model model, HttpServletRequest request, @RequestParam("token") String token) {
+		UserDetails user = userDetailsService.loadUserByUsername(new JwtUtil().extractUsername(token));
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 

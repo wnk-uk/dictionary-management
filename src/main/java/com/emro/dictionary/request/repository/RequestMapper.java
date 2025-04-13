@@ -43,7 +43,7 @@ public interface RequestMapper {
 		FROM req r
 		LEFT JOIN users u ON r.req_user_id = u.id
 		WHERE r.acpt_sts <> 'HOLDING'
-		AND (#{userId} IS NULL OR r.req_user_id = #{userId})
+		AND (CAST(#{userId} AS TEXT) IS NULL OR r.req_user_id = #{userId})
 		ORDER BY r.req_dttm DESC
     """)
 	@Results({
@@ -66,7 +66,7 @@ public interface RequestMapper {
 		FROM req r
 		LEFT JOIN users u ON r.req_user_id = u.id
 		WHERE r.acpt_sts = #{acptSts}
-		AND (#{userId} IS NULL OR r.req_user_id = #{userId})
+		AND (CAST(#{userId} AS TEXT) IS NULL OR r.req_user_id = #{userId})
 		ORDER BY r.req_dttm DESC
     """)
 	@Results({
@@ -98,7 +98,7 @@ public interface RequestMapper {
 		FROM req r
 		LEFT JOIN users u ON r.req_user_id = u.id
 		WHERE r.acpt_sts = #{acptSts}
-		 AND (r.req_user_id = #{userId} OR #{userId} IS NULL)
+		 AND (r.req_user_id = #{userId} OR CAST(#{userId} AS TEXT) IS NULL)
 		ORDER BY r.req_dttm DESC
 		LIMIT 10
     """)

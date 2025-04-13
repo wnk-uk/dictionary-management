@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS sheet_data (
                                      id BIGSERIAL PRIMARY KEY,
-                                     json_data CLOB NOT NULL
+                                     json_data TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS req (
